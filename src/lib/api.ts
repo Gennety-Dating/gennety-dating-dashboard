@@ -22,6 +22,54 @@ export interface MatchesData {
   completed: number;
 }
 
+export interface UserProfile {
+  height: number | null;
+  hobbies: string[];
+  partnerPreferences: string[];
+  visualPreferences: string[];
+  psychologicalSummary: string | null;
+  negativeConstraints: string[];
+  ageRangeMin: number | null;
+  ageRangeMax: number | null;
+  photos: string[];
+}
+
+export interface UserListItem {
+  id: string;
+  telegramId: string;
+  firstName: string;
+  surname: string | null;
+  age: number | null;
+  gender: string | null;
+  preference: string | null;
+  major: string | null;
+  language: string | null;
+  status: string;
+  onboardingStep: string;
+  universityDomain: string | null;
+  email: string | null;
+  createdAt: string;
+  profile: UserProfile | null;
+}
+
+export interface UsersListResponse {
+  data: UserListItem[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface ChatMessage {
+  role?: string;
+  content?: string;
+  timestamp?: string | number;
+  [key: string]: unknown;
+}
+
+export interface UserDetail extends UserListItem {
+  messageHistory: ChatMessage[] | null;
+}
+
 // ── Fetcher ─────────────────────────────────────────────────────
 
 async function apiFetch<T>(path: string): Promise<T> {
@@ -54,3 +102,9 @@ export const getFunnel = () =>
 
 export const getMatches = () =>
   apiFetch<MatchesData>("/admin/analytics/matches");
+
+export const getUsers = (limit = 20, offset = 0) =>
+  apiFetch<UsersListResponse>(`/admin/users?limit=${limit}&offset=${offset}`);
+
+export const getUserDetail = (id: string) =>
+  apiFetch<UserDetail>(`/admin/users/${encodeURIComponent(id)}`);

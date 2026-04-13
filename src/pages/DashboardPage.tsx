@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   getDemographics,
   getFunnel,
@@ -104,12 +104,28 @@ export default function DashboardPage() {
           <h1 className="text-2xl font-bold text-white">Gennety Analytics</h1>
           <p className="text-sm text-slate-400">Admin Dashboard</p>
         </div>
-        <button
-          onClick={handleLogout}
-          className="cursor-pointer rounded-lg border border-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-800"
-        >
-          Logout
-        </button>
+        <div className="flex items-center gap-2">
+          <nav className="flex overflow-hidden rounded-lg border border-slate-700">
+            <Link
+              to="/"
+              className="bg-slate-800 px-3 py-1.5 text-sm text-white"
+            >
+              Analytics
+            </Link>
+            <Link
+              to="/users"
+              className="border-l border-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-800"
+            >
+              Users
+            </Link>
+          </nav>
+          <button
+            onClick={handleLogout}
+            className="cursor-pointer rounded-lg border border-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-800"
+          >
+            Logout
+          </button>
+        </div>
       </div>
 
       {/* Sections */}
