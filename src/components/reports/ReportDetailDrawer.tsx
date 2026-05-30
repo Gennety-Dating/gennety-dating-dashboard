@@ -21,7 +21,7 @@ const TIER_COLORS: Record<number, string> = {
 };
 
 function displayName(user: {
-  firstName: string;
+  firstName: string | null;
   surname: string | null;
   telegramId: string;
 }): string {
@@ -37,6 +37,130 @@ function Field({ label, value }: { label: string; value: React.ReactNode }) {
       </p>
       <p className="mt-0.5 text-sm text-slate-200">{value ?? "—"}</p>
     </div>
+  );
+}
+
+function TagList({ items }: { items: string[] | undefined | null }) {
+  if (!items || items.length === 0) {
+    return <span className="text-sm text-slate-500">—</span>;
+  }
+
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {items.map((item, index) => (
+        <span
+          key={`${item}-${index}`}
+          className="rounded-md border border-slate-700 bg-slate-800/60 px-2 py-0.5 text-xs text-slate-200"
+        >
+          {item}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function EmptyState({ text }: { text: string }) {
+  return (
+    <div className="rounded-xl border border-dashed border-slate-700 bg-slate-900/40 p-4 text-sm text-slate-500">
+      {text}
+    </div>
+  );
+}
+
+function UserSnapshot({
+  title,
+  user,
+  showStrikes,
+}: {
+  title: string;
+  user: ReportListItem["reporter"] | ReportListItem["reported"];
+  showStrikes?: boolean;
+}) {
+  return (
+    <section className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+      <div className="mb-4 flex items-start justify-between gap-4">
+        <div>
+          <p className="text-[10px] font-medium tracking-wider text-slate-500 uppercase">
+            {title}
+          </p>
+          <h4 className="mt-1 text-base font-semibold text-white">
+            {displayName(user)}
+          </h4>
+        </div>
+        <div className="rounded-full border border-slate-700 px-2.5 py-1 text-[10px] font-medium tracking-wide text-slate-300 uppercase">
+          <span className="capitalize">{user.status}</span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+        <Field label="Telegram" value={`tg:${user.telegramId}`} />
+        <Field label="Email" value={user.email ?? "—"} />
+        <Field
+          label="Email Verified"
+          value={user.isEmailVerified ? "Yes" : "No"}
+        />
+        <Field
+          label="Verification"
+          value={<span className="capitalize">{user.verificationStatus}</span>}
+        />
+        <Field label="Photos" value={user.profile?.photos.length ?? 0} />
+        {showStrikes ? <Field label="Strikes" value={user.strikes} /> : null}
+      </div>
+
+      <div className="mt-5 space-y-4">
+        <div>
+          <p className="mb-1.5 text-[10px] font-medium tracking-wider text-slate-500 uppercase">
+            Psychological Summary
+          </p>
+          {user.profile?.psychologicalSummary ? (
+            <div className="rounded-xl border border-violet-500/20 bg-violet-500/5 p-4">
+              <p className="font-mono text-sm leading-relaxed whitespace-pre-wrap text-slate-200">
+                {user.profile.psychologicalSummary}
+              </p>
+            </div>
+          ) : (
+            <EmptyState text="No psychological summary recorded." />
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <p className="mb-1.5 text-[10px] font-medium tracking-wider text-slate-500 uppercase">
+              Hobbies
+            </p>
+            <TagList items={user.profile?.hobbies} />
+          </div>
+          <div>
+            <p className="mb-1.5 text-[10px] font-medium tracking-wider text-slate-500 uppercase">
+              Partner Preferences
+            </p>
+            <TagList items={user.profile?.partnerPreferences} />
+          </div>
+          <div>
+            <p className="mb-1.5 text-[10px] font-medium tracking-wider text-slate-500 uppercase">
+              Negative Constraints
+            </p>
+            <TagList items={user.profile?.negativeConstraints} />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <Field
+              label="Height"
+              value={
+                user.profile?.height ? `${user.profile.height} cm` : "—"
+              }
+            />
+            <Field
+              label="Age Range"
+              value={
+                user.profile?.ageRangeMin && user.profile?.ageRangeMax
+                  ? `${user.profile.ageRangeMin}–${user.profile.ageRangeMax}`
+                  : "—"
+              }
+            />
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -90,7 +214,6 @@ export default function ReportDetailDrawer({
 
         {report && (
           <div className="space-y-6 px-6 py-6">
-            {/* Tier badge */}
             <div
               className={`rounded-xl border p-4 ${TIER_COLORS[report.tier] ?? "border-slate-700 bg-slate-800 text-slate-300"}`}
             >
@@ -107,48 +230,20 @@ export default function ReportDetailDrawer({
               </p>
             </div>
 
-            {/* Reporter / Reported */}
-            <div className="grid grid-cols-2 gap-6">
-              <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
-                <p className="mb-3 text-[10px] font-medium tracking-wider text-slate-500 uppercase">
-                  Reporter
-                </p>
-                <Field label="Name" value={displayName(report.reporter)} />
-                <div className="mt-2">
-                  <Field
-                    label="Telegram"
-                    value={`tg:${report.reporter.telegramId}`}
-                  />
-                </div>
-              </div>
-              <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
-                <p className="mb-3 text-[10px] font-medium tracking-wider text-slate-500 uppercase">
-                  Reported User
-                </p>
-                <Field label="Name" value={displayName(report.reported)} />
-                <div className="mt-2 grid grid-cols-2 gap-2">
-                  <Field
-                    label="Status"
-                    value={
-                      <span className="capitalize">
-                        {report.reported.status ?? "—"}
-                      </span>
-                    }
-                  />
-                  <Field
-                    label="Strikes"
-                    value={report.reported.strikes ?? 0}
-                  />
-                </div>
-              </div>
+            <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+              <UserSnapshot title="Reporter" user={report.reporter} />
+              <UserSnapshot
+                title="Reported User"
+                user={report.reported}
+                showStrikes
+              />
             </div>
 
-            {/* AI Triage Summary */}
-            {report.reasonSummary && (
-              <section>
-                <h4 className="mb-3 text-sm font-semibold text-white">
-                  AI Triage Summary
-                </h4>
+            <section>
+              <h4 className="mb-3 text-sm font-semibold text-white">
+                AI Triage Summary
+              </h4>
+              {report.reasonSummary ? (
                 <div className="relative overflow-hidden rounded-xl border border-violet-500/30 bg-gradient-to-br from-violet-500/10 via-slate-900 to-slate-900 p-5">
                   <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-violet-400 to-fuchsia-500" />
                   <div className="mb-3 flex items-center gap-2">
@@ -160,10 +255,11 @@ export default function ReportDetailDrawer({
                     {report.reasonSummary}
                   </blockquote>
                 </div>
-              </section>
-            )}
+              ) : (
+                <EmptyState text="No AI reason summary was returned for this report." />
+              )}
+            </section>
 
-            {/* Raw text */}
             <section>
               <h4 className="mb-3 text-sm font-semibold text-white">
                 User's Report
@@ -175,9 +271,21 @@ export default function ReportDetailDrawer({
               </div>
             </section>
 
-            {/* Match info */}
-            <div className="grid grid-cols-2 gap-4">
-              <Field label="Match ID" value={report.match.id.slice(0, 8)} />
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Field
+                label="Report ID"
+                value={
+                  <span className="font-mono text-xs break-all">{report.id}</span>
+                }
+              />
+              <Field
+                label="Match ID"
+                value={
+                  <span className="font-mono text-xs break-all">
+                    {report.match.id}
+                  </span>
+                }
+              />
               <Field
                 label="Match Status"
                 value={
@@ -194,7 +302,6 @@ export default function ReportDetailDrawer({
               />
             </div>
 
-            {/* Mark reviewed */}
             {!report.adminReviewed && (
               <div className="border-t border-slate-800 pt-6">
                 {markError && (

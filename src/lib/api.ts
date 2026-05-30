@@ -229,11 +229,24 @@ export interface UserDetail extends UserListItem {
 
 export interface ReportUserRef {
   id: string;
-  firstName: string;
+  firstName: string | null;
   surname: string | null;
   telegramId: string;
-  status?: string;
-  strikes?: number;
+  email: string | null;
+  status: string;
+  verificationStatus: string;
+  isEmailVerified: boolean;
+  strikes: number;
+  profile: {
+    height: number | null;
+    hobbies: string[];
+    partnerPreferences: string[];
+    psychologicalSummary: string | null;
+    negativeConstraints: string[];
+    ageRangeMin: number | null;
+    ageRangeMax: number | null;
+    photos: string[];
+  } | null;
 }
 
 export interface ReportListItem {

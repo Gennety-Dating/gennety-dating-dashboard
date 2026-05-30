@@ -45,7 +45,7 @@ function ReviewedPill({ reviewed }: { reviewed: boolean }) {
   );
 }
 
-function displayName(user: { firstName: string; surname: string | null }): string {
+function displayName(user: { firstName: string | null; surname: string | null }): string {
   const parts = [user.firstName, user.surname].filter(Boolean);
   return parts.length > 0 ? parts.join(" ") : "—";
 }
@@ -126,9 +126,7 @@ export default function ReportsTable({ reports, loading, onRowClick }: Props) {
                       {displayName(r.reported)}
                     </div>
                     <div className="text-xs text-slate-500">
-                      {r.reported.status && (
-                        <span className="capitalize">{r.reported.status}</span>
-                      )}
+                      <span className="capitalize">{r.reported.status}</span>
                       {r.reported.strikes !== undefined &&
                         r.reported.strikes > 0 &&
                         ` · ${r.reported.strikes} strike${r.reported.strikes > 1 ? "s" : ""}`}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   getReports,
   type ReportListItem,
@@ -14,11 +14,44 @@ const PAGE_SIZE = 20;
 type TierFilter = "all" | "1" | "2" | "3";
 type ReviewFilter = "all" | "reviewed" | "pending";
 
+function parsePageParam(value: string | null): number {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) - 1 : 0;
+}
+
+function parseTierFilter(value: string | null): TierFilter {
+  return value === "1" || value === "2" || value === "3" ? value : "all";
+}
+
+function parseReviewFilter(value: string | null): ReviewFilter {
+  if (value === "true") return "reviewed";
+  if (value === "false") return "pending";
+  return "all";
+}
+
+function buildSearchParams(
+  page: number,
+  tierFilter: TierFilter,
+  reviewFilter: ReviewFilter,
+): URLSearchParams {
+  const params = new URLSearchParams();
+  if (page > 0) params.set("page", String(page + 1));
+  if (tierFilter !== "all") params.set("tier", tierFilter);
+  if (reviewFilter === "reviewed") params.set("reviewed", "true");
+  if (reviewFilter === "pending") params.set("reviewed", "false");
+  return params;
+}
+
 export default function ReportsPage() {
   const navigate = useNavigate();
-  const [page, setPage] = useState(0);
-  const [tierFilter, setTierFilter] = useState<TierFilter>("all");
-  const [reviewFilter, setReviewFilter] = useState<ReviewFilter>("all");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [page, setPage] = useState(() => parsePageParam(searchParams.get("page")));
+  const [tierFilter, setTierFilter] = useState<TierFilter>(() =>
+    parseTierFilter(searchParams.get("tier")),
+  );
+  const [reviewFilter, setReviewFilter] = useState<ReviewFilter>(() =>
+    parseReviewFilter(searchParams.get("reviewed")),
+  );
 
   const [result, setResult] = useState<{
     key: string;
@@ -64,6 +97,26 @@ export default function ReportsPage() {
     loadReports();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, tierFilter, reviewFilter, navigate]);
+
+  useEffect(() => {
+    const nextPage = parsePageParam(searchParams.get("page"));
+    const nextTierFilter = parseTierFilter(searchParams.get("tier"));
+    const nextReviewFilter = parseReviewFilter(searchParams.get("reviewed"));
+
+    setPage((current) => (current === nextPage ? current : nextPage));
+    setTierFilter((current) =>
+      current === nextTierFilter ? current : nextTierFilter,
+    );
+    setReviewFilter((current) =>
+      current === nextReviewFilter ? current : nextReviewFilter,
+    );
+  }, [searchParams]);
+
+  useEffect(() => {
+    const nextParams = buildSearchParams(page, tierFilter, reviewFilter);
+    if (nextParams.toString() === searchParams.toString()) return;
+    setSearchParams(nextParams, { replace: true });
+  }, [page, reviewFilter, searchParams, setSearchParams, tierFilter]);
 
   function handleLogout() {
     clearApiKey();
