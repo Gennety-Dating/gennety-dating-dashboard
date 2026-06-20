@@ -225,6 +225,47 @@ export interface UserDetail extends UserListItem {
   messageHistory: ChatMessage[] | null;
 }
 
+// ── Conversation viewer ─────────────────────────────────────────
+// Mirrors GET /admin/users/:id/conversation. Merges both backend stores
+// (Telegram messageHistory + Aether Message rows) into one normalized
+// transcript; profile photos come back as a separate gallery.
+
+export type MediaType = "telegram" | "photo" | "chat";
+
+export interface ConversationToolCall {
+  name: string;
+  arguments: string;
+}
+
+export interface ConversationImage {
+  type: "chat";
+  ref: string;
+}
+
+export interface ConversationMessage {
+  id: string;
+  source: "telegram" | "aether";
+  role: string;
+  text: string | null;
+  createdAt: string | null;
+  technical: boolean;
+  toolCalls?: ConversationToolCall[];
+  image?: ConversationImage;
+}
+
+export interface ConversationPhoto {
+  type: "photo";
+  ref: string;
+}
+
+export interface UserConversation {
+  userId: string;
+  telegramId: string;
+  displayName: string | null;
+  messages: ConversationMessage[];
+  photos: ConversationPhoto[];
+}
+
 // ── Report types ───────────────────────────────────────────────
 
 export interface ReportUserRef {
@@ -338,6 +379,20 @@ export const getUsers = (limit = 20, offset = 0) =>
 
 export const getUserDetail = (id: string) =>
   apiFetch<UserDetail>(`/admin/users/${encodeURIComponent(id)}`);
+
+export const getUserConversation = (id: string) =>
+  apiFetch<UserConversation>(
+    `/admin/users/${encodeURIComponent(id)}/conversation`,
+  );
+
+/**
+ * Build the authenticated image-proxy URL. The Bearer key is NEVER put in the
+ * query string — callers fetch this URL with the Authorization header and
+ * convert the response to a blob URL (see <AuthedImage>).
+ */
+export function mediaUrl(type: MediaType, ref: string): string {
+  return `${BASE_URL}/admin/media?type=${type}&ref=${encodeURIComponent(ref)}`;
+}
 
 // ── Reports ────────────────────────────────────────────────────
 

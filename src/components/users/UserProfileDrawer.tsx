@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { getUserDetail, type UserDetail } from "../../lib/api";
 import PsychProfileBlock from "./PsychProfileBlock";
 import ChatHistoryBlock from "./ChatHistoryBlock";
@@ -241,11 +242,20 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
                 </section>
               )}
 
-              {/* Chat history */}
+              {/* Chat history — quick preview; full transcript (with images
+                  + technical toggle) lives on the dedicated route. */}
               <section>
-                <h4 className="mb-3 text-sm font-semibold text-white">
-                  Chat History
-                </h4>
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <h4 className="text-sm font-semibold text-white">
+                    Chat History
+                  </h4>
+                  <Link
+                    to={`/users/${detail.id}`}
+                    className="shrink-0 rounded-lg border border-violet-500/40 bg-violet-500/10 px-3 py-1 text-xs font-medium text-violet-200 hover:bg-violet-500/20"
+                  >
+                    Open full conversation →
+                  </Link>
+                </div>
                 <ChatHistoryBlock messages={detail.messageHistory ?? null} />
               </section>
             </>

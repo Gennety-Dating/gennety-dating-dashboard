@@ -3,6 +3,7 @@ import { isAuthenticated } from "./lib/auth";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import UsersPage from "./pages/UsersPage";
+import UserConversationPage from "./pages/UserConversationPage";
 import ReportsPage from "./pages/ReportsPage";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -30,6 +31,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <UsersPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/users/:id"
+          element={
+            <ProtectedRoute>
+              <UserConversationPage />
             </ProtectedRoute>
           }
         />
