@@ -6,6 +6,7 @@ import {
   getMatches,
   getReportsStats,
   getAudience,
+  getCities,
   getHeatmap,
   getAlgorithm,
   getGenderAnalytics,
@@ -17,6 +18,7 @@ import {
   type MatchesData,
   type ReportsStatsData,
   type AudienceData,
+  type CitiesData,
   type HeatmapData,
   type AlgorithmData,
   type GenderData,
@@ -30,11 +32,12 @@ import FunnelSection from "../components/FunnelSection";
 import MatchesSection from "../components/MatchesSection";
 import ReportsSection from "../components/ReportsSection";
 import AudienceSection from "../components/AudienceSection";
+import CitiesSection from "../components/CitiesSection";
 import AlgorithmSection from "../components/AlgorithmSection";
 import GenderSection from "../components/GenderSection";
 import GrowthSection from "../components/GrowthSection";
 
-type TabKey = "overview" | "audience" | "algorithm" | "gender" | "growth";
+type TabKey = "overview" | "audience" | "cities" | "algorithm" | "gender" | "growth";
 
 interface DashboardState {
   demographics: DemographicsData | null;
@@ -42,6 +45,7 @@ interface DashboardState {
   matches: MatchesData | null;
   reports: ReportsStatsData | null;
   audience: AudienceData | null;
+  cities: CitiesData | null;
   heatmap: HeatmapData | null;
   algorithm: AlgorithmData | null;
   gender: GenderData | null;
@@ -60,6 +64,12 @@ const TABS: Array<{ key: TabKey; label: string; description: string }> = [
     key: "audience",
     label: "Audience",
     description: "Demographics, interests, psychology, geography.",
+  },
+  {
+    key: "cities",
+    label: "Cities",
+    description:
+      "Demographic split by city — date departure point where known, else matching city.",
   },
   {
     key: "algorithm",
@@ -86,6 +96,7 @@ export default function DashboardPage() {
     matches: null,
     reports: null,
     audience: null,
+    cities: null,
     heatmap: null,
     algorithm: null,
     gender: null,
@@ -111,6 +122,7 @@ export default function DashboardPage() {
           matches,
           reports,
           audience,
+          cities,
           heatmap,
           algorithm,
           gender,
@@ -123,6 +135,7 @@ export default function DashboardPage() {
           getMatches(),
           getReportsStats(),
           getAudience(),
+          getCities().catch(() => null),
           getHeatmap().catch(() => null),
           getAlgorithm(),
           getGenderAnalytics(),
@@ -137,6 +150,7 @@ export default function DashboardPage() {
             matches,
             reports,
             audience,
+            cities,
             heatmap,
             algorithm,
             gender,
@@ -298,6 +312,10 @@ export default function DashboardPage() {
 
         {activeTab === "audience" && data.audience && (
           <AudienceSection audience={data.audience} heatmap={data.heatmap} />
+        )}
+
+        {activeTab === "cities" && data.cities && (
+          <CitiesSection data={data.cities} />
         )}
 
         {activeTab === "algorithm" && data.algorithm && (

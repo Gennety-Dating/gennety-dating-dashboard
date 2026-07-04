@@ -13,6 +13,26 @@ export interface DemographicsData {
   }>;
 }
 
+// ── Cities ────────────────────────────────────────────────────
+
+export interface CityRow {
+  cityKey: string;
+  city: string;
+  countryCode: string | null;
+  total: number;
+  male: number;
+  female: number;
+  unknown: number;
+  /** How many of this city's users were placed by their date departure pin. */
+  fromDeparture: number;
+}
+
+export interface CitiesData {
+  totalUsers: number;
+  attribution: { byDeparture: number; byMatchingCity: number; unknown: number };
+  cities: CityRow[];
+}
+
 // ── Audience ──────────────────────────────────────────────────
 
 export interface AudienceData {
@@ -355,6 +375,9 @@ export const getMatches = () =>
 
 export const getAudience = () =>
   apiFetch<AudienceData>("/admin/analytics/audience");
+
+export const getCities = () =>
+  apiFetch<CitiesData>("/admin/analytics/cities");
 
 export const getHeatmap = () =>
   apiFetch<HeatmapData>("/admin/analytics/audience/heatmap");
