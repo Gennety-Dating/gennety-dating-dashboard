@@ -335,6 +335,35 @@ export interface ReportsStatsData {
   unreviewedTier3: number;
 }
 
+// ── Weekly matches (founder report parity) ──────────────────────
+
+export interface WeeklyMatchesUserCard {
+  userId: string;
+  firstName: string | null;
+  age: number | null;
+  gender: string | null;
+  city: string | null;
+  verificationStatus: string;
+  /** 0..100 vision attractiveness score (null until the Elo vision seed ran). */
+  attractiveness: number | null;
+  /** Telegram file_id / Supabase path refs (served via /admin/media). */
+  photoRefs: string[];
+}
+
+export interface WeeklyMatchesPair {
+  matchId: string;
+  status: string;
+  synergyScore: number | null;
+  synergyReason: string | null;
+  createdAtIso: string;
+  users: [WeeklyMatchesUserCard, WeeklyMatchesUserCard];
+}
+
+export interface WeeklyMatchesData {
+  weekOf: string;
+  pairs: WeeklyMatchesPair[];
+}
+
 // ── Fetcher ─────────────────────────────────────────────────────
 
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
@@ -372,6 +401,11 @@ export const getFunnel = () =>
 
 export const getMatches = () =>
   apiFetch<MatchesData>("/admin/analytics/matches");
+
+export const getWeeklyMatches = (weekOf?: string) =>
+  apiFetch<WeeklyMatchesData>(
+    `/admin/analytics/weekly-matches${weekOf ? `?weekOf=${encodeURIComponent(weekOf)}` : ""}`,
+  );
 
 export const getAudience = () =>
   apiFetch<AudienceData>("/admin/analytics/audience");

@@ -36,8 +36,16 @@ import CitiesSection from "../components/CitiesSection";
 import AlgorithmSection from "../components/AlgorithmSection";
 import GenderSection from "../components/GenderSection";
 import GrowthSection from "../components/GrowthSection";
+import WeeklyMatchesSection from "../components/WeeklyMatchesSection";
 
-type TabKey = "overview" | "audience" | "cities" | "algorithm" | "gender" | "growth";
+type TabKey =
+  | "overview"
+  | "matches"
+  | "audience"
+  | "cities"
+  | "algorithm"
+  | "gender"
+  | "growth";
 
 interface DashboardState {
   demographics: DemographicsData | null;
@@ -59,6 +67,12 @@ const TABS: Array<{ key: TabKey; label: string; description: string }> = [
     key: "overview",
     label: "Overview",
     description: "Headline KPIs and the safety report queue.",
+  },
+  {
+    key: "matches",
+    label: "Weekly matches",
+    description:
+      "Every pair from the last drop — both users' data, photos, and attractiveness score.",
   },
   {
     key: "audience",
@@ -309,6 +323,8 @@ export default function DashboardPage() {
             {data.reports && <ReportsSection data={data.reports} />}
           </div>
         )}
+
+        {activeTab === "matches" && <WeeklyMatchesSection />}
 
         {activeTab === "audience" && data.audience && (
           <AudienceSection audience={data.audience} heatmap={data.heatmap} />
