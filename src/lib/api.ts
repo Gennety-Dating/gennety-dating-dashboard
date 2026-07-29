@@ -200,10 +200,17 @@ export interface MatchesData {
 export interface UserProfile {
   height: number | null;
   hobbies: string[];
-  partnerPreferences: string[];
-  visualPreferences: string[];
+  /**
+   * Free-text on the backend (`Profile.partnerPreferences` is a String column),
+   * NOT an array — declaring it `string[]` is what let a `.map` call ship and
+   * blank the profile drawer. Render these through `toTagList()`.
+   */
+  partnerPreferences: string | string[] | null;
+  /** Not returned by `/admin/users/:id` today; kept optional, never assumed. */
+  visualPreferences?: string | string[] | null;
   psychologicalSummary: string | null;
-  negativeConstraints: string[];
+  /** Free-text on the backend, same as `partnerPreferences`. */
+  negativeConstraints: string | string[] | null;
   ageRangeMin: number | null;
   ageRangeMax: number | null;
   photos: string[];
@@ -278,6 +285,112 @@ export interface ConversationPhoto {
   ref: string;
 }
 
+// ── Dialogs (GET /admin/dialogs) ────────────────────────────────
+// The richer conversation reader. Unlike /admin/users/:id/conversation
+// (agent + Aether only), this merges a THIRD store — `chat_events` — so the
+// transcript shows what the bot actually SENT from its ~276 non-agent call
+// sites, which buttons were on offer, and what the user tapped.
+
+export type DialogSource = "agent" | "aether" | "timeline";
+export type DialogDirection = "in" | "out";
+
+/** A button that was on offer with an outbound message. */
+export interface DialogAction {
+  label: string;
+  data?: string;
+  webApp?: string;
+}
+
+export interface DialogMessage {
+  id: string;
+  source: DialogSource;
+  direction: DialogDirection;
+  role: string;
+  text: string | null;
+  createdAt: string | null;
+  technical: boolean;
+  /** agent rows only */
+  toolCalls?: ConversationToolCall[];
+  /** aether rows only */
+  image?: ConversationImage;
+  /** timeline rows only */
+  kind?: string;
+  surface?: string | null;
+  actions?: DialogAction[] | null;
+  matchId?: string | null;
+}
+
+export interface DialogParticipant {
+  userId: string;
+  displayName: string | null;
+  telegramId: string;
+  telegramUsername: string | null;
+  age: number | null;
+  gender: string | null;
+  city: string | null;
+  cityKey: string | null;
+  language: string | null;
+  platform: string;
+  status: string;
+  onboardingStep: string;
+  registrationTrack: string | null;
+  verificationStatus: string;
+  createdAt: string;
+}
+
+export interface DialogCounts {
+  total: number;
+  agent: number;
+  aether: number;
+  timeline: number;
+}
+
+/**
+ * The list row's preview. NOTE: `lastMessage` is an OBJECT, not a string —
+ * only its `text` field is the ≤200-char preview. Rendering the object
+ * directly throws "Objects are not valid as a React child" and blanks the
+ * page, so always read `.text`.
+ */
+export interface DialogPreview {
+  source: DialogSource;
+  direction: DialogDirection;
+  text: string | null;
+  createdAt: string | null;
+}
+
+export interface DialogListRow {
+  id: string;
+  participant: DialogParticipant;
+  counts: DialogCounts;
+  lastMessageAt: string | null;
+  lastMessage: DialogPreview | null;
+  messages?: DialogMessage[];
+}
+
+export interface DialogsListResponse {
+  data: DialogListRow[];
+  total: number;
+  limit: number;
+  offset: number;
+  sources: Record<DialogSource, boolean>;
+}
+
+export interface DialogDetail {
+  id: string;
+  participant: DialogParticipant;
+  counts: DialogCounts;
+  sources: Record<DialogSource, boolean>;
+  messages: DialogMessage[];
+  photos: ConversationPhoto[];
+}
+
+export interface DialogFilters {
+  status?: string;
+  platform?: string;
+  search?: string;
+  activeSince?: string;
+}
+
 export interface UserConversation {
   userId: string;
   telegramId: string;
@@ -301,9 +414,11 @@ export interface ReportUserRef {
   profile: {
     height: number | null;
     hobbies: string[];
-    partnerPreferences: string[];
+    /** Free-text on the backend — see `UserProfile`. Render via `toTagList()`. */
+    partnerPreferences: string | string[] | null;
     psychologicalSummary: string | null;
-    negativeConstraints: string[];
+    /** Free-text on the backend — see `UserProfile`. Render via `toTagList()`. */
+    negativeConstraints: string | string[] | null;
     ageRangeMin: number | null;
     ageRangeMax: number | null;
     photos: string[];
@@ -441,6 +556,38 @@ export const getUserConversation = (id: string) =>
   apiFetch<UserConversation>(
     `/admin/users/${encodeURIComponent(id)}/conversation`,
   );
+
+// ── Dialogs ────────────────────────────────────────────────────
+
+export function getDialogs(limit = 25, offset = 0, filters?: DialogFilters) {
+  const params = new URLSearchParams({
+    limit: String(limit),
+    offset: String(offset),
+  });
+  if (filters?.status) params.set("status", filters.status);
+  if (filters?.platform) params.set("platform", filters.platform);
+  if (filters?.search) params.set("search", filters.search);
+  if (filters?.activeSince) params.set("activeSince", filters.activeSince);
+  return apiFetch<DialogsListResponse>(`/admin/dialogs?${params}`);
+}
+
+/**
+ * `:id` is the USER id — a dialog is user↔bot and has exactly one human.
+ * `includeTechnical` surfaces system/tool turns, hidden by default.
+ */
+export function getDialog(
+  id: string,
+  opts?: { limit?: number; order?: "asc" | "desc"; includeTechnical?: boolean },
+) {
+  const params = new URLSearchParams({
+    limit: String(opts?.limit ?? 300),
+    order: opts?.order ?? "asc",
+  });
+  if (opts?.includeTechnical) params.set("includeTechnical", "true");
+  return apiFetch<DialogDetail>(
+    `/admin/dialogs/${encodeURIComponent(id)}?${params}`,
+  );
+}
 
 /**
  * Build the authenticated image-proxy URL. The Bearer key is NEVER put in the

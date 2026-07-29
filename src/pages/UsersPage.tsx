@@ -78,6 +78,12 @@ export default function UsersPage() {
               Users
             </Link>
             <Link
+              to="/dialogs"
+              className="border-l border-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-800"
+            >
+              Dialogs
+            </Link>
+            <Link
               to="/reports"
               className="border-l border-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-800"
             >

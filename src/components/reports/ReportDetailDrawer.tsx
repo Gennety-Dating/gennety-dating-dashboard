@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { ReportListItem } from "../../lib/api";
 import { markReportReviewed } from "../../lib/api";
+import { toTagList } from "../../lib/tags";
 
 interface Props {
   report: ReportListItem | null;
@@ -40,14 +41,15 @@ function Field({ label, value }: { label: string; value: React.ReactNode }) {
   );
 }
 
-function TagList({ items }: { items: string[] | undefined | null }) {
-  if (!items || items.length === 0) {
+function TagList({ items }: { items: string[] | string | undefined | null }) {
+  const tags = toTagList(items);
+  if (tags.length === 0) {
     return <span className="text-sm text-slate-500">—</span>;
   }
 
   return (
     <div className="flex flex-wrap gap-1.5">
-      {items.map((item, index) => (
+      {tags.map((item, index) => (
         <span
           key={`${item}-${index}`}
           className="rounded-md border border-slate-700 bg-slate-800/60 px-2 py-0.5 text-xs text-slate-200"

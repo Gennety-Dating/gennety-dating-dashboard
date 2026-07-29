@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getUserDetail, type UserDetail } from "../../lib/api";
+import { toTagList } from "../../lib/tags";
 import PsychProfileBlock from "./PsychProfileBlock";
 import ChatHistoryBlock from "./ChatHistoryBlock";
 
@@ -20,11 +21,12 @@ function Field({ label, value }: { label: string; value: React.ReactNode }) {
   );
 }
 
-function TagList({ items }: { items: string[] | undefined | null }) {
-  if (!items || items.length === 0) return <span className="text-slate-500">—</span>;
+function TagList({ items }: { items: string[] | string | undefined | null }) {
+  const tags = toTagList(items);
+  if (tags.length === 0) return <span className="text-slate-500">—</span>;
   return (
     <div className="flex flex-wrap gap-1.5">
-      {items.map((t, i) => (
+      {tags.map((t, i) => (
         <span
           key={`${t}-${i}`}
           className="rounded-md border border-slate-700 bg-slate-800/60 px-2 py-0.5 text-xs text-slate-200"

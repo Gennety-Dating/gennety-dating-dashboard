@@ -4,6 +4,7 @@ import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import UsersPage from "./pages/UsersPage";
 import UserConversationPage from "./pages/UserConversationPage";
+import DialogsPage from "./pages/DialogsPage";
 import ReportsPage from "./pages/ReportsPage";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -39,6 +40,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <UserConversationPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dialogs"
+          element={
+            <ProtectedRoute>
+              <DialogsPage />
             </ProtectedRoute>
           }
         />
