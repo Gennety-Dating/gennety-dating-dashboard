@@ -118,31 +118,43 @@ export default function DialogsPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
-      <div className="mx-auto mb-8 flex max-w-[110rem] items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Gennety Analytics</h1>
-          <p className="text-sm text-slate-400">Admin Dashboard</p>
+      {/* Top Header */}
+      <div className="mx-auto mb-6 flex max-w-[110rem] items-center justify-between rounded-2xl bg-slate-900/60 p-4 shadow-xl shadow-black/20 backdrop-blur-xl ring-1 ring-white/5">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-500 shadow-md shadow-violet-500/20">
+            <span className="text-lg font-black text-white">G</span>
+          </div>
+          <div>
+            <h1 className="bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-xl font-extrabold tracking-tight text-transparent">
+              Gennety Analytics
+            </h1>
+            <p className="text-xs font-medium text-slate-400">Admin Dashboard</p>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <nav className="flex overflow-hidden rounded-lg border border-slate-700">
-            <Link to="/" className="px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-800">
+
+        <div className="flex items-center gap-3">
+          <nav className="flex items-center gap-1 rounded-xl bg-slate-950/60 p-1 ring-1 ring-white/5">
+            <Link
+              to="/"
+              className="rounded-lg px-3.5 py-1.5 text-xs font-medium text-slate-400 transition-all hover:text-white hover:bg-white/5"
+            >
               Analytics
             </Link>
             <Link
               to="/users"
-              className="border-l border-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-800"
+              className="rounded-lg px-3.5 py-1.5 text-xs font-medium text-slate-400 transition-all hover:text-white hover:bg-white/5"
             >
               Users
             </Link>
             <Link
               to="/dialogs"
-              className="border-l border-slate-700 bg-slate-800 px-3 py-1.5 text-sm text-white"
+              className="rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm shadow-violet-600/30 transition-all"
             >
               Dialogs
             </Link>
             <Link
               to="/reports"
-              className="border-l border-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-800"
+              className="rounded-lg px-3.5 py-1.5 text-xs font-medium text-slate-400 transition-all hover:text-white hover:bg-white/5"
             >
               Reports
             </Link>
@@ -152,7 +164,7 @@ export default function DialogsPage() {
               clearApiKey();
               navigate("/login", { replace: true });
             }}
-            className="cursor-pointer rounded-lg border border-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-800"
+            className="cursor-pointer rounded-xl bg-slate-950/60 px-3.5 py-2 text-xs font-medium text-slate-400 ring-1 ring-white/5 transition-all hover:bg-red-500/10 hover:text-red-300 hover:ring-red-500/20"
           >
             Logout
           </button>
@@ -166,26 +178,26 @@ export default function DialogsPage() {
         />
 
         {list?.error && (
-          <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
+          <div className="mb-4 rounded-2xl bg-red-500/10 p-4 text-xs font-medium text-red-300 ring-1 ring-red-500/20">
             {list.error}
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[22rem_1fr]">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-[22rem_1fr]">
           {/* ── List pane ─────────────────────────────────────── */}
-          <div className="flex max-h-[78vh] flex-col rounded-xl border border-slate-800 bg-slate-900/40">
-            <div className="space-y-2 border-b border-slate-800 p-3">
+          <div className="flex max-h-[78vh] flex-col rounded-2xl bg-slate-900/60 shadow-xl shadow-black/30 backdrop-blur-xl ring-1 ring-white/5 overflow-hidden">
+            <div className="space-y-2.5 border-b border-white/5 p-3.5 bg-slate-950/40">
               <div className="flex gap-2">
                 <input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && applyFilters()}
-                  placeholder="Name, email, @username, tg id"
-                  className="min-w-0 flex-1 rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1.5 text-sm text-slate-200 placeholder:text-slate-600 focus:border-violet-500 focus:outline-none"
+                  placeholder="Name, email, @username..."
+                  className="min-w-0 flex-1 rounded-xl bg-slate-900 px-3 py-2 text-xs text-slate-200 placeholder:text-slate-500 outline-none ring-1 ring-white/10 focus:ring-violet-500/80 transition-all"
                 />
                 <button
                   onClick={applyFilters}
-                  className="cursor-pointer rounded-lg border border-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-800"
+                  className="cursor-pointer rounded-xl bg-violet-600/80 px-3.5 py-2 text-xs font-medium text-white shadow-sm hover:bg-violet-600 transition-all"
                 >
                   Go
                 </button>
@@ -197,7 +209,7 @@ export default function DialogsPage() {
                   setPage(0);
                   setApplied({ status: e.target.value, search: search.trim() });
                 }}
-                className="w-full cursor-pointer rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1.5 text-sm text-slate-200 focus:border-violet-500 focus:outline-none"
+                className="w-full cursor-pointer rounded-xl bg-slate-900 px-3 py-2 text-xs text-slate-200 outline-none ring-1 ring-white/10 focus:ring-violet-500/80 transition-all"
               >
                 {STATUS_OPTIONS.map((s) => (
                   <option key={s} value={s}>
@@ -207,13 +219,13 @@ export default function DialogsPage() {
               </select>
             </div>
 
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto divide-y divide-white/[0.04]">
               {listLoading ? (
-                <div className="flex justify-center py-10">
-                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
+                <div className="flex justify-center py-12">
+                  <div className="h-6 w-6 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
                 </div>
               ) : rows.length === 0 ? (
-                <p className="px-3 py-8 text-center text-sm text-slate-500">No dialogs found.</p>
+                <p className="px-3 py-10 text-center text-xs text-slate-500">No dialogs found.</p>
               ) : (
                 rows.map((r) => {
                   const active = r.id === selectedId;
@@ -222,26 +234,28 @@ export default function DialogsPage() {
                     <button
                       key={r.id}
                       onClick={() => setSelectedId(r.id)}
-                      className={`block w-full cursor-pointer border-b border-slate-800/60 px-3 py-2.5 text-left transition-colors ${
-                        active ? "bg-violet-500/10" : "hover:bg-slate-800/50"
+                      className={`block w-full cursor-pointer px-3.5 py-3 text-left transition-all ${
+                        active
+                          ? "bg-violet-600/15 border-l-2 border-violet-500"
+                          : "hover:bg-white/[0.03]"
                       }`}
                     >
                       <div className="flex items-baseline justify-between gap-2">
-                        <span className="truncate text-sm font-medium text-slate-100">
+                        <span className="truncate text-xs font-semibold text-slate-100">
                           {p.displayName ?? `tg:${p.telegramId}`}
                         </span>
-                        <span className="shrink-0 text-[10px] text-slate-500">
+                        <span className="shrink-0 text-[10px] font-medium text-slate-400">
                           {formatWhen(r.lastMessageAt)}
                         </span>
                       </div>
-                      <div className="mt-0.5 flex flex-wrap items-center gap-1 text-[10px] text-slate-500">
-                        <span className="rounded bg-slate-800 px-1 text-slate-400">{p.status}</span>
-                        {p.city && <span>{p.city}</span>}
-                        <span>· {r.counts.total} msg</span>
+                      <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px]">
+                        <span className="rounded-md bg-white/5 px-1.5 py-0.5 font-medium text-slate-400 ring-1 ring-white/10">{p.status}</span>
+                        {p.city && <span className="text-slate-400">{p.city}</span>}
+                        <span className="text-slate-400/80">· {r.counts.total} msg</span>
                       </div>
                       {r.lastMessage?.text && (
-                        <p className="mt-1 line-clamp-2 text-xs text-slate-400">
-                          <span className="text-slate-600">
+                        <p className="mt-1.5 line-clamp-2 text-xs text-slate-400/90 leading-relaxed">
+                          <span className="text-violet-400 font-medium">
                             {r.lastMessage.direction === "in" ? "↑ " : "↓ "}
                           </span>
                           {r.lastMessage.text}
@@ -253,23 +267,23 @@ export default function DialogsPage() {
               )}
             </div>
 
-            <div className="flex items-center justify-between border-t border-slate-800 px-3 py-2 text-xs text-slate-500">
-              <span>{total} total</span>
-              <div className="flex items-center gap-1.5">
+            <div className="flex items-center justify-between border-t border-white/5 bg-slate-950/40 px-3.5 py-2.5 text-xs text-slate-400">
+              <span className="font-medium">{total} total</span>
+              <div className="flex items-center gap-2">
                 <button
                   onClick={() => setPage((p) => Math.max(0, p - 1))}
                   disabled={page === 0 || listLoading}
-                  className="cursor-pointer rounded border border-slate-700 px-2 py-0.5 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="cursor-pointer rounded-lg bg-slate-900 px-2.5 py-1 text-xs font-medium text-slate-300 ring-1 ring-white/10 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   ‹
                 </button>
-                <span>
+                <span className="text-xs font-medium text-slate-400">
                   {page + 1}/{maxPage + 1}
                 </span>
                 <button
                   onClick={() => setPage((p) => Math.min(maxPage, p + 1))}
                   disabled={page >= maxPage || listLoading}
-                  className="cursor-pointer rounded border border-slate-700 px-2 py-0.5 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="cursor-pointer rounded-lg bg-slate-900 px-2.5 py-1 text-xs font-medium text-slate-300 ring-1 ring-white/10 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   ›
                 </button>
@@ -278,9 +292,9 @@ export default function DialogsPage() {
           </div>
 
           {/* ── Transcript pane ───────────────────────────────── */}
-          <div className="flex max-h-[78vh] min-h-[30rem] flex-col rounded-xl border border-slate-800 bg-slate-900/40 p-4">
+          <div className="flex max-h-[78vh] min-h-[30rem] flex-col rounded-2xl bg-slate-900/60 p-5 shadow-xl shadow-black/30 backdrop-blur-xl ring-1 ring-white/5">
             {!selectedId ? (
-              <div className="flex flex-1 items-center justify-center text-sm text-slate-500">
+              <div className="flex flex-1 items-center justify-center text-xs text-slate-500">
                 Select a dialog to read it.
               </div>
             ) : detailLoading ? (
@@ -288,26 +302,26 @@ export default function DialogsPage() {
                 <div className="h-6 w-6 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
               </div>
             ) : current?.error ? (
-              <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
+              <div className="rounded-2xl bg-red-500/10 p-4 text-xs font-medium text-red-300 ring-1 ring-red-500/20">
                 {current.error}
               </div>
             ) : current?.data ? (
               <>
-                <div className="mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-slate-800 pb-3">
-                  <h3 className="text-base font-semibold text-white">
+                <div className="mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-white/5 pb-3.5">
+                  <h3 className="text-base font-bold tracking-tight text-white">
                     {current.data.participant.displayName ??
                       `tg:${current.data.participant.telegramId}`}
                   </h3>
-                  <span className="text-xs text-slate-500">
+                  <span className="text-xs text-slate-400">
                     tg:{current.data.participant.telegramId}
                     {current.data.participant.telegramUsername &&
                       ` · @${current.data.participant.telegramUsername}`}
                   </span>
                   <Link
                     to={`/users/${current.data.participant.userId}`}
-                    className="ml-auto text-xs text-violet-400 hover:text-violet-300"
+                    className="ml-auto text-xs font-medium text-violet-400 transition-colors hover:text-violet-300"
                   >
-                    Full profile →
+                    Full profile &rarr;
                   </Link>
                 </div>
                 <div className="min-h-0 flex-1">

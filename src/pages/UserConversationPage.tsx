@@ -45,30 +45,30 @@ export default function UserConversationPage() {
 
   return (
     <div className="flex h-screen flex-col bg-slate-950">
-      <header className="flex items-center gap-3 border-b border-slate-800 px-4 py-3 sm:px-6">
+      <header className="flex items-center gap-4 bg-slate-900/60 px-4 py-3.5 shadow-xl backdrop-blur-xl ring-1 ring-white/5 sm:px-6">
         <Link
           to="/users"
-          className="shrink-0 rounded-lg border border-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-800"
+          className="shrink-0 rounded-xl bg-slate-950/60 px-3.5 py-1.5 text-xs font-semibold text-slate-300 ring-1 ring-white/10 transition-all hover:bg-white/10 hover:text-white"
         >
-          ← Users
+          &larr; Back to Users
         </Link>
         <div className="min-w-0">
-          <h1 className="truncate text-base font-semibold text-white">{title}</h1>
+          <h1 className="truncate text-base font-bold tracking-tight text-white">{title}</h1>
           {data && (
-            <p className="truncate text-xs text-slate-500">Telegram ID: {data.telegramId}</p>
+            <p className="truncate text-xs font-medium text-slate-400">Telegram ID: {data.telegramId}</p>
           )}
         </div>
       </header>
 
-      <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col overflow-hidden px-4 py-4 sm:px-6">
+      <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col overflow-hidden px-4 py-6 sm:px-6">
         {loading && (
           <div className="flex flex-1 items-center justify-center">
-            <div className="h-6 w-6 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
+            <div className="h-7 w-7 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
           </div>
         )}
 
         {error && !loading && (
-          <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
+          <div className="rounded-2xl bg-red-500/10 p-4 text-xs font-medium text-red-300 ring-1 ring-red-500/20">
             {error}
           </div>
         )}

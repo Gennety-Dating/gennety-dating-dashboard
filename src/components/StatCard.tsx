@@ -23,30 +23,37 @@ export default function StatCard({
   lowSample,
 }: StatCardProps) {
   return (
-    <div className="relative rounded-xl border border-slate-800 bg-slate-900 p-5">
+    <div className="group relative overflow-hidden rounded-2xl bg-slate-900/60 p-5 shadow-xl shadow-black/30 backdrop-blur-xl ring-1 ring-white/5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-violet-950/20 hover:ring-white/10">
+      {accent && (
+        <div className="pointer-events-none absolute -top-12 -right-12 h-24 w-24 rounded-full bg-violet-500/10 blur-2xl transition-all duration-300 group-hover:bg-violet-500/20" />
+      )}
       <div className="flex items-start justify-between gap-2">
-        <p className="text-xs font-medium tracking-wide text-slate-400 uppercase">
+        <p className="text-[11px] font-semibold tracking-wider text-slate-400 uppercase">
           {label}
         </p>
         {info && (
           <span
             title={info}
-            className="cursor-help rounded-full border border-slate-700 px-1.5 text-[10px] leading-4 text-slate-400 hover:border-violet-500 hover:text-violet-300"
+            className="cursor-help rounded-full bg-white/5 px-2 py-0.5 text-[10px] font-medium leading-4 text-slate-400 ring-1 ring-white/10 transition-colors hover:bg-violet-500/20 hover:text-violet-300 hover:ring-violet-500/30"
           >
             i
           </span>
         )}
       </div>
       <p
-        className={`mt-1 text-3xl font-bold ${accent ? "text-violet-400" : "text-white"}`}
+        className={`mt-2 text-3xl font-extrabold tracking-tight ${
+          accent
+            ? "bg-gradient-to-r from-violet-400 to-indigo-300 bg-clip-text text-transparent"
+            : "text-white"
+        }`}
       >
         {value}
       </p>
-      {sub && <p className="mt-0.5 text-sm text-slate-500">{sub}</p>}
+      {sub && <p className="mt-1 text-xs font-medium text-slate-400/80">{sub}</p>}
       {lowSample && (
-        <p className="mt-1 text-[10px] tracking-wide text-amber-400/80 uppercase">
+        <span className="mt-2 inline-block rounded-md bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold tracking-wider text-amber-300 uppercase ring-1 ring-amber-500/20">
           low sample
-        </p>
+        </span>
       )}
     </div>
   );

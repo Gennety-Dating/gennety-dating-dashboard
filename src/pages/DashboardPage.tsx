@@ -231,42 +231,50 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
-      {/* Header */}
-      <div className="mx-auto mb-8 flex max-w-7xl items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Gennety Analytics</h1>
-          <p className="text-sm text-slate-400">Admin Dashboard</p>
+      {/* Top Header */}
+      <div className="mx-auto mb-6 flex max-w-7xl items-center justify-between rounded-2xl bg-slate-900/60 p-4 shadow-xl shadow-black/20 backdrop-blur-xl ring-1 ring-white/5">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-500 shadow-md shadow-violet-500/20">
+            <span className="text-lg font-black text-white">G</span>
+          </div>
+          <div>
+            <h1 className="bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-xl font-extrabold tracking-tight text-transparent">
+              Gennety Analytics
+            </h1>
+            <p className="text-xs font-medium text-slate-400">Admin Dashboard</p>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <nav className="flex overflow-hidden rounded-lg border border-slate-700">
+
+        <div className="flex items-center gap-3">
+          <nav className="flex items-center gap-1 rounded-xl bg-slate-950/60 p-1 ring-1 ring-white/5">
             <Link
               to="/"
-              className="bg-slate-800 px-3 py-1.5 text-sm text-white"
+              className="rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm shadow-violet-600/30 transition-all"
             >
               Analytics
             </Link>
             <Link
               to="/users"
-              className="border-l border-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-800"
+              className="rounded-lg px-3.5 py-1.5 text-xs font-medium text-slate-400 transition-all hover:text-white hover:bg-white/5"
             >
               Users
             </Link>
             <Link
               to="/dialogs"
-              className="border-l border-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-800"
+              className="rounded-lg px-3.5 py-1.5 text-xs font-medium text-slate-400 transition-all hover:text-white hover:bg-white/5"
             >
               Dialogs
             </Link>
             <Link
               to="/reports"
-              className="border-l border-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-800"
+              className="rounded-lg px-3.5 py-1.5 text-xs font-medium text-slate-400 transition-all hover:text-white hover:bg-white/5"
             >
               Reports
             </Link>
           </nav>
           <button
             onClick={handleLogout}
-            className="cursor-pointer rounded-lg border border-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-800"
+            className="cursor-pointer rounded-xl bg-slate-950/60 px-3.5 py-2 text-xs font-medium text-slate-400 ring-1 ring-white/5 transition-all hover:bg-red-500/10 hover:text-red-300 hover:ring-red-500/20"
           >
             Logout
           </button>
@@ -278,33 +286,36 @@ export default function DashboardPage() {
         <div className="mx-auto mb-6 max-w-7xl">
           <Link
             to="/reports?tier=3&reviewed=false"
-            className="flex items-center gap-3 rounded-xl border border-red-500/30 bg-red-500/10 px-5 py-3 transition hover:bg-red-500/15"
+            className="group flex items-center gap-3 rounded-2xl bg-red-500/10 px-5 py-3.5 shadow-lg shadow-red-950/20 backdrop-blur-xl ring-1 ring-red-500/20 transition-all hover:bg-red-500/15 hover:ring-red-500/40"
           >
-            <span className="inline-block h-2.5 w-2.5 animate-pulse rounded-full bg-red-400" />
-            <span className="text-sm font-medium text-red-300">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
+              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-red-500" />
+            </span>
+            <span className="text-xs font-semibold text-red-200">
               {data.reports.unreviewedTier3} Tier 3 safety report
               {data.reports.unreviewedTier3 > 1 ? "s" : ""} pending review
             </span>
-            <span className="ml-auto text-xs text-red-400/70">
+            <span className="ml-auto text-xs font-medium text-red-400/80 transition-transform group-hover:translate-x-0.5">
               View reports &rarr;
             </span>
           </Link>
         </div>
       )}
 
-      {/* Tab navigation — sticky so it stays in view across long sections */}
-      <div className="sticky top-0 z-10 mx-auto mb-8 max-w-7xl border-b border-slate-800 bg-slate-950/95 pb-2 backdrop-blur">
-        <div className="-mx-1 flex overflow-x-auto pt-2">
+      {/* Tab navigation — sticky segment bar */}
+      <div className="sticky top-4 z-20 mx-auto mb-8 max-w-7xl rounded-2xl bg-slate-900/80 p-2 shadow-2xl shadow-black/40 backdrop-blur-2xl ring-1 ring-white/10">
+        <div className="no-scrollbar flex overflow-x-auto gap-1">
           {TABS.map((t) => {
             const isActive = t.key === activeTab;
             return (
               <button
                 key={t.key}
                 onClick={() => setActiveTab(t.key)}
-                className={`mx-1 cursor-pointer rounded-lg border px-4 py-2 text-sm whitespace-nowrap transition ${
+                className={`cursor-pointer rounded-xl px-4 py-2 text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
                   isActive
-                    ? "border-violet-500 bg-violet-500/10 text-violet-300"
-                    : "border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200"
+                    ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-600/30"
+                    : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
                 }`}
               >
                 {t.label}
@@ -313,7 +324,7 @@ export default function DashboardPage() {
           })}
         </div>
         {activeTabMeta && (
-          <p className="mt-2 px-1 text-xs text-slate-500">
+          <p className="mt-2 px-2 text-[11px] font-medium text-slate-400/70">
             {activeTabMeta.description}
           </p>
         )}

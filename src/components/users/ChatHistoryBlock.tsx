@@ -19,23 +19,23 @@ function formatTime(ts: string | number | undefined): string {
 export default function ChatHistoryBlock({ messages }: Props) {
   if (!messages || messages.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-slate-700 bg-slate-900/40 p-5 text-sm text-slate-500">
+      <div className="rounded-2xl border border-dashed border-white/10 bg-slate-950/40 p-5 text-xs font-medium text-slate-400">
         No chat history recorded for this user.
       </div>
     );
   }
 
   return (
-    <div className="max-h-[420px] space-y-3 overflow-y-auto rounded-xl border border-slate-800 bg-slate-950/60 p-4">
+    <div className="max-h-[420px] space-y-3 overflow-y-auto rounded-2xl bg-slate-950/60 p-4 shadow-xl ring-1 ring-white/5">
       {messages.map((m, i) => {
         const role = (m.role ?? "unknown").toLowerCase();
         const isUser = role === "user";
         const isAssistant = role === "assistant" || role === "bot";
         const bubbleCls = isUser
-          ? "ml-auto bg-violet-500/20 border-violet-500/30 text-violet-50"
+          ? "ml-auto bg-gradient-to-br from-violet-600/25 to-indigo-600/20 text-white ring-1 ring-violet-500/30 shadow-sm"
           : isAssistant
-            ? "mr-auto bg-slate-800 border-slate-700 text-slate-100"
-            : "mx-auto bg-slate-900/60 border-slate-800 text-slate-400 italic";
+            ? "mr-auto bg-slate-800/80 text-slate-100 ring-1 ring-white/5 shadow-sm"
+            : "mx-auto bg-slate-950/80 text-slate-400 italic ring-1 ring-white/5";
         const content =
           typeof m.content === "string"
             ? m.content
@@ -44,9 +44,9 @@ export default function ChatHistoryBlock({ messages }: Props) {
         return (
           <div
             key={i}
-            className={`max-w-[80%] rounded-xl border px-4 py-2.5 text-sm whitespace-pre-wrap ${bubbleCls}`}
+            className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-xs leading-relaxed whitespace-pre-wrap ${bubbleCls}`}
           >
-            <div className="mb-1 flex items-center gap-2 text-[10px] tracking-wide uppercase opacity-70">
+            <div className="mb-1 flex items-center gap-2 text-[10px] font-semibold tracking-wider uppercase opacity-75">
               <span>{role}</span>
               {m.timestamp !== undefined && (
                 <span>• {formatTime(m.timestamp)}</span>

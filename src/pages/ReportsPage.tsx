@@ -139,42 +139,50 @@ export default function ReportsPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
-      {/* Header */}
-      <div className="mx-auto mb-8 flex max-w-7xl items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Gennety Analytics</h1>
-          <p className="text-sm text-slate-400">Admin Dashboard</p>
+      {/* Top Header */}
+      <div className="mx-auto mb-6 flex max-w-7xl items-center justify-between rounded-2xl bg-slate-900/60 p-4 shadow-xl shadow-black/20 backdrop-blur-xl ring-1 ring-white/5">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-500 shadow-md shadow-violet-500/20">
+            <span className="text-lg font-black text-white">G</span>
+          </div>
+          <div>
+            <h1 className="bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-xl font-extrabold tracking-tight text-transparent">
+              Gennety Analytics
+            </h1>
+            <p className="text-xs font-medium text-slate-400">Admin Dashboard</p>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <nav className="flex overflow-hidden rounded-lg border border-slate-700">
+
+        <div className="flex items-center gap-3">
+          <nav className="flex items-center gap-1 rounded-xl bg-slate-950/60 p-1 ring-1 ring-white/5">
             <Link
               to="/"
-              className="px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-800"
+              className="rounded-lg px-3.5 py-1.5 text-xs font-medium text-slate-400 transition-all hover:text-white hover:bg-white/5"
             >
               Analytics
             </Link>
             <Link
               to="/users"
-              className="border-l border-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-800"
+              className="rounded-lg px-3.5 py-1.5 text-xs font-medium text-slate-400 transition-all hover:text-white hover:bg-white/5"
             >
               Users
             </Link>
             <Link
               to="/dialogs"
-              className="border-l border-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-800"
+              className="rounded-lg px-3.5 py-1.5 text-xs font-medium text-slate-400 transition-all hover:text-white hover:bg-white/5"
             >
               Dialogs
             </Link>
             <Link
               to="/reports"
-              className="border-l border-slate-700 bg-slate-800 px-3 py-1.5 text-sm text-white"
+              className="rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm shadow-violet-600/30 transition-all"
             >
               Reports
             </Link>
           </nav>
           <button
             onClick={handleLogout}
-            className="cursor-pointer rounded-lg border border-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-800"
+            className="cursor-pointer rounded-xl bg-slate-950/60 px-3.5 py-2 text-xs font-medium text-slate-400 ring-1 ring-white/5 transition-all hover:bg-red-500/10 hover:text-red-300 hover:ring-red-500/20"
           >
             Logout
           </button>
@@ -188,53 +196,60 @@ export default function ReportsPage() {
         />
 
         {/* Filters */}
-        <div className="mb-4 flex flex-wrap items-center gap-3">
+        <div className="mb-5 flex flex-wrap items-center gap-4 rounded-2xl bg-slate-900/60 p-3.5 shadow-xl shadow-black/20 backdrop-blur-xl ring-1 ring-white/5">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium tracking-wide text-slate-400 uppercase">
+            <span className="text-[11px] font-semibold tracking-wider text-slate-400 uppercase">
               Tier
             </span>
-            {(["all", "1", "2", "3"] as const).map((v) => (
-              <button
-                key={v}
-                onClick={() => {
-                  setTierFilter(v);
-                  setPage(0);
-                }}
-                className={`cursor-pointer rounded-lg border px-2.5 py-1 text-xs font-medium transition ${
-                  tierFilter === v
-                    ? "border-violet-500/50 bg-violet-500/20 text-violet-300"
-                    : "border-slate-700 text-slate-400 hover:bg-slate-800"
-                }`}
-              >
-                {v === "all" ? "All" : `T${v}`}
-              </button>
-            ))}
+            <div className="flex rounded-xl bg-slate-950/60 p-1 ring-1 ring-white/5">
+              {(["all", "1", "2", "3"] as const).map((v) => (
+                <button
+                  key={v}
+                  onClick={() => {
+                    setTierFilter(v);
+                    setPage(0);
+                  }}
+                  className={`cursor-pointer rounded-lg px-3 py-1 text-xs font-medium transition-all ${
+                    tierFilter === v
+                      ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-sm"
+                      : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  {v === "all" ? "All Tiers" : `Tier ${v}`}
+                </button>
+              ))}
+            </div>
           </div>
+
+          <div className="h-4 w-[1px] bg-white/10 hidden sm:block" />
+
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium tracking-wide text-slate-400 uppercase">
+            <span className="text-[11px] font-semibold tracking-wider text-slate-400 uppercase">
               Status
             </span>
-            {(["all", "pending", "reviewed"] as const).map((v) => (
-              <button
-                key={v}
-                onClick={() => {
-                  setReviewFilter(v);
-                  setPage(0);
-                }}
-                className={`cursor-pointer rounded-lg border px-2.5 py-1 text-xs font-medium capitalize transition ${
-                  reviewFilter === v
-                    ? "border-violet-500/50 bg-violet-500/20 text-violet-300"
-                    : "border-slate-700 text-slate-400 hover:bg-slate-800"
-                }`}
-              >
-                {v}
-              </button>
-            ))}
+            <div className="flex rounded-xl bg-slate-950/60 p-1 ring-1 ring-white/5">
+              {(["all", "pending", "reviewed"] as const).map((v) => (
+                <button
+                  key={v}
+                  onClick={() => {
+                    setReviewFilter(v);
+                    setPage(0);
+                  }}
+                  className={`cursor-pointer rounded-lg px-3 py-1 text-xs font-medium capitalize transition-all ${
+                    reviewFilter === v
+                      ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-sm"
+                      : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  {v}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
         {error && (
-          <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
+          <div className="mb-4 rounded-2xl bg-red-500/10 p-4 text-xs font-medium text-red-300 ring-1 ring-red-500/20">
             {error}
           </div>
         )}
@@ -246,33 +261,33 @@ export default function ReportsPage() {
         />
 
         {/* Pagination */}
-        <div className="mt-4 flex items-center justify-between text-sm text-slate-400">
+        <div className="mt-5 flex items-center justify-between rounded-2xl bg-slate-900/40 p-4 backdrop-blur-xl ring-1 ring-white/5 text-xs text-slate-400">
           <div>
             {total > 0 ? (
               <>
-                Showing <span className="text-slate-200">{from}</span>–
-                <span className="text-slate-200">{to}</span> of{" "}
-                <span className="text-slate-200">{total}</span>
+                Showing <span className="font-semibold text-white">{from}</span>–
+                <span className="font-semibold text-white">{to}</span> of{" "}
+                <span className="font-semibold text-white">{total}</span> reports
               </>
             ) : (
               !loading && "0 reports"
             )}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <button
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={page === 0 || loading}
-              className="cursor-pointer rounded-lg border border-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+              className="cursor-pointer rounded-xl bg-slate-900 px-3.5 py-1.5 text-xs font-medium text-slate-300 ring-1 ring-white/10 transition-all hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
             >
               Previous
             </button>
-            <span className="text-xs text-slate-500">
-              Page {page + 1} / {maxPage + 1}
+            <span className="text-xs text-slate-400/80">
+              Page <span className="font-medium text-white">{page + 1}</span> / {maxPage + 1}
             </span>
             <button
               onClick={() => setPage((p) => Math.min(maxPage, p + 1))}
               disabled={page >= maxPage || loading}
-              className="cursor-pointer rounded-lg border border-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+              className="cursor-pointer rounded-xl bg-slate-900 px-3.5 py-1.5 text-xs font-medium text-slate-300 ring-1 ring-white/10 transition-all hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
             >
               Next
             </button>

@@ -13,23 +13,23 @@ interface Props {
 function Field({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div>
-      <p className="text-[10px] font-medium tracking-wider text-slate-500 uppercase">
+      <p className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
         {label}
       </p>
-      <p className="mt-0.5 text-sm text-slate-200">{value ?? "—"}</p>
+      <p className="mt-0.5 text-xs font-semibold text-slate-200">{value ?? "—"}</p>
     </div>
   );
 }
 
 function TagList({ items }: { items: string[] | string | undefined | null }) {
   const tags = toTagList(items);
-  if (tags.length === 0) return <span className="text-slate-500">—</span>;
+  if (tags.length === 0) return <span className="text-xs text-slate-500">—</span>;
   return (
     <div className="flex flex-wrap gap-1.5">
       {tags.map((t, i) => (
         <span
           key={`${t}-${i}`}
-          className="rounded-md border border-slate-700 bg-slate-800/60 px-2 py-0.5 text-xs text-slate-200"
+          className="rounded-lg bg-white/5 px-2.5 py-1 text-xs font-medium text-slate-300 ring-1 ring-white/10"
         >
           {t}
         </span>
@@ -92,21 +92,21 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
     <>
       <div
         onClick={onClose}
-        className={`fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity ${
+        className={`fixed inset-0 z-40 bg-slate-950/70 backdrop-blur-md transition-opacity duration-300 ${
           open ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       />
       <aside
-        className={`fixed inset-y-0 right-0 z-50 w-full max-w-2xl overflow-y-auto border-l border-slate-800 bg-slate-950 shadow-2xl transition-transform duration-300 ${
+        className={`fixed inset-y-0 right-0 z-50 w-full max-w-2xl overflow-y-auto bg-slate-900/95 shadow-2xl shadow-black/80 backdrop-blur-2xl ring-1 ring-white/10 transition-transform duration-300 ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-800 bg-slate-950/90 px-6 py-4 backdrop-blur">
-          <h2 className="text-base font-semibold text-white">User Profile</h2>
+        <div className="sticky top-0 z-10 flex items-center justify-between bg-slate-950/80 px-6 py-4 backdrop-blur-xl ring-1 ring-white/5">
+          <h2 className="text-base font-bold tracking-tight text-white">User Profile</h2>
           <button
             onClick={onClose}
             aria-label="Close"
-            className="cursor-pointer rounded-lg border border-slate-700 px-2 py-1 text-sm text-slate-300 hover:bg-slate-800"
+            className="cursor-pointer rounded-xl bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-300 ring-1 ring-white/10 transition-all hover:bg-white/10 hover:text-white"
           >
             Close
           </button>
@@ -115,12 +115,12 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
         <div className="space-y-6 px-6 py-6">
           {loading && (
             <div className="flex items-center justify-center py-20">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
+              <div className="h-7 w-7 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
             </div>
           )}
 
           {error && !loading && (
-            <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
+            <div className="rounded-2xl bg-red-500/10 p-4 text-xs font-medium text-red-300 ring-1 ring-red-500/20">
               {error}
             </div>
           )}
@@ -128,21 +128,21 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
           {detail && !loading && (
             <>
               {/* Header card */}
-              <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+              <div className="rounded-2xl bg-slate-950/60 p-5 shadow-xl ring-1 ring-white/5">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h3 className="text-xl font-bold text-white">
+                    <h3 className="text-xl font-extrabold text-white">
                       {displayName(detail)}
                     </h3>
-                    <p className="mt-0.5 text-sm text-slate-400">
+                    <p className="mt-1 text-xs text-slate-400">
                       Telegram ID: {detail.telegramId}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[10px] tracking-wider text-slate-500 uppercase">
+                    <p className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
                       Registered
                     </p>
-                    <p className="text-sm text-slate-300">
+                    <p className="mt-0.5 text-xs font-medium text-slate-300">
                       {new Date(detail.createdAt).toLocaleDateString()}
                     </p>
                   </div>
@@ -181,7 +181,7 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
 
               {/* Psychological summary — prominent AI block */}
               <section>
-                <h4 className="mb-3 text-sm font-semibold text-white">
+                <h4 className="mb-3 text-xs font-bold tracking-tight text-white uppercase">
                   Psychological Dump
                 </h4>
                 <PsychProfileBlock
@@ -192,10 +192,10 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
               {/* Profile attributes */}
               {detail.profile && (
                 <section>
-                  <h4 className="mb-3 text-sm font-semibold text-white">
+                  <h4 className="mb-3 text-xs font-bold tracking-tight text-white uppercase">
                     Profile
                   </h4>
-                  <div className="space-y-4 rounded-xl border border-slate-800 bg-slate-900 p-5">
+                  <div className="space-y-4 rounded-2xl bg-slate-950/60 p-5 shadow-xl ring-1 ring-white/5">
                     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                       <Field
                         label="Height"
@@ -217,25 +217,25 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
                       />
                     </div>
                     <div>
-                      <p className="mb-1.5 text-[10px] font-medium tracking-wider text-slate-500 uppercase">
+                      <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
                         Hobbies
                       </p>
                       <TagList items={detail.profile.hobbies} />
                     </div>
                     <div>
-                      <p className="mb-1.5 text-[10px] font-medium tracking-wider text-slate-500 uppercase">
+                      <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
                         Partner Preferences
                       </p>
                       <TagList items={detail.profile.partnerPreferences} />
                     </div>
                     <div>
-                      <p className="mb-1.5 text-[10px] font-medium tracking-wider text-slate-500 uppercase">
+                      <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
                         Visual Preferences
                       </p>
                       <TagList items={detail.profile.visualPreferences} />
                     </div>
                     <div>
-                      <p className="mb-1.5 text-[10px] font-medium tracking-wider text-slate-500 uppercase">
+                      <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
                         Negative Constraints
                       </p>
                       <TagList items={detail.profile.negativeConstraints} />
@@ -244,18 +244,17 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
                 </section>
               )}
 
-              {/* Chat history — quick preview; full transcript (with images
-                  + technical toggle) lives on the dedicated route. */}
+              {/* Chat history preview */}
               <section>
                 <div className="mb-3 flex items-center justify-between gap-3">
-                  <h4 className="text-sm font-semibold text-white">
+                  <h4 className="text-xs font-bold tracking-tight text-white uppercase">
                     Chat History
                   </h4>
                   <Link
                     to={`/users/${detail.id}`}
-                    className="shrink-0 rounded-lg border border-violet-500/40 bg-violet-500/10 px-3 py-1 text-xs font-medium text-violet-200 hover:bg-violet-500/20"
+                    className="shrink-0 rounded-xl bg-violet-600/20 px-3 py-1.5 text-xs font-semibold text-violet-200 ring-1 ring-violet-500/30 transition-all hover:bg-violet-600/30"
                   >
-                    Open full conversation →
+                    Open full conversation &rarr;
                   </Link>
                 </div>
                 <ChatHistoryBlock messages={detail.messageHistory ?? null} />

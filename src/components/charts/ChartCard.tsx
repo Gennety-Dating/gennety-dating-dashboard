@@ -15,11 +15,11 @@ interface Props {
 export default function ChartCard({ title, description, children, className }: Props) {
   return (
     <div
-      className={`rounded-xl border border-slate-800 bg-slate-900 p-5 ${className ?? ""}`}
+      className={`rounded-2xl bg-slate-900/60 p-5 shadow-xl shadow-black/30 backdrop-blur-xl ring-1 ring-white/5 transition-all duration-200 hover:ring-white/10 ${className ?? ""}`}
     >
-      <h3 className="text-sm font-medium text-slate-300">{title}</h3>
+      <h3 className="text-sm font-semibold tracking-tight text-slate-200">{title}</h3>
       {description && (
-        <p className="mt-1 mb-3 text-xs text-slate-500">{description}</p>
+        <p className="mt-1 mb-4 text-xs text-slate-400/80 leading-relaxed">{description}</p>
       )}
       {children}
     </div>

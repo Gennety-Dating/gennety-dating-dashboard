@@ -16,9 +16,9 @@ const TIER_LABELS: Record<number, string> = {
 };
 
 const TIER_COLORS: Record<number, string> = {
-  1: "border-sky-500/30 bg-sky-500/10 text-sky-300",
-  2: "border-amber-500/30 bg-amber-500/10 text-amber-300",
-  3: "border-red-500/30 bg-red-500/10 text-red-300",
+  1: "ring-1 ring-sky-500/30 bg-sky-500/10 text-sky-200 shadow-lg shadow-sky-950/20",
+  2: "ring-1 ring-amber-500/30 bg-amber-500/10 text-amber-200 shadow-lg shadow-amber-950/20",
+  3: "ring-1 ring-red-500/40 bg-red-500/15 text-red-200 shadow-lg shadow-red-950/40",
 };
 
 function displayName(user: {
@@ -33,10 +33,10 @@ function displayName(user: {
 function Field({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div>
-      <p className="text-[10px] font-medium tracking-wider text-slate-500 uppercase">
+      <p className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
         {label}
       </p>
-      <p className="mt-0.5 text-sm text-slate-200">{value ?? "—"}</p>
+      <p className="mt-0.5 text-xs font-semibold text-slate-200">{value ?? "—"}</p>
     </div>
   );
 }
@@ -44,7 +44,7 @@ function Field({ label, value }: { label: string; value: React.ReactNode }) {
 function TagList({ items }: { items: string[] | string | undefined | null }) {
   const tags = toTagList(items);
   if (tags.length === 0) {
-    return <span className="text-sm text-slate-500">—</span>;
+    return <span className="text-xs text-slate-500">—</span>;
   }
 
   return (
@@ -52,7 +52,7 @@ function TagList({ items }: { items: string[] | string | undefined | null }) {
       {tags.map((item, index) => (
         <span
           key={`${item}-${index}`}
-          className="rounded-md border border-slate-700 bg-slate-800/60 px-2 py-0.5 text-xs text-slate-200"
+          className="rounded-lg bg-white/5 px-2.5 py-1 text-xs font-medium text-slate-300 ring-1 ring-white/10"
         >
           {item}
         </span>
@@ -63,7 +63,7 @@ function TagList({ items }: { items: string[] | string | undefined | null }) {
 
 function EmptyState({ text }: { text: string }) {
   return (
-    <div className="rounded-xl border border-dashed border-slate-700 bg-slate-900/40 p-4 text-sm text-slate-500">
+    <div className="rounded-2xl border border-dashed border-white/10 bg-slate-950/40 p-4 text-xs font-medium text-slate-400">
       {text}
     </div>
   );
@@ -79,17 +79,17 @@ function UserSnapshot({
   showStrikes?: boolean;
 }) {
   return (
-    <section className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+    <section className="rounded-2xl bg-slate-950/60 p-5 shadow-xl ring-1 ring-white/5">
       <div className="mb-4 flex items-start justify-between gap-4">
         <div>
-          <p className="text-[10px] font-medium tracking-wider text-slate-500 uppercase">
+          <p className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
             {title}
           </p>
-          <h4 className="mt-1 text-base font-semibold text-white">
+          <h4 className="mt-1 text-base font-bold text-white">
             {displayName(user)}
           </h4>
         </div>
-        <div className="rounded-full border border-slate-700 px-2.5 py-1 text-[10px] font-medium tracking-wide text-slate-300 uppercase">
+        <div className="rounded-full bg-white/5 px-3 py-1 text-[10px] font-semibold tracking-wider text-slate-300 ring-1 ring-white/10 uppercase">
           <span className="capitalize">{user.status}</span>
         </div>
       </div>
@@ -111,12 +111,12 @@ function UserSnapshot({
 
       <div className="mt-5 space-y-4">
         <div>
-          <p className="mb-1.5 text-[10px] font-medium tracking-wider text-slate-500 uppercase">
+          <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
             Psychological Summary
           </p>
           {user.profile?.psychologicalSummary ? (
-            <div className="rounded-xl border border-violet-500/20 bg-violet-500/5 p-4">
-              <p className="font-mono text-sm leading-relaxed whitespace-pre-wrap text-slate-200">
+            <div className="rounded-xl bg-violet-500/10 p-4 ring-1 ring-violet-500/20">
+              <p className="font-mono text-xs leading-relaxed whitespace-pre-wrap text-slate-200">
                 {user.profile.psychologicalSummary}
               </p>
             </div>
@@ -127,19 +127,19 @@ function UserSnapshot({
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <p className="mb-1.5 text-[10px] font-medium tracking-wider text-slate-500 uppercase">
+            <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
               Hobbies
             </p>
             <TagList items={user.profile?.hobbies} />
           </div>
           <div>
-            <p className="mb-1.5 text-[10px] font-medium tracking-wider text-slate-500 uppercase">
+            <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
               Partner Preferences
             </p>
             <TagList items={user.profile?.partnerPreferences} />
           </div>
           <div>
-            <p className="mb-1.5 text-[10px] font-medium tracking-wider text-slate-500 uppercase">
+            <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
               Negative Constraints
             </p>
             <TagList items={user.profile?.negativeConstraints} />
@@ -194,21 +194,21 @@ export default function ReportDetailDrawer({
     <>
       <div
         onClick={onClose}
-        className={`fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity ${
+        className={`fixed inset-0 z-40 bg-slate-950/70 backdrop-blur-md transition-opacity duration-300 ${
           open ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       />
       <aside
-        className={`fixed inset-y-0 right-0 z-50 w-full max-w-2xl overflow-y-auto border-l border-slate-800 bg-slate-950 shadow-2xl transition-transform duration-300 ${
+        className={`fixed inset-y-0 right-0 z-50 w-full max-w-2xl overflow-y-auto bg-slate-900/95 shadow-2xl shadow-black/80 backdrop-blur-2xl ring-1 ring-white/10 transition-transform duration-300 ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-800 bg-slate-950/90 px-6 py-4 backdrop-blur">
-          <h2 className="text-base font-semibold text-white">Report Detail</h2>
+        <div className="sticky top-0 z-10 flex items-center justify-between bg-slate-950/80 px-6 py-4 backdrop-blur-xl ring-1 ring-white/5">
+          <h2 className="text-base font-bold tracking-tight text-white">Report Detail</h2>
           <button
             onClick={onClose}
             aria-label="Close"
-            className="cursor-pointer rounded-lg border border-slate-700 px-2 py-1 text-sm text-slate-300 hover:bg-slate-800"
+            className="cursor-pointer rounded-xl bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-300 ring-1 ring-white/10 transition-all hover:bg-white/10 hover:text-white"
           >
             Close
           </button>
@@ -217,12 +217,12 @@ export default function ReportDetailDrawer({
         {report && (
           <div className="space-y-6 px-6 py-6">
             <div
-              className={`rounded-xl border p-4 ${TIER_COLORS[report.tier] ?? "border-slate-700 bg-slate-800 text-slate-300"}`}
+              className={`rounded-2xl p-4.5 ${TIER_COLORS[report.tier] ?? "ring-1 ring-white/10 bg-slate-900 text-slate-300"}`}
             >
-              <p className="text-sm font-semibold">
+              <p className="text-xs font-bold tracking-tight">
                 {TIER_LABELS[report.tier] ?? `Tier ${report.tier}`}
               </p>
-              <p className="mt-1 text-xs opacity-80">
+              <p className="mt-1 text-xs opacity-90 leading-relaxed">
                 {report.tier === 1 &&
                   "Adjusts future match preferences for the reporter."}
                 {report.tier === 2 &&
@@ -242,18 +242,18 @@ export default function ReportDetailDrawer({
             </div>
 
             <section>
-              <h4 className="mb-3 text-sm font-semibold text-white">
+              <h4 className="mb-3 text-xs font-bold tracking-tight text-white uppercase">
                 AI Triage Summary
               </h4>
               {report.reasonSummary ? (
-                <div className="relative overflow-hidden rounded-xl border border-violet-500/30 bg-gradient-to-br from-violet-500/10 via-slate-900 to-slate-900 p-5">
-                  <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-violet-400 to-fuchsia-500" />
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-600/15 via-slate-950 to-slate-950 p-5 ring-1 ring-violet-500/30 shadow-xl">
+                  <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-violet-400 to-indigo-500" />
                   <div className="mb-3 flex items-center gap-2">
-                    <span className="rounded-md bg-violet-500/20 px-2 py-0.5 text-[10px] font-semibold tracking-widest text-violet-300 uppercase">
+                    <span className="rounded-md bg-violet-500/20 px-2 py-0.5 text-[10px] font-bold tracking-widest text-violet-300 uppercase">
                       LLM Classification
                     </span>
                   </div>
-                  <blockquote className="font-mono text-sm leading-relaxed whitespace-pre-wrap text-slate-200">
+                  <blockquote className="font-mono text-xs leading-relaxed whitespace-pre-wrap text-slate-200">
                     {report.reasonSummary}
                   </blockquote>
                 </div>
@@ -263,17 +263,17 @@ export default function ReportDetailDrawer({
             </section>
 
             <section>
-              <h4 className="mb-3 text-sm font-semibold text-white">
+              <h4 className="mb-3 text-xs font-bold tracking-tight text-white uppercase">
                 User's Report
               </h4>
-              <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-5">
-                <p className="text-sm leading-relaxed whitespace-pre-wrap text-slate-200">
+              <div className="rounded-2xl bg-slate-950/60 p-5 ring-1 ring-white/5 shadow-xl">
+                <p className="text-xs leading-relaxed whitespace-pre-wrap text-slate-200">
                   {report.rawText}
                 </p>
               </div>
             </section>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 rounded-2xl bg-slate-950/60 p-5 ring-1 ring-white/5">
               <Field
                 label="Report ID"
                 value={
@@ -305,16 +305,16 @@ export default function ReportDetailDrawer({
             </div>
 
             {!report.adminReviewed && (
-              <div className="border-t border-slate-800 pt-6">
+              <div className="border-t border-white/5 pt-6">
                 {markError && (
-                  <p className="mb-3 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400">
+                  <p className="mb-3 rounded-xl bg-red-500/10 p-3 text-xs font-medium text-red-300 ring-1 ring-red-500/20">
                     {markError}
                   </p>
                 )}
                 <button
                   onClick={handleMarkReviewed}
                   disabled={marking}
-                  className="w-full cursor-pointer rounded-lg bg-violet-600 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="w-full cursor-pointer rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 py-3 text-xs font-semibold text-white shadow-lg shadow-violet-600/30 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {marking ? "Marking..." : "Mark as Reviewed"}
                 </button>
