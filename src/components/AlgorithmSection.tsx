@@ -14,10 +14,11 @@ import StatCard from "./StatCard";
 import ChartCard from "./charts/ChartCard";
 
 const TOOLTIP_STYLE = {
-  backgroundColor: "#1e293b",
-  border: "1px solid #334155",
-  borderRadius: 8,
-  color: "#f1f5f9",
+  backgroundColor: "#17181c",
+  border: "none",
+  borderRadius: 12,
+  color: "#ffffff",
+  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.6)",
 };
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -116,7 +117,7 @@ export default function AlgorithmSection({ data }: Props) {
             />
             <Tooltip contentStyle={TOOLTIP_STYLE} />
             <Legend />
-            <Bar yAxisId="left" dataKey="acceptRate" name="Accept %" fill="#8b5cf6" radius={[6, 6, 0, 0]} />
+            <Bar yAxisId="left" dataKey="acceptRate" name="Accept %" fill="#e11d48" radius={[6, 6, 0, 0]} />
             <Bar yAxisId="right" dataKey="decisions" name="Decisions" fill="#334155" radius={[6, 6, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
@@ -153,7 +154,7 @@ export default function AlgorithmSection({ data }: Props) {
               <XAxis dataKey="bucket" tick={{ fill: "#94a3b8", fontSize: 12 }} />
               <YAxis tick={{ fill: "#94a3b8", fontSize: 12 }} />
               <Tooltip contentStyle={TOOLTIP_STYLE} />
-              <Bar dataKey="acceptRate" name="Accept %" fill="#3b82f6" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="acceptRate" name="Accept %" fill="#be123c" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -165,13 +166,13 @@ export default function AlgorithmSection({ data }: Props) {
           title="V_explicit distribution"
           description="Embedding cosine similarity across all logged matches. Bimodal shape ⇒ embeddings split candidates into 'similar' and 'different' clusters."
           bins={data.componentHistograms.explicit}
-          color="#8b5cf6"
+          color="#e11d48"
         />
         <HistogramChart
           title="V_research distribution"
           description="Sociological heuristic score (age, height, energy match)."
           bins={data.componentHistograms.research}
-          color="#3b82f6"
+          color="#be123c"
         />
         <HistogramChart
           title="V_league distribution"
@@ -290,7 +291,7 @@ function ResponseHeatmap({
                     key={h}
                     className="text-center"
                     style={{
-                      backgroundColor: `rgba(139, 92, 246, ${intensity * 0.85})`,
+                      backgroundColor: `rgba(225, 29, 72, ${intensity * 0.85})`,
                       color: intensity > 0.4 ? "#fff" : "#94a3b8",
                     }}
                     title={`${label} ${h}:00 — ${cell?.accept ?? 0} accept / ${cell?.decline ?? 0} decline (${(acceptRate * 100).toFixed(0)}% accept)`}

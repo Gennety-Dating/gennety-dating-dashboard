@@ -18,15 +18,16 @@ import StatCard from "./StatCard";
 import ChartCard from "./charts/ChartCard";
 
 const TOOLTIP_STYLE = {
-  backgroundColor: "#1e293b",
-  border: "1px solid #334155",
-  borderRadius: 8,
-  color: "#f1f5f9",
+  backgroundColor: "#17181c",
+  border: "none",
+  borderRadius: 12,
+  color: "#ffffff",
+  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.6)",
 };
 
 const STATUS_COLORS: Record<string, string> = {
   onboarding: "#f59e0b",
-  active: "#10b981",
+  active: "#e11d48",
   paused: "#64748b",
   suspended: "#ef4444",
   banned: "#7f1d1d",
@@ -254,7 +255,7 @@ export default function GrowthSection({ retention, dates, verification }: Props)
                     width={95}
                   />
                   <Tooltip contentStyle={TOOLTIP_STYLE} />
-                  <Bar dataKey="count" fill="#3b82f6" radius={[0, 6, 6, 0]} />
+                  <Bar dataKey="count" fill="#e11d48" radius={[0, 6, 6, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -474,7 +475,7 @@ export default function GrowthSection({ retention, dates, verification }: Props)
                 return (
                   <div
                     key={tier}
-                    className="rounded-lg border border-slate-800 bg-slate-950 p-3 text-sm"
+                    className="rounded-2xl bg-[#17181c] p-3 text-sm [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]"
                   >
                     <div className="flex items-baseline justify-between">
                       <span className="text-xs tracking-wide text-slate-400 uppercase">

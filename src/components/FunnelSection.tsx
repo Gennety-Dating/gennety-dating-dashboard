@@ -17,12 +17,20 @@ const STEP_LABELS: Record<string, string> = {
   completed: "Completed",
 };
 
-const STEP_COLORS = ["#f59e0b", "#3b82f6", "#10b981"];
+const STEP_COLORS = ["#f59e0b", "#9f1239", "#e11d48"];
 
 const STATUS_COLORS: Record<string, string> = {
   onboarding: "#f59e0b",
-  active: "#10b981",
+  active: "#e11d48",
   paused: "#64748b",
+};
+
+const TOOLTIP_STYLE = {
+  backgroundColor: "#17181c",
+  border: "none",
+  borderRadius: 12,
+  color: "#ffffff",
+  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.6)",
 };
 
 interface Props {
@@ -48,8 +56,8 @@ export default function FunnelSection({ data }: Props) {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Funnel Steps */}
-        <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
-          <h3 className="mb-3 text-sm font-medium text-slate-300">
+        <div className="glass-card-borderless rounded-3xl p-5.5">
+          <h3 className="mb-3 text-sm font-extrabold text-white">
             Funnel Steps
           </h3>
           <ResponsiveContainer width="100%" height={220}>
@@ -62,14 +70,7 @@ export default function FunnelSection({ data }: Props) {
                 tick={{ fill: "#94a3b8", fontSize: 12 }}
               />
               <YAxis hide />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "#1e293b",
-                  border: "1px solid #334155",
-                  borderRadius: 8,
-                  color: "#f1f5f9",
-                }}
-              />
+              <Tooltip contentStyle={TOOLTIP_STYLE} />
               <Bar dataKey="users" radius={[6, 6, 0, 0]}>
                 {funnelSteps.map((_, i) => (
                   <Cell key={i} fill={STEP_COLORS[i]} />
@@ -80,8 +81,8 @@ export default function FunnelSection({ data }: Props) {
         </div>
 
         {/* Status Breakdown */}
-        <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
-          <h3 className="mb-4 text-sm font-medium text-slate-300">
+        <div className="glass-card-borderless rounded-3xl p-5.5">
+          <h3 className="mb-4 text-sm font-extrabold text-white">
             User Status Breakdown
           </h3>
           <div className="space-y-4">
@@ -102,13 +103,13 @@ export default function FunnelSection({ data }: Props) {
                       </span>
                     </span>
                   </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-slate-800">
+                  <div className="h-2 overflow-hidden rounded-full bg-[#121316] [box-shadow:inset_0_1px_1px_rgba(0,0,0,0.5)]">
                     <div
                       className="h-full rounded-full transition-all"
                       style={{
                         width: `${pct}%`,
                         backgroundColor:
-                          STATUS_COLORS[s.name] ?? "#8b5cf6",
+                          STATUS_COLORS[s.name] ?? "#9f1239",
                       }}
                     />
                   </div>

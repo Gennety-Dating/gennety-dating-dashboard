@@ -16,15 +16,16 @@ import StatCard from "./StatCard";
 import ChartCard from "./charts/ChartCard";
 
 const CHART_COLORS = [
-  "#8b5cf6", "#ec4899", "#3b82f6", "#10b981", "#f59e0b",
-  "#ef4444", "#14b8a6", "#a855f7", "#f97316",
+  "#e11d48", "#be123c", "#f43f5e", "#10b981", "#f59e0b",
+  "#9f1239", "#fb7185", "#38bdf8", "#f97316",
 ];
 
 const TOOLTIP_STYLE = {
-  backgroundColor: "#1e293b",
-  border: "1px solid #334155",
-  borderRadius: 8,
-  color: "#f1f5f9",
+  backgroundColor: "#17181c",
+  border: "none",
+  borderRadius: 12,
+  color: "#ffffff",
+  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.6)",
 };
 
 interface Props {
@@ -96,7 +97,7 @@ export default function AudienceSection({ audience, heatmap }: Props) {
               <XAxis dataKey="name" tick={{ fill: "#94a3b8", fontSize: 12 }} />
               <YAxis tick={{ fill: "#94a3b8", fontSize: 12 }} />
               <Tooltip contentStyle={TOOLTIP_STYLE} />
-              <Bar dataKey="value" fill="#8b5cf6" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="value" fill="#e11d48" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -110,7 +111,7 @@ export default function AudienceSection({ audience, heatmap }: Props) {
               <XAxis dataKey="name" tick={{ fill: "#94a3b8", fontSize: 11 }} />
               <YAxis tick={{ fill: "#94a3b8", fontSize: 12 }} />
               <Tooltip contentStyle={TOOLTIP_STYLE} />
-              <Bar dataKey="value" fill="#3b82f6" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="value" fill="#be123c" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -306,7 +307,7 @@ function SimpleHeatmap({
   const lngRange = lngMax - lngMin || 1;
 
   return (
-    <div className="relative h-72 w-full overflow-hidden rounded-lg bg-slate-950">
+    <div className="relative h-72 w-full overflow-hidden rounded-3xl bg-[#121316] [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]">
       {cells.map((c, i) => {
         // Y is inverted: higher latitude = top of the canvas.
         const left = ((c.lng - lngMin) / lngRange) * 100;
@@ -317,7 +318,7 @@ function SimpleHeatmap({
           <div
             key={i}
             title={`${c.count} users near ${c.lat.toFixed(2)}, ${c.lng.toFixed(2)}`}
-            className="pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 cursor-help rounded-full bg-violet-400 transition hover:bg-violet-300"
+            className="pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 cursor-help rounded-full bg-rose-500 transition hover:bg-rose-400"
             style={{
               left: `${left}%`,
               top: `${top}%`,

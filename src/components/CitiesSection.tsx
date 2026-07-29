@@ -13,10 +13,11 @@ import StatCard from "./StatCard";
 import ChartCard from "./charts/ChartCard";
 
 const TOOLTIP_STYLE = {
-  backgroundColor: "#1e293b",
-  border: "1px solid #334155",
-  borderRadius: 8,
-  color: "#f1f5f9",
+  backgroundColor: "#17181c",
+  border: "none",
+  borderRadius: 12,
+  color: "#ffffff",
+  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.6)",
 };
 
 interface Props {
@@ -96,8 +97,8 @@ export default function CitiesSection({ data }: Props) {
               />
               <Tooltip contentStyle={TOOLTIP_STYLE} />
               <Legend />
-              <Bar dataKey="Female" stackId="g" fill="#ec4899" radius={[0, 0, 0, 0]} />
-              <Bar dataKey="Male" stackId="g" fill="#3b82f6" radius={[0, 0, 0, 0]} />
+              <Bar dataKey="Female" stackId="g" fill="#f43f5e" radius={[0, 0, 0, 0]} />
+              <Bar dataKey="Male" stackId="g" fill="#be123c" radius={[0, 0, 0, 0]} />
               <Bar dataKey="Unknown" stackId="g" fill="#64748b" radius={[0, 6, 6, 0]} />
             </BarChart>
           </ResponsiveContainer>

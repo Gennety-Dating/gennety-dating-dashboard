@@ -15,10 +15,11 @@ import StatCard from "./StatCard";
 import ChartCard from "./charts/ChartCard";
 
 const TOOLTIP_STYLE = {
-  backgroundColor: "#1e293b",
-  border: "1px solid #334155",
-  borderRadius: 8,
-  color: "#f1f5f9",
+  backgroundColor: "#17181c",
+  border: "none",
+  borderRadius: 12,
+  color: "#ffffff",
+  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.6)",
 };
 
 interface Props {
@@ -89,8 +90,8 @@ export default function GenderSection({ data }: Props) {
             <YAxis tick={{ fill: "#94a3b8", fontSize: 12 }} />
             <Tooltip contentStyle={TOOLTIP_STYLE} />
             <Legend />
-            <Line type="monotone" dataKey="male" name="Male" stroke="#3b82f6" strokeWidth={2} dot={false} />
-            <Line type="monotone" dataKey="female" name="Female" stroke="#ec4899" strokeWidth={2} dot={false} />
+            <Line type="monotone" dataKey="male" name="Male" stroke="#e11d48" strokeWidth={2} dot={false} />
+            <Line type="monotone" dataKey="female" name="Female" stroke="#fb7185" strokeWidth={2} dot={false} />
             <Line type="monotone" dataKey="unknown" name="Unknown" stroke="#64748b" strokeWidth={1} strokeDasharray="4 4" dot={false} />
           </LineChart>
         </ResponsiveContainer>
@@ -109,7 +110,7 @@ export default function GenderSection({ data }: Props) {
               <Tooltip contentStyle={TOOLTIP_STYLE} />
               <Legend />
               <Bar dataKey="Onboarding" fill="#f59e0b" radius={[6, 6, 0, 0]} />
-              <Bar dataKey="Active" fill="#3b82f6" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="Active" fill="#be123c" radius={[6, 6, 0, 0]} />
               <Bar dataKey="Got match" fill="#10b981" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
@@ -126,7 +127,7 @@ export default function GenderSection({ data }: Props) {
               return (
                 <div
                   key={g}
-                  className="rounded-lg border border-slate-800 bg-slate-950 p-4"
+                  className="rounded-2xl bg-[#17181c] p-4 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]"
                 >
                   <div className="flex items-baseline justify-between">
                     <span className="text-xs tracking-wide text-slate-400 uppercase">
@@ -183,9 +184,9 @@ export default function GenderSection({ data }: Props) {
             <YAxis tick={{ fill: "#94a3b8", fontSize: 12 }} />
             <Tooltip contentStyle={TOOLTIP_STYLE} />
             <Legend />
-            <Bar dataKey="men" stackId="a" fill="#3b82f6" />
-            <Bar dataKey="women" stackId="a" fill="#ec4899" />
-            <Bar dataKey="both" stackId="a" fill="#8b5cf6" />
+            <Bar dataKey="men" stackId="a" fill="#be123c" />
+            <Bar dataKey="women" stackId="a" fill="#f43f5e" />
+            <Bar dataKey="both" stackId="a" fill="#9f1239" />
             <Bar dataKey="unknown" stackId="a" fill="#475569" />
           </BarChart>
         </ResponsiveContainer>

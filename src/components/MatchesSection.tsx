@@ -12,10 +12,18 @@ import StatCard from "./StatCard";
 
 const STATUS_COLORS: Record<string, string> = {
   Proposed: "#f59e0b",
-  Negotiating: "#3b82f6",
-  Scheduled: "#8b5cf6",
+  Negotiating: "#be123c",
+  Scheduled: "#e11d48",
   Cancelled: "#ef4444",
   Completed: "#10b981",
+};
+
+const TOOLTIP_STYLE = {
+  backgroundColor: "#17181c",
+  border: "none",
+  borderRadius: 12,
+  color: "#ffffff",
+  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.6)",
 };
 
 interface Props {
@@ -71,8 +79,8 @@ export default function MatchesSection({ data }: Props) {
         />
       </div>
 
-      <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
-        <h3 className="mb-3 text-sm font-medium text-slate-300">
+      <div className="glass-card-borderless rounded-3xl p-5.5">
+        <h3 className="mb-3 text-sm font-extrabold text-white">
           Match Status Distribution
         </h3>
         <ResponsiveContainer width="100%" height={280}>
@@ -94,14 +102,7 @@ export default function MatchesSection({ data }: Props) {
                 />
               ))}
             </Pie>
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#1e293b",
-                border: "1px solid #334155",
-                borderRadius: 8,
-                color: "#f1f5f9",
-              }}
-            />
+            <Tooltip contentStyle={TOOLTIP_STYLE} />
             <Legend
               verticalAlign="middle"
               align="right"

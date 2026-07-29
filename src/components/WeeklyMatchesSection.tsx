@@ -56,7 +56,7 @@ function UserCard({ user }: { user: WeeklyMatchesUserCard }) {
 
 function PairCard({ pair }: { pair: WeeklyMatchesPair }) {
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
+    <div className="glass-card-borderless rounded-3xl p-5">
       <div className="mb-3 flex items-center gap-2">
         <span className="text-[11px] uppercase tracking-wide text-slate-500">
           {pair.status}

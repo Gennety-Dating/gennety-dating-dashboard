@@ -14,9 +14,17 @@ import SectionHeader from "./SectionHeader";
 import StatCard from "./StatCard";
 
 const GENDER_COLORS: Record<string, string> = {
-  male: "#6366f1",
-  female: "#ec4899",
+  male: "#e11d48",
+  female: "#f43f5e",
   unknown: "#64748b",
+};
+
+const TOOLTIP_STYLE = {
+  backgroundColor: "#17181c",
+  border: "none",
+  borderRadius: 12,
+  color: "#ffffff",
+  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.6)",
 };
 
 const FALLBACK_COLOR = "#94a3b8";
@@ -56,8 +64,8 @@ export default function DemographicsSection({ data }: Props) {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Gender Pie */}
-        <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
-          <h3 className="mb-3 text-sm font-medium text-slate-300">
+        <div className="glass-card-borderless rounded-3xl p-5.5">
+          <h3 className="mb-3 text-sm font-extrabold text-white">
             Gender Split
           </h3>
           <ResponsiveContainer width="100%" height={240}>
@@ -82,21 +90,14 @@ export default function DemographicsSection({ data }: Props) {
                   />
                 ))}
               </Pie>
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "#1e293b",
-                  border: "1px solid #334155",
-                  borderRadius: 8,
-                  color: "#f1f5f9",
-                }}
-              />
+              <Tooltip contentStyle={TOOLTIP_STYLE} />
             </PieChart>
           </ResponsiveContainer>
         </div>
 
         {/* University Bar */}
-        <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
-          <h3 className="mb-3 text-sm font-medium text-slate-300">
+        <div className="glass-card-borderless rounded-3xl p-5.5">
+          <h3 className="mb-3 text-sm font-extrabold text-white">
             Top Universities
           </h3>
           <ResponsiveContainer width="100%" height={240}>
@@ -112,15 +113,8 @@ export default function DemographicsSection({ data }: Props) {
                 tick={{ fill: "#94a3b8", fontSize: 12 }}
                 width={75}
               />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "#1e293b",
-                  border: "1px solid #334155",
-                  borderRadius: 8,
-                  color: "#f1f5f9",
-                }}
-              />
-              <Bar dataKey="count" fill="#8b5cf6" radius={[0, 6, 6, 0]} />
+              <Tooltip contentStyle={TOOLTIP_STYLE} />
+              <Bar dataKey="count" fill="#9f1239" radius={[0, 6, 6, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
