@@ -1,5 +1,6 @@
 import { type FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Logo from "../components/Logo";
 import { setApiKey } from "../lib/auth";
 
 export default function LoginPage() {
@@ -29,10 +30,8 @@ export default function LoginPage() {
         className="glass-card-borderless w-full max-w-sm rounded-3xl p-8 transition-all"
       >
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-rose-900 via-rose-700 to-rose-500 shadow-xl shadow-rose-950/50 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.4),inset_0_0_12px_rgba(255,255,255,0.15)]">
-            <span className="text-xl font-black text-white">G</span>
-          </div>
-          <h1 className="bg-gradient-to-r from-white via-rose-100 to-rose-300 bg-clip-text text-2xl font-extrabold tracking-tight text-transparent">
+          <Logo className="mx-auto mb-3 h-12 w-12" />
+          <h1 className="text-2xl font-extrabold tracking-tight text-white">
             Gennety Admin
           </h1>
           <p className="mt-1.5 text-xs font-medium text-rose-200/70">

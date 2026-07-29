@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Logo from "../components/Logo";
 import {
   getDialogs,
   getDialog,
@@ -120,12 +121,10 @@ export default function DialogsPage() {
     <div className="min-h-screen bg-[#121316] px-4 py-6 sm:px-6 lg:px-8">
       {/* Top Header */}
       <div className="glass-card-borderless mx-auto mb-6 flex max-w-[110rem] items-center justify-between rounded-3xl p-4.5">
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-rose-900 via-rose-700 to-rose-500 shadow-lg shadow-rose-950/50 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.4),inset_0_0_12px_rgba(255,255,255,0.15)]">
-            <span className="text-xl font-black text-white">G</span>
-          </div>
+        <div className="flex items-center gap-3.5">
+          <Logo className="h-11 w-11" />
           <div>
-            <h1 className="bg-gradient-to-r from-white via-rose-100 to-rose-300 bg-clip-text text-xl font-extrabold tracking-tight text-transparent">
+            <h1 className="text-xl font-extrabold tracking-tight text-white">
               Gennety Analytics
             </h1>
             <p className="text-[11px] font-medium text-rose-200/70">Admin Dashboard</p>
