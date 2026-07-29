@@ -45,30 +45,30 @@ export default function UserConversationPage() {
 
   return (
     <div className="flex h-screen flex-col bg-slate-950">
-      <header className="flex items-center gap-4 bg-slate-900/60 px-4 py-3.5 shadow-xl backdrop-blur-xl ring-1 ring-white/5 sm:px-6">
+      <header className="glass-card-borderless flex items-center gap-4 px-5 py-4">
         <Link
           to="/users"
-          className="shrink-0 rounded-xl bg-slate-950/60 px-3.5 py-1.5 text-xs font-semibold text-slate-300 ring-1 ring-white/10 transition-all hover:bg-white/10 hover:text-white"
+          className="inner-glow shrink-0 rounded-2xl px-4 py-2 text-xs font-bold text-slate-300 hover:text-white"
         >
           &larr; Back to Users
         </Link>
         <div className="min-w-0">
-          <h1 className="truncate text-base font-bold tracking-tight text-white">{title}</h1>
+          <h1 className="truncate text-base font-extrabold tracking-tight text-white">{title}</h1>
           {data && (
-            <p className="truncate text-xs font-medium text-slate-400">Telegram ID: {data.telegramId}</p>
+            <p className="truncate text-xs font-medium text-rose-200/60">Telegram ID: {data.telegramId}</p>
           )}
         </div>
       </header>
 
-      <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col overflow-hidden px-4 py-6 sm:px-6">
+      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col overflow-hidden px-4 py-6 sm:px-6">
         {loading && (
           <div className="flex flex-1 items-center justify-center">
-            <div className="h-7 w-7 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
+            <div className="h-7 w-7 animate-spin rounded-full border-2 border-rose-500 border-t-transparent" />
           </div>
         )}
 
         {error && !loading && (
-          <div className="rounded-2xl bg-red-500/10 p-4 text-xs font-medium text-red-300 ring-1 ring-red-500/20">
+          <div className="rounded-2xl bg-rose-950/40 p-4 text-xs font-medium text-rose-300 [box-shadow:inset_0_1px_1px_rgba(244,63,94,0.3)]">
             {error}
           </div>
         )}

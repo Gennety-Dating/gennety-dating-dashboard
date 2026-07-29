@@ -140,49 +140,49 @@ export default function ReportsPage() {
   return (
     <div className="min-h-screen bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
       {/* Top Header */}
-      <div className="mx-auto mb-6 flex max-w-7xl items-center justify-between rounded-2xl bg-slate-900/60 p-4 shadow-xl shadow-black/20 backdrop-blur-xl ring-1 ring-white/5">
+      <div className="glass-card-borderless mx-auto mb-6 flex max-w-7xl items-center justify-between rounded-3xl p-4.5">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-500 shadow-md shadow-violet-500/20">
-            <span className="text-lg font-black text-white">G</span>
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-rose-900 via-rose-700 to-rose-500 shadow-lg shadow-rose-950/50 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.4),inset_0_0_12px_rgba(255,255,255,0.15)]">
+            <span className="text-xl font-black text-white">G</span>
           </div>
           <div>
-            <h1 className="bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-xl font-extrabold tracking-tight text-transparent">
+            <h1 className="bg-gradient-to-r from-rose-100 via-rose-200 to-rose-400 bg-clip-text text-xl font-extrabold tracking-tight text-transparent">
               Gennety Analytics
             </h1>
-            <p className="text-xs font-medium text-slate-400">Admin Dashboard</p>
+            <p className="text-[11px] font-medium text-rose-200/60">Admin Dashboard</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <nav className="flex items-center gap-1 rounded-xl bg-slate-950/60 p-1 ring-1 ring-white/5">
+          <nav className="flex items-center gap-1.5 rounded-2xl bg-slate-950/80 p-1.5 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
             <Link
               to="/"
-              className="rounded-lg px-3.5 py-1.5 text-xs font-medium text-slate-400 transition-all hover:text-white hover:bg-white/5"
+              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
             >
               Analytics
             </Link>
             <Link
               to="/users"
-              className="rounded-lg px-3.5 py-1.5 text-xs font-medium text-slate-400 transition-all hover:text-white hover:bg-white/5"
+              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
             >
               Users
             </Link>
             <Link
               to="/dialogs"
-              className="rounded-lg px-3.5 py-1.5 text-xs font-medium text-slate-400 transition-all hover:text-white hover:bg-white/5"
+              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
             >
               Dialogs
             </Link>
             <Link
               to="/reports"
-              className="rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm shadow-violet-600/30 transition-all"
+              className="inner-glow-cherry rounded-xl px-4 py-2 text-xs font-bold tracking-wide text-white"
             >
               Reports
             </Link>
           </nav>
           <button
             onClick={handleLogout}
-            className="cursor-pointer rounded-xl bg-slate-950/60 px-3.5 py-2 text-xs font-medium text-slate-400 ring-1 ring-white/5 transition-all hover:bg-red-500/10 hover:text-red-300 hover:ring-red-500/20"
+            className="inner-glow cursor-pointer rounded-2xl px-4 py-2.5 text-xs font-semibold text-rose-300/80 hover:text-rose-200"
           >
             Logout
           </button>
@@ -196,12 +196,12 @@ export default function ReportsPage() {
         />
 
         {/* Filters */}
-        <div className="mb-5 flex flex-wrap items-center gap-4 rounded-2xl bg-slate-900/60 p-3.5 shadow-xl shadow-black/20 backdrop-blur-xl ring-1 ring-white/5">
-          <div className="flex items-center gap-2">
+        <div className="glass-card-borderless mb-6 flex flex-wrap items-center gap-4 rounded-3xl p-4">
+          <div className="flex items-center gap-2.5">
             <span className="text-[11px] font-semibold tracking-wider text-slate-400 uppercase">
               Tier
             </span>
-            <div className="flex rounded-xl bg-slate-950/60 p-1 ring-1 ring-white/5">
+            <div className="flex gap-1.5 rounded-2xl bg-slate-950/80 p-1.5 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
               {(["all", "1", "2", "3"] as const).map((v) => (
                 <button
                   key={v}
@@ -209,10 +209,10 @@ export default function ReportsPage() {
                     setTierFilter(v);
                     setPage(0);
                   }}
-                  className={`cursor-pointer rounded-lg px-3 py-1 text-xs font-medium transition-all ${
+                  className={`cursor-pointer rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all ${
                     tierFilter === v
-                      ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-sm"
-                      : "text-slate-400 hover:text-slate-200"
+                      ? "inner-glow-cherry text-white"
+                      : "inner-glow text-slate-300 hover:text-white"
                   }`}
                 >
                   {v === "all" ? "All Tiers" : `Tier ${v}`}
@@ -221,13 +221,13 @@ export default function ReportsPage() {
             </div>
           </div>
 
-          <div className="h-4 w-[1px] bg-white/10 hidden sm:block" />
+          <div className="h-5 w-[1px] bg-white/10 hidden sm:block" />
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <span className="text-[11px] font-semibold tracking-wider text-slate-400 uppercase">
               Status
             </span>
-            <div className="flex rounded-xl bg-slate-950/60 p-1 ring-1 ring-white/5">
+            <div className="flex gap-1.5 rounded-2xl bg-slate-950/80 p-1.5 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
               {(["all", "pending", "reviewed"] as const).map((v) => (
                 <button
                   key={v}
@@ -235,10 +235,10 @@ export default function ReportsPage() {
                     setReviewFilter(v);
                     setPage(0);
                   }}
-                  className={`cursor-pointer rounded-lg px-3 py-1 text-xs font-medium capitalize transition-all ${
+                  className={`cursor-pointer rounded-xl px-3.5 py-1.5 text-xs font-bold capitalize transition-all ${
                     reviewFilter === v
-                      ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-sm"
-                      : "text-slate-400 hover:text-slate-200"
+                      ? "inner-glow-cherry text-white"
+                      : "inner-glow text-slate-300 hover:text-white"
                   }`}
                 >
                   {v}
@@ -249,7 +249,7 @@ export default function ReportsPage() {
         </div>
 
         {error && (
-          <div className="mb-4 rounded-2xl bg-red-500/10 p-4 text-xs font-medium text-red-300 ring-1 ring-red-500/20">
+          <div className="mb-4 rounded-2xl bg-rose-950/40 p-4 text-xs font-medium text-rose-300 [box-shadow:inset_0_1px_1px_rgba(244,63,94,0.3),inset_0_0_10px_rgba(244,63,94,0.1)]">
             {error}
           </div>
         )}
@@ -261,13 +261,13 @@ export default function ReportsPage() {
         />
 
         {/* Pagination */}
-        <div className="mt-5 flex items-center justify-between rounded-2xl bg-slate-900/40 p-4 backdrop-blur-xl ring-1 ring-white/5 text-xs text-slate-400">
+        <div className="glass-card-borderless mt-5 flex items-center justify-between rounded-3xl p-4.5 text-xs text-slate-400">
           <div>
             {total > 0 ? (
               <>
-                Showing <span className="font-semibold text-white">{from}</span>–
-                <span className="font-semibold text-white">{to}</span> of{" "}
-                <span className="font-semibold text-white">{total}</span> reports
+                Showing <span className="font-bold text-white">{from}</span>–
+                <span className="font-bold text-white">{to}</span> of{" "}
+                <span className="font-bold text-white">{total}</span> reports
               </>
             ) : (
               !loading && "0 reports"
@@ -277,17 +277,17 @@ export default function ReportsPage() {
             <button
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={page === 0 || loading}
-              className="cursor-pointer rounded-xl bg-slate-900 px-3.5 py-1.5 text-xs font-medium text-slate-300 ring-1 ring-white/10 transition-all hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+              className="inner-glow cursor-pointer rounded-2xl px-4 py-2 text-xs font-semibold text-slate-200 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
             >
               Previous
             </button>
             <span className="text-xs text-slate-400/80">
-              Page <span className="font-medium text-white">{page + 1}</span> / {maxPage + 1}
+              Page <span className="font-bold text-white">{page + 1}</span> / {maxPage + 1}
             </span>
             <button
               onClick={() => setPage((p) => Math.min(maxPage, p + 1))}
               disabled={page >= maxPage || loading}
-              className="cursor-pointer rounded-xl bg-slate-900 px-3.5 py-1.5 text-xs font-medium text-slate-300 ring-1 ring-white/10 transition-all hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+              className="inner-glow cursor-pointer rounded-2xl px-4 py-2 text-xs font-semibold text-slate-200 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
             >
               Next
             </button>

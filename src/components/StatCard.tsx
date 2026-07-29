@@ -23,27 +23,27 @@ export default function StatCard({
   lowSample,
 }: StatCardProps) {
   return (
-    <div className="group relative overflow-hidden rounded-2xl bg-slate-900/60 p-5 shadow-xl shadow-black/30 backdrop-blur-xl ring-1 ring-white/5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-violet-950/20 hover:ring-white/10">
+    <div className="glass-card-borderless group relative overflow-hidden rounded-3xl p-5.5 transition-all duration-300 hover:-translate-y-0.5">
       {accent && (
-        <div className="pointer-events-none absolute -top-12 -right-12 h-24 w-24 rounded-full bg-violet-500/10 blur-2xl transition-all duration-300 group-hover:bg-violet-500/20" />
+        <div className="pointer-events-none absolute -top-12 -right-12 h-28 w-28 rounded-full bg-rose-600/15 blur-2xl transition-all duration-300 group-hover:bg-rose-600/25" />
       )}
       <div className="flex items-start justify-between gap-2">
-        <p className="text-[11px] font-semibold tracking-wider text-slate-400 uppercase">
+        <p className="text-[11px] font-bold tracking-wider text-slate-400 uppercase">
           {label}
         </p>
         {info && (
           <span
             title={info}
-            className="cursor-help rounded-full bg-white/5 px-2 py-0.5 text-[10px] font-medium leading-4 text-slate-400 ring-1 ring-white/10 transition-colors hover:bg-violet-500/20 hover:text-violet-300 hover:ring-violet-500/30"
+            className="inner-glow cursor-help rounded-full px-2 py-0.5 text-[10px] font-semibold leading-4 text-slate-300 transition-colors hover:text-rose-200"
           >
             i
           </span>
         )}
       </div>
       <p
-        className={`mt-2 text-3xl font-extrabold tracking-tight ${
+        className={`mt-2.5 text-3.5xl font-black tracking-tight ${
           accent
-            ? "bg-gradient-to-r from-violet-400 to-indigo-300 bg-clip-text text-transparent"
+            ? "text-gradient-cherry"
             : "text-white"
         }`}
       >
@@ -51,7 +51,7 @@ export default function StatCard({
       </p>
       {sub && <p className="mt-1 text-xs font-medium text-slate-400/80">{sub}</p>}
       {lowSample && (
-        <span className="mt-2 inline-block rounded-md bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold tracking-wider text-amber-300 uppercase ring-1 ring-amber-500/20">
+        <span className="mt-2.5 inline-block rounded-xl bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-bold tracking-wider text-amber-300 uppercase [box-shadow:inset_0_1px_1px_rgba(245,158,11,0.3)]">
           low sample
         </span>
       )}

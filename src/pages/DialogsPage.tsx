@@ -119,42 +119,42 @@ export default function DialogsPage() {
   return (
     <div className="min-h-screen bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
       {/* Top Header */}
-      <div className="mx-auto mb-6 flex max-w-[110rem] items-center justify-between rounded-2xl bg-slate-900/60 p-4 shadow-xl shadow-black/20 backdrop-blur-xl ring-1 ring-white/5">
+      <div className="glass-card-borderless mx-auto mb-6 flex max-w-[110rem] items-center justify-between rounded-3xl p-4.5">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-500 shadow-md shadow-violet-500/20">
-            <span className="text-lg font-black text-white">G</span>
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-rose-900 via-rose-700 to-rose-500 shadow-lg shadow-rose-950/50 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.4),inset_0_0_12px_rgba(255,255,255,0.15)]">
+            <span className="text-xl font-black text-white">G</span>
           </div>
           <div>
-            <h1 className="bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-xl font-extrabold tracking-tight text-transparent">
+            <h1 className="bg-gradient-to-r from-rose-100 via-rose-200 to-rose-400 bg-clip-text text-xl font-extrabold tracking-tight text-transparent">
               Gennety Analytics
             </h1>
-            <p className="text-xs font-medium text-slate-400">Admin Dashboard</p>
+            <p className="text-[11px] font-medium text-rose-200/60">Admin Dashboard</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <nav className="flex items-center gap-1 rounded-xl bg-slate-950/60 p-1 ring-1 ring-white/5">
+          <nav className="flex items-center gap-1.5 rounded-2xl bg-slate-950/80 p-1.5 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
             <Link
               to="/"
-              className="rounded-lg px-3.5 py-1.5 text-xs font-medium text-slate-400 transition-all hover:text-white hover:bg-white/5"
+              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
             >
               Analytics
             </Link>
             <Link
               to="/users"
-              className="rounded-lg px-3.5 py-1.5 text-xs font-medium text-slate-400 transition-all hover:text-white hover:bg-white/5"
+              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
             >
               Users
             </Link>
             <Link
               to="/dialogs"
-              className="rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm shadow-violet-600/30 transition-all"
+              className="inner-glow-cherry rounded-xl px-4 py-2 text-xs font-bold tracking-wide text-white"
             >
               Dialogs
             </Link>
             <Link
               to="/reports"
-              className="rounded-lg px-3.5 py-1.5 text-xs font-medium text-slate-400 transition-all hover:text-white hover:bg-white/5"
+              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
             >
               Reports
             </Link>
@@ -164,7 +164,7 @@ export default function DialogsPage() {
               clearApiKey();
               navigate("/login", { replace: true });
             }}
-            className="cursor-pointer rounded-xl bg-slate-950/60 px-3.5 py-2 text-xs font-medium text-slate-400 ring-1 ring-white/5 transition-all hover:bg-red-500/10 hover:text-red-300 hover:ring-red-500/20"
+            className="inner-glow cursor-pointer rounded-2xl px-4 py-2.5 text-xs font-semibold text-rose-300/80 hover:text-rose-200"
           >
             Logout
           </button>
@@ -178,26 +178,26 @@ export default function DialogsPage() {
         />
 
         {list?.error && (
-          <div className="mb-4 rounded-2xl bg-red-500/10 p-4 text-xs font-medium text-red-300 ring-1 ring-red-500/20">
+          <div className="mb-4 rounded-2xl bg-rose-950/40 p-4 text-xs font-medium text-rose-300 [box-shadow:inset_0_1px_1px_rgba(244,63,94,0.3),inset_0_0_10px_rgba(244,63,94,0.1)]">
             {list.error}
           </div>
         )}
 
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-[22rem_1fr]">
           {/* ── List pane ─────────────────────────────────────── */}
-          <div className="flex max-h-[78vh] flex-col rounded-2xl bg-slate-900/60 shadow-xl shadow-black/30 backdrop-blur-xl ring-1 ring-white/5 overflow-hidden">
-            <div className="space-y-2.5 border-b border-white/5 p-3.5 bg-slate-950/40">
+          <div className="glass-card-borderless flex max-h-[78vh] flex-col rounded-3xl overflow-hidden">
+            <div className="space-y-2.5 p-4 bg-slate-950/70 [box-shadow:inset_0_-1px_0_rgba(255,255,255,0.06)]">
               <div className="flex gap-2">
                 <input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && applyFilters()}
                   placeholder="Name, email, @username..."
-                  className="min-w-0 flex-1 rounded-xl bg-slate-900 px-3 py-2 text-xs text-slate-200 placeholder:text-slate-500 outline-none ring-1 ring-white/10 focus:ring-violet-500/80 transition-all"
+                  className="min-w-0 flex-1 rounded-2xl bg-slate-900 px-3.5 py-2.5 text-xs text-slate-200 placeholder:text-slate-500 outline-none [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.2)] focus:[box-shadow:inset_0_1px_2px_rgba(255,255,255,0.3),inset_0_0_12px_rgba(244,63,94,0.2)] transition-all"
                 />
                 <button
                   onClick={applyFilters}
-                  className="cursor-pointer rounded-xl bg-violet-600/80 px-3.5 py-2 text-xs font-medium text-white shadow-sm hover:bg-violet-600 transition-all"
+                  className="inner-glow-cherry cursor-pointer rounded-2xl px-4 py-2.5 text-xs font-bold text-white transition-all"
                 >
                   Go
                 </button>
@@ -209,7 +209,7 @@ export default function DialogsPage() {
                   setPage(0);
                   setApplied({ status: e.target.value, search: search.trim() });
                 }}
-                className="w-full cursor-pointer rounded-xl bg-slate-900 px-3 py-2 text-xs text-slate-200 outline-none ring-1 ring-white/10 focus:ring-violet-500/80 transition-all"
+                className="w-full cursor-pointer rounded-2xl bg-slate-900 px-3.5 py-2.5 text-xs font-medium text-slate-200 outline-none [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.2)] transition-all"
               >
                 {STATUS_OPTIONS.map((s) => (
                   <option key={s} value={s}>
@@ -219,13 +219,13 @@ export default function DialogsPage() {
               </select>
             </div>
 
-            <div className="flex-1 overflow-y-auto divide-y divide-white/[0.04]">
+            <div className="flex-1 overflow-y-auto divide-y divide-white/[0.03]">
               {listLoading ? (
                 <div className="flex justify-center py-12">
-                  <div className="h-6 w-6 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
+                  <div className="h-7 w-7 animate-spin rounded-full border-2 border-rose-500 border-t-transparent" />
                 </div>
               ) : rows.length === 0 ? (
-                <p className="px-3 py-10 text-center text-xs text-slate-500">No dialogs found.</p>
+                <p className="px-3 py-10 text-center text-xs font-medium text-slate-500">No dialogs found.</p>
               ) : (
                 rows.map((r) => {
                   const active = r.id === selectedId;
@@ -234,14 +234,14 @@ export default function DialogsPage() {
                     <button
                       key={r.id}
                       onClick={() => setSelectedId(r.id)}
-                      className={`block w-full cursor-pointer px-3.5 py-3 text-left transition-all ${
+                      className={`block w-full cursor-pointer px-4 py-3.5 text-left transition-all ${
                         active
-                          ? "bg-violet-600/15 border-l-2 border-violet-500"
-                          : "hover:bg-white/[0.03]"
+                          ? "bg-rose-950/40 [box-shadow:inset_3px_0_0_#f43f5e,inset_0_1px_1px_rgba(255,255,255,0.1)]"
+                          : "hover:bg-white/[0.02]"
                       }`}
                     >
                       <div className="flex items-baseline justify-between gap-2">
-                        <span className="truncate text-xs font-semibold text-slate-100">
+                        <span className="truncate text-xs font-bold text-slate-100">
                           {p.displayName ?? `tg:${p.telegramId}`}
                         </span>
                         <span className="shrink-0 text-[10px] font-medium text-slate-400">
@@ -249,13 +249,13 @@ export default function DialogsPage() {
                         </span>
                       </div>
                       <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px]">
-                        <span className="rounded-md bg-white/5 px-1.5 py-0.5 font-medium text-slate-400 ring-1 ring-white/10">{p.status}</span>
+                        <span className="rounded-xl bg-white/5 px-2 py-0.5 font-medium text-slate-300 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">{p.status}</span>
                         {p.city && <span className="text-slate-400">{p.city}</span>}
                         <span className="text-slate-400/80">· {r.counts.total} msg</span>
                       </div>
                       {r.lastMessage?.text && (
-                        <p className="mt-1.5 line-clamp-2 text-xs text-slate-400/90 leading-relaxed">
-                          <span className="text-violet-400 font-medium">
+                        <p className="mt-1.5 line-clamp-2 text-xs text-slate-400 leading-relaxed">
+                          <span className="text-rose-400 font-semibold">
                             {r.lastMessage.direction === "in" ? "↑ " : "↓ "}
                           </span>
                           {r.lastMessage.text}
@@ -267,23 +267,23 @@ export default function DialogsPage() {
               )}
             </div>
 
-            <div className="flex items-center justify-between border-t border-white/5 bg-slate-950/40 px-3.5 py-2.5 text-xs text-slate-400">
-              <span className="font-medium">{total} total</span>
+            <div className="flex items-center justify-between bg-slate-950/70 px-4 py-3 text-xs text-slate-400 [box-shadow:inset_0_1px_0_rgba(255,255,255,0.06)]">
+              <span className="font-semibold">{total} total</span>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setPage((p) => Math.max(0, p - 1))}
                   disabled={page === 0 || listLoading}
-                  className="cursor-pointer rounded-lg bg-slate-900 px-2.5 py-1 text-xs font-medium text-slate-300 ring-1 ring-white/10 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="inner-glow cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   ‹
                 </button>
-                <span className="text-xs font-medium text-slate-400">
+                <span className="text-xs font-bold text-slate-300">
                   {page + 1}/{maxPage + 1}
                 </span>
                 <button
                   onClick={() => setPage((p) => Math.min(maxPage, p + 1))}
                   disabled={page >= maxPage || listLoading}
-                  className="cursor-pointer rounded-lg bg-slate-900 px-2.5 py-1 text-xs font-medium text-slate-300 ring-1 ring-white/10 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="inner-glow cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   ›
                 </button>
@@ -292,34 +292,34 @@ export default function DialogsPage() {
           </div>
 
           {/* ── Transcript pane ───────────────────────────────── */}
-          <div className="flex max-h-[78vh] min-h-[30rem] flex-col rounded-2xl bg-slate-900/60 p-5 shadow-xl shadow-black/30 backdrop-blur-xl ring-1 ring-white/5">
+          <div className="glass-card-borderless flex max-h-[78vh] min-h-[30rem] flex-col rounded-3xl p-6">
             {!selectedId ? (
-              <div className="flex flex-1 items-center justify-center text-xs text-slate-500">
+              <div className="flex flex-1 items-center justify-center text-xs font-medium text-slate-500">
                 Select a dialog to read it.
               </div>
             ) : detailLoading ? (
               <div className="flex flex-1 items-center justify-center">
-                <div className="h-6 w-6 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
+                <div className="h-7 w-7 animate-spin rounded-full border-2 border-rose-500 border-t-transparent" />
               </div>
             ) : current?.error ? (
-              <div className="rounded-2xl bg-red-500/10 p-4 text-xs font-medium text-red-300 ring-1 ring-red-500/20">
+              <div className="rounded-2xl bg-rose-950/40 p-4 text-xs font-medium text-rose-300 [box-shadow:inset_0_1px_1px_rgba(244,63,94,0.3)]">
                 {current.error}
               </div>
             ) : current?.data ? (
               <>
-                <div className="mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-white/5 pb-3.5">
-                  <h3 className="text-base font-bold tracking-tight text-white">
+                <div className="mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-1 pb-3.5 [box-shadow:inset_0_-1px_0_rgba(255,255,255,0.06)]">
+                  <h3 className="text-base font-extrabold tracking-tight text-white">
                     {current.data.participant.displayName ??
                       `tg:${current.data.participant.telegramId}`}
                   </h3>
-                  <span className="text-xs text-slate-400">
+                  <span className="text-xs font-medium text-slate-400">
                     tg:{current.data.participant.telegramId}
                     {current.data.participant.telegramUsername &&
                       ` · @${current.data.participant.telegramUsername}`}
                   </span>
                   <Link
                     to={`/users/${current.data.participant.userId}`}
-                    className="ml-auto text-xs font-medium text-violet-400 transition-colors hover:text-violet-300"
+                    className="ml-auto text-xs font-bold text-rose-400 transition-colors hover:text-rose-300"
                   >
                     Full profile &rarr;
                   </Link>

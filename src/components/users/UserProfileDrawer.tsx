@@ -23,13 +23,13 @@ function Field({ label, value }: { label: string; value: React.ReactNode }) {
 
 function TagList({ items }: { items: string[] | string | undefined | null }) {
   const tags = toTagList(items);
-  if (tags.length === 0) return <span className="text-xs text-slate-500">—</span>;
+  if (tags.length === 0) return <span className="text-xs font-medium text-slate-500">—</span>;
   return (
     <div className="flex flex-wrap gap-1.5">
       {tags.map((t, i) => (
         <span
           key={`${t}-${i}`}
-          className="rounded-lg bg-white/5 px-2.5 py-1 text-xs font-medium text-slate-300 ring-1 ring-white/10"
+          className="rounded-xl bg-slate-950/80 px-3 py-1 text-xs font-semibold text-slate-300 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]"
         >
           {t}
         </span>
@@ -48,34 +48,29 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
     userId: string;
     detail: UserDetail | null;
     error: string;
-  } | null>(null);
-
-  const loading = userId !== null && (result === null || result.userId !== userId);
-  const detail = result && result.userId === userId ? result.detail : null;
-  const error = result && result.userId === userId ? result.error : "";
+  }>({ userId: "", detail: null, error: "" });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!userId) return;
-    let cancelled = false;
-
-    getUserDetail(userId)
-      .then((d) => {
-        if (cancelled) return;
-        setResult({ userId, detail: d, error: "" });
-      })
-      .catch((err) => {
-        if (cancelled) return;
-        setResult({
-          userId,
-          detail: null,
-          error: err instanceof Error ? err.message : "Unknown error",
-        });
-      });
-
+    let cancel = false;
+    setLoading(true);
+    getUserDetail(userId).then((res: any) => {
+      if (cancel) return;
+      if (res.data) {
+        setResult({ userId, detail: res.data, error: "" });
+      } else {
+        setResult({ userId, detail: null, error: res.error ?? "Failed to load user" });
+      }
+      setLoading(false);
+    });
     return () => {
-      cancelled = true;
+      cancel = true;
     };
   }, [userId]);
+
+  const detail = result.userId === userId ? result.detail : null;
+  const error = result.userId === userId ? result.error : "";
 
   useEffect(() => {
     if (!userId) return;
@@ -92,21 +87,21 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
     <>
       <div
         onClick={onClose}
-        className={`fixed inset-0 z-40 bg-slate-950/70 backdrop-blur-md transition-opacity duration-300 ${
+        className={`fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-md transition-opacity duration-300 ${
           open ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       />
       <aside
-        className={`fixed inset-y-0 right-0 z-50 w-full max-w-2xl overflow-y-auto bg-slate-900/95 shadow-2xl shadow-black/80 backdrop-blur-2xl ring-1 ring-white/10 transition-transform duration-300 ${
+        className={`fixed inset-y-0 right-0 z-50 w-full max-w-2xl overflow-y-auto bg-slate-950/95 shadow-2xl backdrop-blur-2xl [box-shadow:inset_1px_0_1px_rgba(255,255,255,0.1)] transition-transform duration-300 ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="sticky top-0 z-10 flex items-center justify-between bg-slate-950/80 px-6 py-4 backdrop-blur-xl ring-1 ring-white/5">
-          <h2 className="text-base font-bold tracking-tight text-white">User Profile</h2>
+        <div className="sticky top-0 z-10 flex items-center justify-between bg-slate-950/90 px-6 py-4.5 backdrop-blur-xl [box-shadow:inset_0_-1px_0_rgba(255,255,255,0.06)]">
+          <h2 className="text-base font-extrabold tracking-tight text-white">User Profile</h2>
           <button
             onClick={onClose}
             aria-label="Close"
-            className="cursor-pointer rounded-xl bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-300 ring-1 ring-white/10 transition-all hover:bg-white/10 hover:text-white"
+            className="inner-glow cursor-pointer rounded-2xl px-4 py-2 text-xs font-bold text-slate-300 hover:text-white"
           >
             Close
           </button>
@@ -115,12 +110,12 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
         <div className="space-y-6 px-6 py-6">
           {loading && (
             <div className="flex items-center justify-center py-20">
-              <div className="h-7 w-7 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
+              <div className="h-7 w-7 animate-spin rounded-full border-2 border-rose-500 border-t-transparent" />
             </div>
           )}
 
           {error && !loading && (
-            <div className="rounded-2xl bg-red-500/10 p-4 text-xs font-medium text-red-300 ring-1 ring-red-500/20">
+            <div className="rounded-2xl bg-rose-950/40 p-4 text-xs font-medium text-rose-300 [box-shadow:inset_0_1px_1px_rgba(244,63,94,0.3)]">
               {error}
             </div>
           )}
@@ -128,13 +123,13 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
           {detail && !loading && (
             <>
               {/* Header card */}
-              <div className="rounded-2xl bg-slate-950/60 p-5 shadow-xl ring-1 ring-white/5">
+              <div className="rounded-3xl bg-slate-950/70 p-6 shadow-2xl [box-shadow:inset_0_1px_1.5px_rgba(255,255,255,0.15)]">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h3 className="text-xl font-extrabold text-white">
+                    <h3 className="text-2xl font-black text-white">
                       {displayName(detail)}
                     </h3>
-                    <p className="mt-1 text-xs text-slate-400">
+                    <p className="mt-1 text-xs font-medium text-slate-400">
                       Telegram ID: {detail.telegramId}
                     </p>
                   </div>

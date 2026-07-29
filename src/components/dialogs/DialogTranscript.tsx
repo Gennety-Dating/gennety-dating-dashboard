@@ -139,10 +139,10 @@ export default function DialogTranscript({ dialog }: Props) {
             }
 
             const bubbleCls = m.technical
-              ? "bg-slate-950/70 text-slate-400 italic ring-1 ring-white/5"
+              ? "bg-slate-950/70 text-slate-400 italic [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]"
               : inbound
-                ? "bg-gradient-to-br from-violet-600/25 to-indigo-600/20 text-white ring-1 ring-violet-500/30 shadow-md shadow-violet-950/20"
-                : "bg-slate-800/80 text-slate-100 ring-1 ring-white/5 shadow-md shadow-black/20";
+                ? "bg-gradient-to-br from-rose-950/50 to-rose-900/40 text-white [box-shadow:inset_0_1px_1.5px_rgba(244,63,94,0.4),inset_0_0_14px_rgba(244,63,94,0.2)]"
+                : "bg-slate-900/90 text-slate-100 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]";
 
             return (
               <div

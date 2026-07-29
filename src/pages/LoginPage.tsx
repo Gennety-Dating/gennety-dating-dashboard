@@ -20,34 +20,34 @@ export default function LoginPage() {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 px-4">
-      {/* Ambient background glow elements */}
-      <div className="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[500px] w-[600px] -translate-x-1/2 rounded-full bg-violet-600/15 blur-[120px]" />
-      <div className="pointer-events-none absolute -bottom-40 left-1/3 -z-10 h-[400px] w-[500px] rounded-full bg-indigo-600/10 blur-[100px]" />
+      {/* Ambient Deep Cherry background glow elements */}
+      <div className="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[550px] w-[650px] -translate-x-1/2 rounded-full bg-rose-950/30 blur-[130px]" />
+      <div className="pointer-events-none absolute -bottom-40 left-1/3 -z-10 h-[450px] w-[550px] rounded-full bg-rose-900/20 blur-[110px]" />
 
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-sm rounded-3xl bg-slate-900/60 p-8 shadow-2xl shadow-violet-950/20 backdrop-blur-2xl ring-1 ring-white/10 transition-all"
+        className="glass-card-borderless w-full max-w-sm rounded-3xl p-8 transition-all"
       >
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-500 shadow-lg shadow-violet-500/25">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-rose-900 via-rose-700 to-rose-500 shadow-xl shadow-rose-950/50 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.4),inset_0_0_12px_rgba(255,255,255,0.15)]">
             <span className="text-xl font-black text-white">G</span>
           </div>
-          <h1 className="bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-2xl font-extrabold tracking-tight text-transparent">
+          <h1 className="bg-gradient-to-r from-rose-100 via-rose-200 to-rose-400 bg-clip-text text-2xl font-extrabold tracking-tight text-transparent">
             Gennety Admin
           </h1>
-          <p className="mt-1.5 text-xs text-slate-400">
+          <p className="mt-1.5 text-xs font-medium text-rose-200/60">
             Enter your Admin API key to access dashboard
           </p>
         </div>
 
         {error && (
-          <p className="mb-4 rounded-xl bg-red-500/10 px-3.5 py-2.5 text-xs font-medium text-red-300 ring-1 ring-red-500/20">
+          <p className="mb-4 rounded-2xl bg-rose-950/40 px-3.5 py-2.5 text-xs font-medium text-rose-300 [box-shadow:inset_0_1px_1px_rgba(244,63,94,0.3),inset_0_0_10px_rgba(244,63,94,0.1)]">
             {error}
           </p>
         )}
 
-        <div className="mb-5">
-          <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-slate-300">
+        <div className="mb-6">
+          <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-slate-300">
             API Key
           </label>
           <input
@@ -58,16 +58,16 @@ export default function LoginPage() {
               setError("");
             }}
             placeholder="sk-admin-..."
-            className="w-full rounded-xl bg-slate-950/80 px-4 py-3 text-sm text-white placeholder-slate-500 outline-none ring-1 ring-white/10 transition-all duration-200 focus:ring-2 focus:ring-violet-500/80 focus:shadow-lg focus:shadow-violet-500/10"
+            className="w-full rounded-2xl bg-slate-950/90 px-4 py-3 text-sm text-white placeholder-slate-500 outline-none [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.2),inset_0_0_8px_rgba(255,255,255,0.04)] focus:[box-shadow:inset_0_1px_2px_rgba(255,255,255,0.35),inset_0_0_14px_rgba(244,63,94,0.2)] transition-all duration-200"
           />
         </div>
 
         <button
           type="submit"
-          className="group relative w-full cursor-pointer overflow-hidden rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-600/25 transition-all duration-200 hover:shadow-violet-600/40 hover:scale-[1.01] active:scale-[0.99]"
+          className="inner-glow-cherry group relative w-full cursor-pointer overflow-hidden rounded-2xl py-3.5 text-xs font-bold tracking-wide uppercase text-white shadow-xl transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
         >
           <span className="relative z-10">Sign In</span>
-          <div className="absolute inset-0 bg-white/20 opacity-0 transition-opacity group-hover:opacity-100" />
+          <div className="absolute inset-0 bg-white/10 opacity-0 transition-opacity group-hover:opacity-100" />
         </button>
       </form>
     </div>
