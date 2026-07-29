@@ -138,7 +138,7 @@ export default function ReportsPage() {
   const to = Math.min(total, (page + 1) * PAGE_SIZE);
 
   return (
-    <div className="min-h-screen bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#121316] px-4 py-6 sm:px-6 lg:px-8">
       {/* Top Header */}
       <div className="glass-card-borderless mx-auto mb-6 flex max-w-7xl items-center justify-between rounded-3xl p-4.5">
         <div className="flex items-center gap-3">
@@ -146,15 +146,15 @@ export default function ReportsPage() {
             <span className="text-xl font-black text-white">G</span>
           </div>
           <div>
-            <h1 className="bg-gradient-to-r from-rose-100 via-rose-200 to-rose-400 bg-clip-text text-xl font-extrabold tracking-tight text-transparent">
+            <h1 className="bg-gradient-to-r from-white via-rose-100 to-rose-300 bg-clip-text text-xl font-extrabold tracking-tight text-transparent">
               Gennety Analytics
             </h1>
-            <p className="text-[11px] font-medium text-rose-200/60">Admin Dashboard</p>
+            <p className="text-[11px] font-medium text-rose-200/70">Admin Dashboard</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <nav className="flex items-center gap-1.5 rounded-2xl bg-slate-950/80 p-1.5 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
+          <nav className="flex items-center gap-1.5 rounded-2xl bg-[#17181c] p-1.5 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
             <Link
               to="/"
               className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
@@ -201,7 +201,7 @@ export default function ReportsPage() {
             <span className="text-[11px] font-semibold tracking-wider text-slate-400 uppercase">
               Tier
             </span>
-            <div className="flex gap-1.5 rounded-2xl bg-slate-950/80 p-1.5 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
+            <div className="flex gap-1.5 rounded-2xl bg-[#17181c] p-1.5 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
               {(["all", "1", "2", "3"] as const).map((v) => (
                 <button
                   key={v}
@@ -227,7 +227,7 @@ export default function ReportsPage() {
             <span className="text-[11px] font-semibold tracking-wider text-slate-400 uppercase">
               Status
             </span>
-            <div className="flex gap-1.5 rounded-2xl bg-slate-950/80 p-1.5 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
+            <div className="flex gap-1.5 rounded-2xl bg-[#17181c] p-1.5 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
               {(["all", "pending", "reviewed"] as const).map((v) => (
                 <button
                   key={v}

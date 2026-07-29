@@ -200,10 +200,10 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-950">
+      <div className="flex min-h-screen items-center justify-center bg-[#121316]">
         <div className="text-center">
-          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
-          <p className="mt-3 text-sm text-slate-400">
+          <div className="mx-auto h-9 w-9 animate-spin rounded-full border-2 border-rose-600 border-t-white" />
+          <p className="mt-4 text-xs font-semibold tracking-wide text-rose-200/70 uppercase">
             Loading analytics...
           </p>
         </div>
@@ -213,12 +213,12 @@ export default function DashboardPage() {
 
   if (error) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4">
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-6 text-center">
-          <p className="text-sm text-red-400">{error}</p>
+      <div className="flex min-h-screen items-center justify-center bg-[#121316] px-4">
+        <div className="glass-card-borderless max-w-md rounded-3xl p-8 text-center">
+          <p className="text-xs font-medium text-rose-300">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="mt-3 cursor-pointer rounded-lg bg-slate-800 px-4 py-2 text-sm text-white hover:bg-slate-700"
+            className="inner-glow-cherry mt-4 cursor-pointer rounded-2xl px-5 py-2.5 text-xs font-bold text-white transition-all"
           >
             Retry
           </button>
@@ -230,7 +230,7 @@ export default function DashboardPage() {
   const activeTabMeta = TABS.find((t) => t.key === activeTab);
 
   return (
-    <div className="min-h-screen bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#121316] px-4 py-6 sm:px-6 lg:px-8">
       {/* Top Header */}
       <div className="glass-card-borderless mx-auto mb-6 flex max-w-7xl items-center justify-between rounded-3xl p-4.5">
         <div className="flex items-center gap-3">
@@ -238,15 +238,15 @@ export default function DashboardPage() {
             <span className="text-xl font-black text-white">G</span>
           </div>
           <div>
-            <h1 className="bg-gradient-to-r from-rose-100 via-rose-200 to-rose-400 bg-clip-text text-xl font-extrabold tracking-tight text-transparent">
+            <h1 className="bg-gradient-to-r from-white via-rose-100 to-rose-300 bg-clip-text text-xl font-extrabold tracking-tight text-transparent">
               Gennety Analytics
             </h1>
-            <p className="text-[11px] font-medium text-rose-200/60">Admin Dashboard</p>
+            <p className="text-[11px] font-medium text-rose-200/70">Admin Dashboard</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <nav className="flex items-center gap-1.5 rounded-2xl bg-slate-950/80 p-1.5 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
+          <nav className="flex items-center gap-1.5 rounded-2xl bg-[#17181c] p-1.5 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
             <Link
               to="/"
               className="inner-glow-cherry rounded-xl px-4 py-2 text-xs font-bold tracking-wide text-white"
@@ -304,7 +304,7 @@ export default function DashboardPage() {
       )}
 
       {/* Tab navigation — sticky segment bar with inner edge spray */}
-      <div className="sticky top-4 z-20 mx-auto mb-8 max-w-7xl rounded-3xl bg-slate-950/90 p-2 shadow-2xl backdrop-blur-2xl [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15),inset_0_0_20px_rgba(0,0,0,0.5)]">
+      <div className="sticky top-4 z-20 mx-auto mb-8 max-w-7xl rounded-3xl bg-[#17181c]/90 p-2 shadow-2xl backdrop-blur-2xl [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15),inset_0_0_20px_rgba(0,0,0,0.5)]">
         <div className="no-scrollbar flex overflow-x-auto gap-1.5">
           {TABS.map((t) => {
             const isActive = t.key === activeTab;

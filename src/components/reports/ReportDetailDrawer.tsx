@@ -199,11 +199,11 @@ export default function ReportDetailDrawer({
         }`}
       />
       <aside
-        className={`fixed inset-y-0 right-0 z-50 w-full max-w-2xl overflow-y-auto bg-slate-950/95 shadow-2xl backdrop-blur-2xl [box-shadow:inset_1px_0_1px_rgba(255,255,255,0.1)] transition-transform duration-300 ${
+        className={`fixed inset-y-0 right-0 z-50 w-full max-w-2xl overflow-y-auto bg-[#121316]/95 shadow-2xl backdrop-blur-2xl [box-shadow:inset_1px_0_1px_rgba(255,255,255,0.1)] transition-transform duration-300 ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="sticky top-0 z-10 flex items-center justify-between bg-slate-950/90 px-6 py-4.5 backdrop-blur-xl [box-shadow:inset_0_-1px_0_rgba(255,255,255,0.06)]">
+        <div className="sticky top-0 z-10 flex items-center justify-between bg-[#17181c]/95 px-6 py-4.5 backdrop-blur-xl [box-shadow:inset_0_-1px_0_rgba(255,255,255,0.06)]">
           <h2 className="text-base font-extrabold tracking-tight text-white">Report Detail</h2>
           <button
             onClick={onClose}

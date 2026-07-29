@@ -19,10 +19,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 px-4">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#121316] px-4">
       {/* Ambient Deep Cherry background glow elements */}
-      <div className="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[550px] w-[650px] -translate-x-1/2 rounded-full bg-rose-950/30 blur-[130px]" />
-      <div className="pointer-events-none absolute -bottom-40 left-1/3 -z-10 h-[450px] w-[550px] rounded-full bg-rose-900/20 blur-[110px]" />
+      <div className="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[550px] w-[650px] -translate-x-1/2 rounded-full bg-rose-950/30 blur-[140px]" />
+      <div className="pointer-events-none absolute -bottom-40 left-1/3 -z-10 h-[450px] w-[550px] rounded-full bg-rose-900/20 blur-[120px]" />
 
       <form
         onSubmit={handleSubmit}
@@ -32,16 +32,16 @@ export default function LoginPage() {
           <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-rose-900 via-rose-700 to-rose-500 shadow-xl shadow-rose-950/50 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.4),inset_0_0_12px_rgba(255,255,255,0.15)]">
             <span className="text-xl font-black text-white">G</span>
           </div>
-          <h1 className="bg-gradient-to-r from-rose-100 via-rose-200 to-rose-400 bg-clip-text text-2xl font-extrabold tracking-tight text-transparent">
+          <h1 className="bg-gradient-to-r from-white via-rose-100 to-rose-300 bg-clip-text text-2xl font-extrabold tracking-tight text-transparent">
             Gennety Admin
           </h1>
-          <p className="mt-1.5 text-xs font-medium text-rose-200/60">
+          <p className="mt-1.5 text-xs font-medium text-rose-200/70">
             Enter your Admin API key to access dashboard
           </p>
         </div>
 
         {error && (
-          <p className="mb-4 rounded-2xl bg-rose-950/40 px-3.5 py-2.5 text-xs font-medium text-rose-300 [box-shadow:inset_0_1px_1px_rgba(244,63,94,0.3),inset_0_0_10px_rgba(244,63,94,0.1)]">
+          <p className="mb-4 rounded-2xl bg-rose-950/50 px-3.5 py-2.5 text-xs font-medium text-rose-300 [box-shadow:inset_0_1px_1px_rgba(244,63,94,0.3),inset_0_0_10px_rgba(244,63,94,0.1)]">
             {error}
           </p>
         )}
@@ -58,7 +58,7 @@ export default function LoginPage() {
               setError("");
             }}
             placeholder="sk-admin-..."
-            className="w-full rounded-2xl bg-slate-950/90 px-4 py-3 text-sm text-white placeholder-slate-500 outline-none [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.2),inset_0_0_8px_rgba(255,255,255,0.04)] focus:[box-shadow:inset_0_1px_2px_rgba(255,255,255,0.35),inset_0_0_14px_rgba(244,63,94,0.2)] transition-all duration-200"
+            className="w-full rounded-2xl bg-[#17181c] px-4 py-3 text-sm text-white placeholder-slate-500 outline-none [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.2),inset_0_0_8px_rgba(255,255,255,0.04)] focus:[box-shadow:inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_0_14px_rgba(244,63,94,0.25)] transition-all duration-200"
           />
         </div>
 

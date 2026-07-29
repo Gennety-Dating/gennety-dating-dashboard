@@ -44,7 +44,7 @@ export default function UserConversationPage() {
   const title = data?.displayName ?? (data ? `tg:${data.telegramId}` : "Conversation");
 
   return (
-    <div className="flex h-screen flex-col bg-slate-950">
+    <div className="flex h-screen flex-col bg-[#121316]">
       <header className="glass-card-borderless flex items-center gap-4 px-5 py-4">
         <Link
           to="/users"
@@ -55,7 +55,7 @@ export default function UserConversationPage() {
         <div className="min-w-0">
           <h1 className="truncate text-base font-extrabold tracking-tight text-white">{title}</h1>
           {data && (
-            <p className="truncate text-xs font-medium text-rose-200/60">Telegram ID: {data.telegramId}</p>
+            <p className="truncate text-xs font-medium text-rose-200/70">Telegram ID: {data.telegramId}</p>
           )}
         </div>
       </header>
@@ -63,7 +63,7 @@ export default function UserConversationPage() {
       <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col overflow-hidden px-4 py-6 sm:px-6">
         {loading && (
           <div className="flex flex-1 items-center justify-center">
-            <div className="h-7 w-7 animate-spin rounded-full border-2 border-rose-500 border-t-transparent" />
+            <div className="h-7 w-7 animate-spin rounded-full border-2 border-rose-600 border-t-white" />
           </div>
         )}
 

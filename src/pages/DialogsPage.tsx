@@ -117,7 +117,7 @@ export default function DialogsPage() {
   const current = detail && detail.id === selectedId ? detail : null;
 
   return (
-    <div className="min-h-screen bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#121316] px-4 py-6 sm:px-6 lg:px-8">
       {/* Top Header */}
       <div className="glass-card-borderless mx-auto mb-6 flex max-w-[110rem] items-center justify-between rounded-3xl p-4.5">
         <div className="flex items-center gap-3">
@@ -125,15 +125,15 @@ export default function DialogsPage() {
             <span className="text-xl font-black text-white">G</span>
           </div>
           <div>
-            <h1 className="bg-gradient-to-r from-rose-100 via-rose-200 to-rose-400 bg-clip-text text-xl font-extrabold tracking-tight text-transparent">
+            <h1 className="bg-gradient-to-r from-white via-rose-100 to-rose-300 bg-clip-text text-xl font-extrabold tracking-tight text-transparent">
               Gennety Analytics
             </h1>
-            <p className="text-[11px] font-medium text-rose-200/60">Admin Dashboard</p>
+            <p className="text-[11px] font-medium text-rose-200/70">Admin Dashboard</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <nav className="flex items-center gap-1.5 rounded-2xl bg-slate-950/80 p-1.5 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
+          <nav className="flex items-center gap-1.5 rounded-2xl bg-[#17181c] p-1.5 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
             <Link
               to="/"
               className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
@@ -186,14 +186,14 @@ export default function DialogsPage() {
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-[22rem_1fr]">
           {/* ── List pane ─────────────────────────────────────── */}
           <div className="glass-card-borderless flex max-h-[78vh] flex-col rounded-3xl overflow-hidden">
-            <div className="space-y-2.5 p-4 bg-slate-950/70 [box-shadow:inset_0_-1px_0_rgba(255,255,255,0.06)]">
+            <div className="space-y-2.5 p-4 bg-[#17181c]/90 [box-shadow:inset_0_-1px_0_rgba(255,255,255,0.06)]">
               <div className="flex gap-2">
                 <input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && applyFilters()}
                   placeholder="Name, email, @username..."
-                  className="min-w-0 flex-1 rounded-2xl bg-slate-900 px-3.5 py-2.5 text-xs text-slate-200 placeholder:text-slate-500 outline-none [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.2)] focus:[box-shadow:inset_0_1px_2px_rgba(255,255,255,0.3),inset_0_0_12px_rgba(244,63,94,0.2)] transition-all"
+                  className="min-w-0 flex-1 rounded-2xl bg-[#121316] px-3.5 py-2.5 text-xs text-slate-200 placeholder:text-slate-500 outline-none [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.2)] focus:[box-shadow:inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_0_12px_rgba(244,63,94,0.25)] transition-all"
                 />
                 <button
                   onClick={applyFilters}
@@ -209,7 +209,7 @@ export default function DialogsPage() {
                   setPage(0);
                   setApplied({ status: e.target.value, search: search.trim() });
                 }}
-                className="w-full cursor-pointer rounded-2xl bg-slate-900 px-3.5 py-2.5 text-xs font-medium text-slate-200 outline-none [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.2)] transition-all"
+                className="w-full cursor-pointer rounded-2xl bg-[#121316] px-3.5 py-2.5 text-xs font-medium text-slate-200 outline-none [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.2)] transition-all"
               >
                 {STATUS_OPTIONS.map((s) => (
                   <option key={s} value={s}>
@@ -222,7 +222,7 @@ export default function DialogsPage() {
             <div className="flex-1 overflow-y-auto divide-y divide-white/[0.03]">
               {listLoading ? (
                 <div className="flex justify-center py-12">
-                  <div className="h-7 w-7 animate-spin rounded-full border-2 border-rose-500 border-t-transparent" />
+                  <div className="h-7 w-7 animate-spin rounded-full border-2 border-rose-600 border-t-white" />
                 </div>
               ) : rows.length === 0 ? (
                 <p className="px-3 py-10 text-center text-xs font-medium text-slate-500">No dialogs found.</p>
@@ -299,7 +299,7 @@ export default function DialogsPage() {
               </div>
             ) : detailLoading ? (
               <div className="flex flex-1 items-center justify-center">
-                <div className="h-7 w-7 animate-spin rounded-full border-2 border-rose-500 border-t-transparent" />
+                <div className="h-7 w-7 animate-spin rounded-full border-2 border-rose-600 border-t-white" />
               </div>
             ) : current?.error ? (
               <div className="rounded-2xl bg-rose-950/40 p-4 text-xs font-medium text-rose-300 [box-shadow:inset_0_1px_1px_rgba(244,63,94,0.3)]">
