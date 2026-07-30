@@ -52,7 +52,7 @@ function TagList({ items }: { items: string[] | string | undefined | null }) {
       {tags.map((item, index) => (
         <span
           key={`${item}-${index}`}
-          className="rounded-xl bg-slate-950/80 px-3 py-1 text-xs font-semibold text-slate-300 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]"
+          className="rounded-xl bg-[#121316] px-3 py-1 text-xs font-semibold text-slate-300 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]"
         >
           {item}
         </span>
@@ -63,7 +63,7 @@ function TagList({ items }: { items: string[] | string | undefined | null }) {
 
 function EmptyState({ text }: { text: string }) {
   return (
-    <div className="rounded-2xl bg-slate-950/60 p-4 text-xs font-medium text-slate-400 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]">
+    <div className="rounded-2xl bg-[#121316] p-4 text-xs font-medium text-slate-400 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]">
       {text}
     </div>
   );
@@ -79,7 +79,7 @@ function UserSnapshot({
   showStrikes?: boolean;
 }) {
   return (
-    <section className="rounded-3xl bg-slate-950/70 p-6 shadow-2xl [box-shadow:inset_0_1px_1.5px_rgba(255,255,255,0.15)]">
+    <section className="rounded-3xl bg-[#121316] p-6 shadow-2xl [box-shadow:inset_0_1px_1.5px_rgba(255,255,255,0.15)]">
       <div className="mb-4 flex items-start justify-between gap-4">
         <div>
           <p className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
@@ -89,7 +89,7 @@ function UserSnapshot({
             {displayName(user)}
           </h4>
         </div>
-        <div className="rounded-full bg-slate-900 px-3 py-1 text-[10px] font-bold tracking-wider text-slate-300 uppercase [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
+        <div className="rounded-full bg-[#17181c] px-3 py-1 text-[10px] font-bold tracking-wider text-slate-300 uppercase [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
           <span className="capitalize">{user.status}</span>
         </div>
       </div>
@@ -194,7 +194,7 @@ export default function ReportDetailDrawer({
     <>
       <div
         onClick={onClose}
-        className={`fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-md transition-opacity duration-300 ${
+        className={`fixed inset-0 z-40 bg-[#121316]/80 backdrop-blur-md transition-opacity duration-300 ${
           open ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       />
@@ -217,7 +217,7 @@ export default function ReportDetailDrawer({
         {report && (
           <div className="space-y-6 px-6 py-6">
             <div
-              className={`rounded-3xl p-5 ${TIER_COLORS[report.tier] ?? "bg-slate-950 text-slate-300 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]"}`}
+              className={`rounded-3xl p-5 ${TIER_COLORS[report.tier] ?? "bg-[#121316] text-slate-300 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]"}`}
             >
               <p className="text-xs font-extrabold tracking-tight">
                 {TIER_LABELS[report.tier] ?? `Tier ${report.tier}`}
@@ -246,7 +246,7 @@ export default function ReportDetailDrawer({
                 AI Triage Summary
               </h4>
               {report.reasonSummary ? (
-                <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-rose-950/40 via-slate-950 to-slate-950 p-5.5 shadow-2xl [box-shadow:inset_0_1px_1.5px_rgba(244,63,94,0.35),inset_0_0_18px_rgba(244,63,94,0.1)]">
+                <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-rose-950/40 via-[#121316] to-[#121316] p-5.5 shadow-2xl [box-shadow:inset_0_1px_1.5px_rgba(244,63,94,0.35),inset_0_0_18px_rgba(244,63,94,0.1)]">
                   <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-rose-400 to-rose-700" />
                   <div className="mb-3 flex items-center gap-2">
                     <span className="rounded-xl bg-rose-950/60 px-2.5 py-0.5 text-[10px] font-bold tracking-widest text-rose-200 uppercase [box-shadow:inset_0_1px_1px_rgba(244,63,94,0.4)]">
@@ -266,14 +266,14 @@ export default function ReportDetailDrawer({
               <h4 className="mb-3 text-xs font-extrabold tracking-tight text-white uppercase">
                 User's Report
               </h4>
-              <div className="rounded-3xl bg-slate-950/70 p-5.5 shadow-2xl [box-shadow:inset_0_1px_1.5px_rgba(255,255,255,0.15)]">
+              <div className="rounded-3xl bg-[#121316] p-5.5 shadow-2xl [box-shadow:inset_0_1px_1.5px_rgba(255,255,255,0.15)]">
                 <p className="text-xs font-medium leading-relaxed whitespace-pre-wrap text-slate-200">
                   {report.rawText}
                 </p>
               </div>
             </section>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 rounded-3xl bg-slate-950/70 p-5.5 shadow-2xl [box-shadow:inset_0_1px_1.5px_rgba(255,255,255,0.15)]">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 rounded-3xl bg-[#121316] p-5.5 shadow-2xl [box-shadow:inset_0_1px_1.5px_rgba(255,255,255,0.15)]">
               <Field
                 label="Report ID"
                 value={

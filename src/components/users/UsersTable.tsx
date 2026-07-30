@@ -48,7 +48,7 @@ export default function UsersTable({ users, loading, onRowClick }: Props) {
     <div className="glass-card-borderless overflow-hidden rounded-3xl">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-white/[0.03] text-xs">
-          <thead className="bg-slate-950/70">
+          <thead className="bg-[#121316]">
             <tr className="text-left text-[11px] font-bold tracking-wider text-slate-400 uppercase">
               <th className="px-6 py-4">Name</th>
               <th className="px-6 py-4">Gender</th>

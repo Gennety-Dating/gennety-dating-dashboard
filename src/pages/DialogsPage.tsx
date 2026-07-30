@@ -273,7 +273,7 @@ export default function DialogsPage() {
               )}
             </div>
 
-            <div className="flex items-center justify-between bg-slate-950/70 px-4 py-3 text-xs text-slate-400 [box-shadow:inset_0_1px_0_rgba(255,255,255,0.06)]">
+            <div className="flex items-center justify-between bg-[#121316] px-4 py-3 text-xs text-slate-400 [box-shadow:inset_0_1px_0_rgba(255,255,255,0.06)]">
               <span className="font-semibold">{total} total</span>
               <div className="flex items-center gap-2">
                 <button

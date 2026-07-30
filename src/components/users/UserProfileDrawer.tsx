@@ -29,7 +29,7 @@ function TagList({ items }: { items: string[] | string | undefined | null }) {
       {tags.map((t, i) => (
         <span
           key={`${t}-${i}`}
-          className="rounded-xl bg-slate-950/80 px-3 py-1 text-xs font-semibold text-slate-300 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]"
+          className="rounded-xl bg-[#121316] px-3 py-1 text-xs font-semibold text-slate-300 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]"
         >
           {t}
         </span>
@@ -87,7 +87,7 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
     <>
       <div
         onClick={onClose}
-        className={`fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-md transition-opacity duration-300 ${
+        className={`fixed inset-0 z-40 bg-[#121316]/80 backdrop-blur-md transition-opacity duration-300 ${
           open ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       />
@@ -123,7 +123,7 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
           {detail && !loading && (
             <>
               {/* Header card */}
-              <div className="rounded-3xl bg-slate-950/70 p-6 shadow-2xl [box-shadow:inset_0_1px_1.5px_rgba(255,255,255,0.15)]">
+              <div className="rounded-3xl bg-[#121316] p-6 shadow-2xl [box-shadow:inset_0_1px_1.5px_rgba(255,255,255,0.15)]">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <h3 className="text-2xl font-black text-white">
@@ -190,7 +190,7 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
                   <h4 className="mb-3 text-xs font-bold tracking-tight text-white uppercase">
                     Profile
                   </h4>
-                  <div className="space-y-4 rounded-2xl bg-slate-950/60 p-5 shadow-xl ring-1 ring-white/5">
+                  <div className="space-y-4 rounded-2xl bg-[#121316] p-5 shadow-xl ring-1 ring-white/5">
                     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                       <Field
                         label="Height"
