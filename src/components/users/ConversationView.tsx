@@ -95,7 +95,7 @@ export default function ConversationView({ conversation }: Props) {
                   <div className="mb-1.5 flex items-center gap-2 text-[10px] font-semibold tracking-wider uppercase opacity-75">
                     <span>{m.role}</span>
                     {bothSources && m.source === "aether" && (
-                      <span className="rounded bg-sky-500/15 px-1.5 py-0.5 text-sky-300">aether</span>
+                      <span className="rounded bg-white/10 px-1.5 py-0.5 text-white ring-1 ring-white/20">aether</span>
                     )}
                     {m.createdAt && <span>• {formatTime(m.createdAt)}</span>}
                   </div>
@@ -104,7 +104,7 @@ export default function ConversationView({ conversation }: Props) {
                     <button
                       type="button"
                       onClick={() => setLightbox({ mediaType: img.type, refKey: img.ref })}
-                      className="mb-2 block overflow-hidden rounded-xl cursor-zoom-in ring-1 ring-white/10 hover:ring-violet-500/50 transition-all"
+                      className="mb-2 block overflow-hidden rounded-xl cursor-zoom-in ring-1 ring-white/10 hover:ring-white/30 transition-all"
                     >
                       <AuthedImage
                         mediaType={img.type}
@@ -121,9 +121,9 @@ export default function ConversationView({ conversation }: Props) {
                       {m.toolCalls.map((tc, i) => (
                         <div
                           key={i}
-                          className="rounded-lg bg-slate-950/80 px-2.5 py-1 font-mono text-[11px] leading-relaxed break-all text-amber-300/90 ring-1 ring-amber-500/20"
+                          className="rounded-lg bg-[#17181c] px-2.5 py-1 font-mono text-[11px] leading-relaxed break-all text-slate-200 ring-1 ring-white/15"
                         >
-                          <span className="text-amber-200 font-semibold">{tc.name}</span>({tc.arguments})
+                          <span className="text-white font-semibold">{tc.name}</span>({tc.arguments})
                         </div>
                       ))}
                     </div>

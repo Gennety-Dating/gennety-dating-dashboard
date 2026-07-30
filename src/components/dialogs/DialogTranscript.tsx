@@ -30,9 +30,9 @@ const KIND_LABELS: Record<string, string> = {
 };
 
 const SOURCE_STYLES: Record<string, string> = {
-  agent: "bg-violet-500/10 text-violet-300 ring-1 ring-violet-500/20",
-  aether: "bg-sky-500/10 text-sky-300 ring-1 ring-sky-500/20",
-  timeline: "bg-emerald-500/10 text-emerald-300 ring-1 ring-emerald-500/20",
+  agent: "bg-white/10 text-white ring-1 ring-white/20",
+  aether: "bg-slate-200/15 text-slate-200 ring-1 ring-white/15",
+  timeline: "bg-slate-200/10 text-slate-300 ring-1 ring-white/10",
 };
 
 function formatTime(iso: string | null): string {
@@ -186,8 +186,8 @@ export default function DialogTranscript({ dialog }: Props) {
                           title={a.webApp ? `Mini App: ${a.webApp}` : a.data ?? ""}
                           className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold ${
                             a.webApp
-                              ? "bg-sky-500/10 text-sky-200 ring-1 ring-sky-500/30"
-                              : "bg-slate-900/80 text-slate-300 ring-1 ring-white/10"
+                              ? "bg-white/10 text-white ring-1 ring-white/20"
+                              : "bg-[#17181c] text-slate-300 ring-1 ring-white/10"
                           }`}
                         >
                           {a.webApp && "🪟 "}
@@ -202,9 +202,9 @@ export default function DialogTranscript({ dialog }: Props) {
                       {m.toolCalls.map((tc, i) => (
                         <div
                           key={i}
-                          className="rounded-lg bg-slate-950/80 px-2.5 py-1 font-mono text-[11px] leading-relaxed break-all text-amber-300/90 ring-1 ring-amber-500/20"
+                          className="rounded-lg bg-[#17181c] px-2.5 py-1 font-mono text-[11px] leading-relaxed break-all text-slate-200 ring-1 ring-white/15"
                         >
-                          <span className="text-amber-200 font-semibold">{tc.name}</span>({tc.arguments})
+                          <span className="text-white font-semibold">{tc.name}</span>({tc.arguments})
                         </div>
                       ))}
                     </div>

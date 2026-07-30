@@ -7,19 +7,19 @@ interface Props {
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  active: "bg-emerald-950/40 text-emerald-300 [box-shadow:inset_0_1px_1px_rgba(16,185,129,0.3)]",
-  onboarding: "bg-amber-950/40 text-amber-300 [box-shadow:inset_0_1px_1px_rgba(245,158,11,0.3)]",
-  paused: "bg-slate-900 text-slate-400 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]",
+  active: "bg-white/15 text-white [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.25)]",
+  onboarding: "bg-slate-200/15 text-slate-200 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]",
+  paused: "bg-[#17181c] text-slate-400 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]",
 };
 
 const STEP_STYLES: Record<string, string> = {
-  completed: "bg-rose-950/40 text-rose-200 [box-shadow:inset_0_1px_1px_rgba(244,63,94,0.3)]",
-  conversational: "bg-sky-950/40 text-sky-300 [box-shadow:inset_0_1px_1px_rgba(14,165,233,0.3)]",
-  language: "bg-slate-900 text-slate-400 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]",
+  completed: "bg-white/15 text-white [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.25)]",
+  conversational: "bg-slate-200/15 text-slate-200 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]",
+  language: "bg-[#17181c] text-slate-400 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]",
 };
 
 function Pill({ text, styles }: { text: string; styles: Record<string, string> }) {
-  const cls = styles[text] ?? "bg-slate-900 text-slate-400 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]";
+  const cls = styles[text] ?? "bg-[#17181c] text-slate-300 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]";
   return (
     <span
       className={`inline-flex items-center rounded-full px-3 py-0.5 text-[11px] font-bold capitalize ${cls}`}

@@ -7,9 +7,9 @@ interface Props {
 }
 
 const TIER_STYLES: Record<number, string> = {
-  1: "bg-sky-950/40 text-sky-300 [box-shadow:inset_0_1px_1px_rgba(14,165,233,0.3)]",
-  2: "bg-amber-950/40 text-amber-300 [box-shadow:inset_0_1px_1px_rgba(245,158,11,0.3)]",
-  3: "bg-rose-950/60 text-rose-200 [box-shadow:inset_0_1px_1.5px_rgba(244,63,94,0.4),inset_0_0_10px_rgba(244,63,94,0.2)]",
+  1: "bg-slate-200/15 text-slate-200 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]",
+  2: "bg-slate-200/20 text-slate-100 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.18)]",
+  3: "bg-white/20 text-white [box-shadow:inset_0_1px_1.5px_rgba(255,255,255,0.3)]",
 };
 
 const TIER_LABELS: Record<number, string> = {
@@ -20,15 +20,15 @@ const TIER_LABELS: Record<number, string> = {
 
 function TierPill({ tier }: { tier: number }) {
   const cls =
-    TIER_STYLES[tier] ?? "bg-slate-900 text-slate-400 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]";
+    TIER_STYLES[tier] ?? "bg-[#17181c] text-slate-300 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]";
   return (
     <span
       className={`inline-flex items-center gap-1.5 rounded-full px-3 py-0.5 text-[11px] font-bold ${cls}`}
     >
       {tier === 3 && (
         <span className="relative flex h-1.5 w-1.5">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75" />
-          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-rose-500" />
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
+          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white" />
         </span>
       )}
       {TIER_LABELS[tier] ?? `Tier ${tier}`}
@@ -38,11 +38,11 @@ function TierPill({ tier }: { tier: number }) {
 
 function ReviewedPill({ reviewed }: { reviewed: boolean }) {
   return reviewed ? (
-    <span className="inline-flex items-center rounded-full bg-emerald-950/40 px-3 py-0.5 text-[11px] font-bold text-emerald-300 [box-shadow:inset_0_1px_1px_rgba(16,185,129,0.3)]">
+    <span className="inline-flex items-center rounded-full bg-white/15 px-3 py-0.5 text-[11px] font-bold text-white [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.25)]">
       Reviewed
     </span>
   ) : (
-    <span className="inline-flex items-center rounded-full bg-slate-900 px-3 py-0.5 text-[11px] font-bold text-slate-400 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]">
+    <span className="inline-flex items-center rounded-full bg-[#17181c] px-3 py-0.5 text-[11px] font-bold text-slate-400 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]">
       Pending
     </span>
   );

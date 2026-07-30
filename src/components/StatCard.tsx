@@ -51,7 +51,7 @@ export default function StatCard({
       </p>
       {sub && <p className="mt-1 text-xs font-medium text-slate-400/80">{sub}</p>}
       {lowSample && (
-        <span className="mt-2.5 inline-block rounded-xl bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-bold tracking-wider text-amber-300 uppercase [box-shadow:inset_0_1px_1px_rgba(245,158,11,0.3)]">
+        <span className="mt-2.5 inline-block rounded-xl bg-white/10 px-2.5 py-0.5 text-[10px] font-bold tracking-wider text-slate-200 uppercase [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
           low sample
         </span>
       )}

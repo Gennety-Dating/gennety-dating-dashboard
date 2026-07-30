@@ -16,9 +16,9 @@ const TIER_LABELS: Record<number, string> = {
 };
 
 const TIER_COLORS: Record<number, string> = {
-  1: "bg-sky-950/40 text-sky-200 [box-shadow:inset_0_1px_1.5px_rgba(14,165,233,0.35)]",
-  2: "bg-amber-950/40 text-amber-200 [box-shadow:inset_0_1px_1.5px_rgba(245,158,11,0.35)]",
-  3: "bg-rose-950/60 text-rose-200 [box-shadow:inset_0_1px_1.5px_rgba(244,63,94,0.4),inset_0_0_16px_rgba(244,63,94,0.2)]",
+  1: "bg-slate-200/15 text-slate-200 [box-shadow:inset_0_1px_1.5px_rgba(255,255,255,0.15)]",
+  2: "bg-slate-200/20 text-slate-100 [box-shadow:inset_0_1px_1.5px_rgba(255,255,255,0.18)]",
+  3: "bg-white/20 text-white [box-shadow:inset_0_1px_1.5px_rgba(255,255,255,0.25)]",
 };
 
 function displayName(user: {
