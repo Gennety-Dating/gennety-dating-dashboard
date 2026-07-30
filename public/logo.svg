@@ -1,27 +1,20 @@
-<svg viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
   <defs>
-    <radialGradient id="g-logo-bg" cx="30%" cy="85%" r="90%" fx="30%" fy="85%">
-      <stop offset="0%" stop-color="#ff1a95" />
-      <stop offset="28%" stop-color="#be123c" />
-      <stop offset="65%" stop-color="#6b092b" />
-      <stop offset="100%" stop-color="#24030d" />
+    <radialGradient id="butterfly-radial-glow" cx="30%" cy="100%" r="100%">
+      <stop offset="0%" stop-color="#FF00FF" />
+      <stop offset="30%" stop-color="#C82356" />
+      <stop offset="70%" stop-color="#8B253B" />
+      <stop offset="100%" stop-color="#3B0B1E" />
     </radialGradient>
   </defs>
-
-  <!-- Squircle background matching the user logo icon -->
-  <rect width="512" height="512" rx="140" fill="url(#g-logo-bg)" />
-
-  <!-- Exact symmetrical 4-lobed white butterfly emblem -->
-  <path
-    fill="#FFFFFF"
-    d="M 256 196
-       C 220 146, 120 130, 100 190
-       C 80 250, 120 270, 170 256
-       C 120 242, 80 262, 100 322
-       C 120 382, 220 366, 256 316
-       C 292 366, 392 382, 412 322
-       C 432 262, 392 242, 342 256
-       C 392 270, 432 250, 412 190
-       C 392 130, 292 146, 256 196 Z"
-  />
+  <rect width="100" height="100" rx="26" fill="url(#butterfly-radial-glow)" />
+  <path d="M 50 35 
+            C 20 0, -10 30, 15 55 
+            C -5 75, 25 100, 48 65 
+            L 52 65 
+            C 75 100, 105 75, 85 55 
+            C 110 30, 80 0, 50 35 
+            Z" 
+         fill="#FFFFFF" 
+         transform="translate(15, 15) scale(0.7)" />
 </svg>
