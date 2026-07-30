@@ -311,7 +311,7 @@ export default function DashboardPage() {
               <button
                 key={t.key}
                 onClick={() => setActiveTab(t.key)}
-                className={`cursor-pointer rounded-2xl px-4 py-2.5 text-xs font-bold whitespace-nowrap transition-all duration-200 ${
+                className={`flex shrink-0 items-center justify-center cursor-pointer rounded-2xl px-4 py-2.5 text-xs font-bold whitespace-nowrap transition-all duration-200 ${
                   isActive
                     ? "inner-glow-cherry text-white"
                     : "inner-glow text-slate-300 hover:text-white"

@@ -208,7 +208,7 @@ export default function ReportsPage() {
                     setTierFilter(v);
                     setPage(0);
                   }}
-                  className={`cursor-pointer rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all ${
+                  className={`flex shrink-0 items-center justify-center cursor-pointer rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all ${
                     tierFilter === v
                       ? "inner-glow-cherry text-white"
                       : "inner-glow text-slate-300 hover:text-white"
@@ -234,7 +234,7 @@ export default function ReportsPage() {
                     setReviewFilter(v);
                     setPage(0);
                   }}
-                  className={`cursor-pointer rounded-xl px-3.5 py-1.5 text-xs font-bold capitalize transition-all ${
+                  className={`flex shrink-0 items-center justify-center cursor-pointer rounded-xl px-3.5 py-1.5 text-xs font-bold capitalize transition-all ${
                     reviewFilter === v
                       ? "inner-glow-cherry text-white"
                       : "inner-glow text-slate-300 hover:text-white"
