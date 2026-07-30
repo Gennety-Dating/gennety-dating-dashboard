@@ -201,21 +201,28 @@ export default function DialogsPage() {
                   Go
                 </button>
               </div>
-              <select
-                value={status}
-                onChange={(e) => {
-                  setStatus(e.target.value);
-                  setPage(0);
-                  setApplied({ status: e.target.value, search: search.trim() });
-                }}
-                className="w-full cursor-pointer rounded-2xl bg-[#121316] px-3.5 py-2.5 text-xs font-medium text-slate-200 outline-none [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.2)] transition-all"
-              >
-                {STATUS_OPTIONS.map((s) => (
-                  <option key={s} value={s}>
-                    {s === "" ? "All statuses" : s}
-                  </option>
-                ))}
-              </select>
+              <div className="relative w-full">
+                <select
+                  value={status}
+                  onChange={(e) => {
+                    setStatus(e.target.value);
+                    setPage(0);
+                    setApplied({ status: e.target.value, search: search.trim() });
+                  }}
+                  className="w-full appearance-none cursor-pointer rounded-2xl bg-[#121316] pl-4 pr-10 py-2.5 text-xs font-medium text-slate-200 outline-none [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.2)] focus:[box-shadow:inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_0_12px_rgba(244,63,94,0.25)] transition-all"
+                >
+                  {STATUS_OPTIONS.map((s) => (
+                    <option key={s} value={s}>
+                      {s === "" ? "All statuses" : s}
+                    </option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
             </div>
 
             <div className="flex-1 overflow-y-auto divide-y divide-white/[0.03]">
