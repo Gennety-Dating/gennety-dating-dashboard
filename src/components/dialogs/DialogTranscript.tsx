@@ -96,7 +96,7 @@ export default function DialogTranscript({ dialog }: Props) {
             type="checkbox"
             checked={showTechnical}
             onChange={(e) => setShowTechnical(e.target.checked)}
-            className="accent-violet-500 rounded"
+            className="accent-[#9f1239] cursor-pointer rounded"
           />
           Show technical ({technicalCount})
         </label>
@@ -122,11 +122,11 @@ export default function DialogTranscript({ dialog }: Props) {
             if (isEvent) {
               return (
                 <div key={m.id} className="mx-auto flex w-fit max-w-[85%] flex-col items-center">
-                  <div className="rounded-full bg-emerald-500/10 px-3.5 py-1 text-xs font-medium text-emerald-300 ring-1 ring-emerald-500/20 shadow-sm">
+                  <div className="rounded-full bg-white/10 px-3.5 py-1 text-xs font-medium text-slate-200 ring-1 ring-white/15 shadow-sm">
                     {kindLabel === "button tap" ? "👆" : kindLabel === "payment" ? "⭐" : "📱"}{" "}
                     {m.text}
                     {m.surface && (
-                      <span className="ml-1.5 text-emerald-400/60">· {m.surface}</span>
+                      <span className="ml-1.5 text-slate-400">· {m.surface}</span>
                     )}
                   </div>
                   {m.createdAt && (
@@ -139,10 +139,10 @@ export default function DialogTranscript({ dialog }: Props) {
             }
 
             const bubbleCls = m.technical
-              ? "bg-slate-950/70 text-slate-400 italic [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]"
+              ? "bg-[#121316] text-slate-400 italic [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.08)]"
               : inbound
-                ? "bg-gradient-to-br from-rose-950/50 to-rose-900/40 text-white [box-shadow:inset_0_1px_1.5px_rgba(244,63,94,0.4),inset_0_0_14px_rgba(244,63,94,0.2)]"
-                : "bg-slate-900/90 text-slate-100 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]";
+                ? "bg-white text-slate-900 font-medium [box-shadow:0_4px_12px_rgba(0,0,0,0.3)]"
+                : "bg-[#17181c] text-slate-100 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]";
 
             return (
               <div

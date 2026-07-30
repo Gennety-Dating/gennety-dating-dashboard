@@ -32,10 +32,10 @@ export default function ChatHistoryBlock({ messages }: Props) {
         const isUser = role === "user";
         const isAssistant = role === "assistant" || role === "bot";
         const bubbleCls = isUser
-          ? "ml-auto bg-gradient-to-br from-violet-600/25 to-indigo-600/20 text-white ring-1 ring-violet-500/30 shadow-sm"
+          ? "ml-auto bg-white text-slate-900 font-medium [box-shadow:0_4px_12px_rgba(0,0,0,0.3)]"
           : isAssistant
-            ? "mr-auto bg-slate-800/80 text-slate-100 ring-1 ring-white/5 shadow-sm"
-            : "mx-auto bg-slate-950/80 text-slate-400 italic ring-1 ring-white/5";
+            ? "mr-auto bg-[#17181c] text-slate-100 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]"
+            : "mx-auto bg-[#121316] text-slate-400 italic [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.08)]";
         const content =
           typeof m.content === "string"
             ? m.content

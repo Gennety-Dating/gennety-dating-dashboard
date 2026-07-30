@@ -21,6 +21,10 @@
     color: #f8fafc;
   }
 
+  input[type="checkbox"] {
+    accent-color: #9f1239;
+  }
+
   /* Custom sleek dark scrollbars */
   ::-webkit-scrollbar {
     width: 6px;

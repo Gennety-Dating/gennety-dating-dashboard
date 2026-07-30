@@ -60,7 +60,7 @@ export default function ConversationView({ conversation }: Props) {
             type="checkbox"
             checked={showTechnical}
             onChange={(e) => setShowTechnical(e.target.checked)}
-            className="accent-violet-500 rounded"
+            className="accent-[#9f1239] cursor-pointer rounded"
           />
           Show technical ({technicalCount})
         </label>
@@ -70,11 +70,7 @@ export default function ConversationView({ conversation }: Props) {
       <div className="flex-1 space-y-3.5 overflow-y-auto px-1 py-4">
         {visible.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-white/10 bg-slate-950/40 p-6 text-center text-xs font-medium text-slate-400">
-            {conversation.messages.length === 0
-              ? "No conversation recorded for this user."
-              : technicalCount > 0 && !showTechnical
-                ? "No user/bot turns to show — enable “Show technical” to see system and tool activity."
-                : "No messages to show."}
+            Nothing to show — enable “Show technical” for system and tool activity.
           </div>
         ) : (
           visible.map((m) => {
@@ -83,10 +79,10 @@ export default function ConversationView({ conversation }: Props) {
             const isAssistant = role === "assistant" || role === "bot";
             const wrapAlign = isUser ? "ml-auto" : isAssistant ? "mr-auto" : "mx-auto";
             const bubbleCls = isUser
-              ? "bg-gradient-to-br from-rose-950/50 to-rose-900/40 text-white [box-shadow:inset_0_1px_1.5px_rgba(244,63,94,0.4),inset_0_0_14px_rgba(244,63,94,0.2)]"
+              ? "bg-white text-slate-900 font-medium [box-shadow:0_4px_12px_rgba(0,0,0,0.3)]"
               : isAssistant
-                ? "bg-slate-900/90 text-slate-100 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]"
-                : "bg-slate-950/70 text-slate-400 italic [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]";
+                ? "bg-[#17181c] text-slate-100 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]"
+                : "bg-[#121316] text-slate-400 italic [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.08)]";
             const img = m.image;
 
             return (
