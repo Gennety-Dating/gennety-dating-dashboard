@@ -165,7 +165,7 @@ export default function DialogTranscript({ dialog }: Props) {
                     <button
                       type="button"
                       onClick={() => setLightbox(m.image!.ref)}
-                      className="mb-2 block overflow-hidden rounded-xl cursor-zoom-in ring-1 ring-white/10 hover:ring-violet-500/50 transition-all"
+                      className="mb-2 block overflow-hidden rounded-xl cursor-zoom-in ring-1 ring-white/10 hover:ring-[#9f1239] hover:shadow-[0_0_15px_rgba(159,18,57,0.4)] transition-all"
                     >
                       <AuthedImage
                         mediaType="chat"
@@ -219,18 +219,18 @@ export default function DialogTranscript({ dialog }: Props) {
       {/* Profile photos gallery */}
       {dialog.photos.length > 0 && (
         <div className="border-t border-white/5 px-1 pt-3.5">
-          <p className="mb-2 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
+          <p className="mb-2 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
             Profile photos ({dialog.photos.length})
           </p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex gap-2 overflow-x-auto pb-1">
             {dialog.photos.map((p, i) => (
               <button
                 key={`${p.ref}-${i}`}
                 type="button"
                 onClick={() => setLightbox(p.ref)}
-                className="cursor-zoom-in overflow-hidden rounded-xl ring-1 ring-white/10 transition-all hover:ring-violet-500/50 hover:scale-105"
+                className="cursor-zoom-in overflow-hidden rounded-xl ring-1 ring-white/10 transition-all hover:ring-[#9f1239] hover:shadow-[0_0_15px_rgba(159,18,57,0.4)] hover:scale-105"
               >
-                <AuthedImage mediaType="photo" refKey={p.ref} className="h-20 w-20 object-cover" />
+                <AuthedImage mediaType="photo" refKey={p.ref} className="h-16 w-16 object-cover" />
               </button>
             ))}
           </div>
@@ -240,7 +240,7 @@ export default function DialogTranscript({ dialog }: Props) {
       {lightbox && (
         <div
           onClick={() => setLightbox(null)}
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/80 p-6 backdrop-blur-md"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-[#121316]/90 p-6 backdrop-blur-xl"
         >
           <AuthedImage
             mediaType="photo"
