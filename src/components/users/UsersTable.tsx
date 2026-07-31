@@ -35,7 +35,10 @@ const STEP_STYLES: Record<string, string> = {
  */
 function Attractiveness({ profile }: { profile: UserListItem["profile"] }) {
   const elo = profile?.eloScore;
-  if (typeof elo !== "number" || !profile?.eloSeededAt) {
+  // `eloSeededAt` may be absent (a server that does not return it) rather than
+  // null (never seeded), so the score itself is the fallback evidence: 500 is
+  // the un-seeded default, anything else was measured.
+  if (typeof elo !== "number" || (profile?.eloSeededAt == null && elo === 500)) {
     return <span className="text-[11px] font-medium text-slate-500">—</span>;
   }
   const score = Math.round(Math.min(Math.max((elo - 200) / 6, 0), 100));

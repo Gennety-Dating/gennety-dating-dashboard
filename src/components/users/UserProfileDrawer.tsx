@@ -83,7 +83,18 @@ function EloBlock({ detail }: { detail: UserDetail }) {
   if (typeof elo !== "number") {
     return <span className="text-xs font-medium text-slate-500">No profile row.</span>;
   }
-  const seeded = Boolean(detail.profile?.eloSeededAt);
+  const seededAt = detail.profile?.eloSeededAt;
+  /*
+   * Whether this is a MEASURED score or the un-seeded 500 default.
+   *
+   * `eloSeededAt` alone is not enough to decide: a server that does not return
+   * the field sends `undefined`, which is not the same claim as `null` ("the
+   * vision pass never ran"). Reading the two as one would announce "never
+   * seeded" over a real, measured 608. The score itself is the fallback
+   * evidence — anything off the 500 default came from somewhere.
+   */
+  const seeded = seededAt != null || elo !== 500;
+  const seedTimeKnown = seededAt != null;
   const attractiveness = attractivenessFromElo(elo);
   // 200..800 is the seedable band; position the marker inside it.
   const position = Math.min(Math.max((elo - 200) / 6, 0), 100);
@@ -124,8 +135,10 @@ function EloBlock({ detail }: { detail: UserDetail }) {
         <Field
           label="Seeded"
           value={
-            seeded ? (
-              formatDate(detail.profile?.eloSeededAt)
+            seedTimeKnown ? (
+              formatDate(seededAt)
+            ) : seeded ? (
+              "yes"
             ) : (
               <span className="text-amber-300">never — using the 500 default</span>
             )
