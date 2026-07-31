@@ -132,7 +132,7 @@ function EloBlock({ detail }: { detail: UserDetail }) {
           }
         />
         <Field label="Matches played" value={detail.profile?.eloMatchesPlayed ?? 0} />
-        <Field label="Standby (missed drops)" value={detail.profile?.standbyCount ?? 0} />
+        <Field label="Standby (missed drops)" value={detail.profile?.standbyCount ?? "—"} />
       </div>
     </>
   );
@@ -336,7 +336,8 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
                     label="Onboarding"
                     value={<span className="capitalize">{detail.onboardingStep}</span>}
                   />
-                  <Field label="Tickets" value={detail.ticketBalance ?? 0} />
+                  {/* `?? 0` would report a balance the server never sent. */}
+                  <Field label="Tickets" value={detail.ticketBalance ?? "—"} />
                   <Field
                     label="Premium"
                     value={
@@ -439,10 +440,10 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
               <Section title="Matchability">
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                   <Field label="Last matched" value={formatDate(detail.profile?.lastMatchedAt)} />
-                  <Field label="Missed drops" value={detail.profile?.missedWeeks ?? 0} />
+                  <Field label="Missed drops" value={detail.profile?.missedWeeks ?? "—"} />
                   <Field
                     label="Silent ignores"
-                    value={detail.profile?.silentIgnoreCount ?? 0}
+                    value={detail.profile?.silentIgnoreCount ?? "—"}
                   />
                   <Field
                     label="Embedding"
@@ -476,8 +477,17 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
               </Section>
 
               {/* Matches */}
-              <Section title={`Matches (${detail.matches?.length ?? 0})`}>
-                {!detail.matches || detail.matches.length === 0 ? (
+              <Section
+                title={detail.matches ? `Matches (${detail.matches.length})` : "Matches"}
+              >
+                {!detail.matches ? (
+                  // An absent array is not an empty one: a server that predates
+                  // this field would otherwise be reported as "never paired",
+                  // which is a claim about the user rather than about the API.
+                  <span className="text-xs font-medium text-slate-500">
+                    Match history not available from this server.
+                  </span>
+                ) : detail.matches.length === 0 ? (
                   <span className="text-xs font-medium text-slate-500">
                     Never been paired.
                   </span>
