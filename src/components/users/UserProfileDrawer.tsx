@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getUserDetail, type UserDetail } from "../../lib/api";
+import { getUserDetail, type UserDetail, type UserMatchRow } from "../../lib/api";
 import { toTagList } from "../../lib/tags";
+import AuthedImage from "../AuthedImage";
 import PsychProfileBlock from "./PsychProfileBlock";
 import ChatHistoryBlock from "./ChatHistoryBlock";
 
@@ -18,6 +19,17 @@ function Field({ label, value }: { label: string; value: React.ReactNode }) {
       </p>
       <p className="mt-0.5 text-xs font-semibold text-slate-200">{value ?? "—"}</p>
     </div>
+  );
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section>
+      <h4 className="mb-3 text-xs font-bold tracking-tight text-white uppercase">{title}</h4>
+      <div className="space-y-4 rounded-2xl bg-[#121316] p-5 shadow-xl ring-1 ring-white/5">
+        {children}
+      </div>
+    </section>
   );
 }
 
@@ -43,6 +55,144 @@ function displayName(u: UserDetail): string {
   return parts.length > 0 ? parts.join(" ") : `tg:${u.telegramId}`;
 }
 
+function formatDate(iso: string | null | undefined): string {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString();
+}
+
+function pct(value: number | null | undefined): string {
+  return typeof value === "number" ? `${(value * 100).toFixed(1)}%` : "—";
+}
+
+/**
+ * The attractiveness league, in the terms the matching engine uses.
+ *
+ * `eloScore` is seeded at verification from the AI vision pass — 0..100
+ * attractiveness maps onto Elo 200..800 at 6 Elo per point — and it is what
+ * `V_league` reads when deciding who this person is viable with. Showing the
+ * raw number alone hides that: 608 means nothing until you know 500 is the
+ * unseeded default and the band is 200..800.
+ */
+function attractivenessFromElo(elo: number): number {
+  return Math.round(Math.min(Math.max((elo - 200) / 6, 0), 100));
+}
+
+function EloBlock({ detail }: { detail: UserDetail }) {
+  const elo = detail.profile?.eloScore;
+  if (typeof elo !== "number") {
+    return <span className="text-xs font-medium text-slate-500">No profile row.</span>;
+  }
+  const seeded = Boolean(detail.profile?.eloSeededAt);
+  const attractiveness = attractivenessFromElo(elo);
+  // 200..800 is the seedable band; position the marker inside it.
+  const position = Math.min(Math.max((elo - 200) / 6, 0), 100);
+
+  return (
+    <>
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <p className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
+            Attractiveness score
+          </p>
+          <p className="mt-0.5 text-3xl font-black text-white">
+            {seeded ? attractiveness : "—"}
+            <span className="ml-1 text-sm font-bold text-slate-500">/ 100</span>
+          </p>
+        </div>
+        <div className="text-right">
+          <p className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
+            Elo
+          </p>
+          <p className="mt-0.5 text-xl font-black text-white">{elo}</p>
+        </div>
+      </div>
+
+      <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+        <div
+          className="absolute inset-y-0 left-0 rounded-full bg-[#9f1239]"
+          style={{ width: `${position}%` }}
+        />
+      </div>
+      <div className="flex justify-between text-[10px] font-medium text-slate-500">
+        <span>200</span>
+        <span>500 · default</span>
+        <span>800</span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+        <Field
+          label="Seeded"
+          value={
+            seeded ? (
+              formatDate(detail.profile?.eloSeededAt)
+            ) : (
+              <span className="text-amber-300">never — using the 500 default</span>
+            )
+          }
+        />
+        <Field label="Matches played" value={detail.profile?.eloMatchesPlayed ?? 0} />
+        <Field label="Standby (missed drops)" value={detail.profile?.standbyCount ?? 0} />
+      </div>
+    </>
+  );
+}
+
+const VERIFICATION_TONE: Record<string, string> = {
+  verified: "bg-emerald-500/15 text-emerald-300 ring-emerald-400/30",
+  rejected: "bg-rose-500/15 text-rose-300 ring-rose-400/30",
+  pending_review: "bg-amber-500/15 text-amber-300 ring-amber-400/30",
+  pending: "bg-sky-500/15 text-sky-300 ring-sky-400/30",
+  unverified: "bg-white/10 text-slate-300 ring-white/15",
+};
+
+function Badge({ text, tone }: { text: string; tone?: string }) {
+  return (
+    <span
+      className={`inline-flex items-center rounded-full px-3 py-0.5 text-[11px] font-bold ring-1 ${
+        tone ?? "bg-white/10 text-slate-300 ring-white/15"
+      }`}
+    >
+      {text}
+    </span>
+  );
+}
+
+function decisionLabel(value: boolean | null): string {
+  if (value === true) return "accepted";
+  if (value === false) return "declined";
+  return "no answer";
+}
+
+function MatchRow({ m }: { m: UserMatchRow }) {
+  return (
+    <div className="rounded-xl bg-[#17181c] px-3.5 py-2.5 ring-1 ring-white/5">
+      <div className="flex flex-wrap items-center gap-2">
+        <Badge text={m.status} />
+        <span className="text-xs font-semibold text-slate-200">
+          {m.partnerName ?? "—"}
+        </span>
+        {typeof m.synergyScore === "number" && (
+          <span className="text-[11px] font-medium text-slate-400">
+            synergy {m.synergyScore}
+          </span>
+        )}
+        {m.source && m.source !== "weekly" && (
+          <span className="text-[11px] font-medium text-slate-400">· {m.source}</span>
+        )}
+        <span className="ml-auto text-[10px] font-medium text-slate-500">
+          {formatDate(m.createdAt)}
+        </span>
+      </div>
+      <p className="mt-1 text-[11px] font-medium text-slate-400">
+        them: {decisionLabel(m.myDecision)} · partner: {decisionLabel(m.partnerDecision)}
+        {m.venueName ? ` · ${m.venueName}` : ""}
+        {m.agreedTime ? ` · ${formatDate(m.agreedTime)}` : ""}
+      </p>
+    </div>
+  );
+}
+
 export default function UserProfileDrawer({ userId, onClose }: Props) {
   const [result, setResult] = useState<{
     userId: string;
@@ -50,6 +200,7 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
     error: string;
   }>({ userId: "", detail: null, error: "" });
   const [loading, setLoading] = useState(false);
+  const [lightbox, setLightbox] = useState<string | null>(null);
 
   useEffect(() => {
     if (!userId) return;
@@ -82,6 +233,8 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
   }, [userId, onClose]);
 
   const open = userId !== null;
+  const photos = detail?.profile?.photos ?? [];
+  const faceScores = detail?.profile?.photoFaceScores ?? [];
 
   return (
     <>
@@ -131,7 +284,27 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
                     </h3>
                     <p className="mt-1 text-xs font-medium text-slate-400">
                       Telegram ID: {detail.telegramId}
+                      {detail.telegramUsername ? ` · @${detail.telegramUsername}` : ""}
                     </p>
+                    <div className="mt-2.5 flex flex-wrap gap-1.5">
+                      <Badge text={detail.status} />
+                      {detail.verificationStatus && (
+                        <Badge
+                          text={detail.verificationStatus}
+                          tone={VERIFICATION_TONE[detail.verificationStatus]}
+                        />
+                      )}
+                      {detail.platform && detail.platform !== "telegram" && (
+                        <Badge text={detail.platform} />
+                      )}
+                      {detail.registrationTrack && <Badge text={detail.registrationTrack} />}
+                      {typeof detail.strikes === "number" && detail.strikes > 0 && (
+                        <Badge
+                          text={`${detail.strikes} strike${detail.strikes > 1 ? "s" : ""}`}
+                          tone="bg-rose-500/15 text-rose-300 ring-rose-400/30"
+                        />
+                      )}
+                    </div>
                   </div>
                   <div className="text-right">
                     <p className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
@@ -147,32 +320,175 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
                   <Field label="Age" value={detail.age ?? "—"} />
                   <Field
                     label="Gender"
-                    value={
-                      <span className="capitalize">{detail.gender ?? "—"}</span>
-                    }
+                    value={<span className="capitalize">{detail.gender ?? "—"}</span>}
                   />
                   <Field
                     label="Preference"
-                    value={
-                      <span className="capitalize">{detail.preference ?? "—"}</span>
-                    }
+                    value={<span className="capitalize">{detail.preference ?? "—"}</span>}
                   />
+                  <Field label="City" value={detail.profile?.homeCity ?? "—"} />
                   <Field label="Language" value={detail.language ?? "—"} />
-                  <Field label="Major" value={detail.major ?? "—"} />
-                  <Field label="University" value={detail.universityDomain ?? "—"} />
+                  <Field label="Timezone" value={detail.profile?.timeZone ?? "—"} />
+                  <Field label="Phone" value={detail.phone ?? "—"} />
                   <Field label="Email" value={detail.email ?? "—"} />
-                  <Field
-                    label="Status"
-                    value={<span className="capitalize">{detail.status}</span>}
-                  />
+                  <Field label="University" value={detail.universityDomain ?? "—"} />
                   <Field
                     label="Onboarding"
+                    value={<span className="capitalize">{detail.onboardingStep}</span>}
+                  />
+                  <Field label="Tickets" value={detail.ticketBalance ?? 0} />
+                  <Field
+                    label="Premium"
                     value={
-                      <span className="capitalize">{detail.onboardingStep}</span>
+                      detail.premiumUntil
+                        ? `until ${new Date(detail.premiumUntil).toLocaleDateString()}`
+                        : "—"
                     }
                   />
+                  <Field label="Last seen" value={formatDate(detail.lastMessageAt)} />
+                  <Field label="Source" value={detail.referralSource ?? "organic"} />
+                  <Field label="Major" value={detail.major ?? "—"} />
                 </div>
               </div>
+
+              {/* Attractiveness / standing */}
+              <Section title="Attractiveness & standing">
+                <EloBlock detail={detail} />
+              </Section>
+
+              {/* Photos — the thing being scored */}
+              <Section title={`Photos (${photos.length})`}>
+                {photos.length === 0 ? (
+                  <span className="text-xs font-medium text-slate-500">
+                    No photos on the profile.
+                  </span>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {photos.map((ref, i) => (
+                      <button
+                        key={`${ref}-${i}`}
+                        type="button"
+                        onClick={() => setLightbox(ref)}
+                        className="cursor-zoom-in overflow-hidden rounded-xl ring-1 ring-white/10 transition-all hover:ring-[#9f1239]"
+                      >
+                        <AuthedImage
+                          mediaType="photo"
+                          refKey={ref}
+                          className="h-28 w-28 object-cover"
+                        />
+                        {/*
+                          `photoFaceScores` is 1:1 with `photos`, so index i is
+                          this photo's own match against the liveness selfie —
+                          the number that decides whether the account verifies.
+                        */}
+                        <span className="block bg-[#17181c] px-1 py-0.5 text-center text-[10px] font-semibold text-slate-400">
+                          face {pct(faceScores[i])}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </Section>
+
+              {/* Verification */}
+              <Section title="Verification">
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                  <Field
+                    label="Status"
+                    value={
+                      <Badge
+                        text={detail.verificationStatus ?? "—"}
+                        tone={VERIFICATION_TONE[detail.verificationStatus ?? ""]}
+                      />
+                    }
+                  />
+                  <Field label="Verified at" value={formatDate(detail.verifiedAt)} />
+                  <Field label="Best face match" value={pct(detail.faceMatchScore)} />
+                  <Field
+                    label="Reference selfie"
+                    value={
+                      detail.verifiedSelfiePath ? (
+                        "on file"
+                      ) : (
+                        // The 90-day GDPR scrub deletes it, and AWS cannot
+                        // re-issue one — so a photo edit needs a fresh liveness
+                        // run rather than a rerun.
+                        <span className="text-amber-300">scrubbed / never stored</span>
+                      )
+                    }
+                  />
+                  <Field label="Email verified" value={detail.isEmailVerified ? "yes" : "no"} />
+                  <Field label="Phone verified" value={formatDate(detail.phoneVerifiedAt)} />
+                </div>
+                {detail.verifiedSelfiePath && (
+                  <button
+                    type="button"
+                    onClick={() => setLightbox(detail.verifiedSelfiePath!)}
+                    className="cursor-zoom-in overflow-hidden rounded-xl ring-1 ring-white/10 transition-all hover:ring-[#9f1239]"
+                  >
+                    <AuthedImage
+                      mediaType="photo"
+                      refKey={detail.verifiedSelfiePath}
+                      className="h-28 w-28 object-cover"
+                    />
+                  </button>
+                )}
+              </Section>
+
+              {/* Matchability — why this person is or isn't in the pool */}
+              <Section title="Matchability">
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                  <Field label="Last matched" value={formatDate(detail.profile?.lastMatchedAt)} />
+                  <Field label="Missed drops" value={detail.profile?.missedWeeks ?? 0} />
+                  <Field
+                    label="Silent ignores"
+                    value={detail.profile?.silentIgnoreCount ?? 0}
+                  />
+                  <Field
+                    label="Embedding"
+                    value={
+                      detail.profile?.embeddingDirty ? (
+                        // Eligibility is fail-closed on this: a dirty profile is
+                        // skipped by the weekly batch until the refresh cron
+                        // catches up, which is a real and invisible reason for
+                        // "why am I not getting matched".
+                        <span className="text-amber-300">dirty — excluded from the batch</span>
+                      ) : (
+                        "fresh"
+                      )
+                    }
+                  />
+                  <Field
+                    label="Energy axis"
+                    value={detail.profile?.energyAxis?.toFixed(2) ?? "—"}
+                  />
+                  <Field
+                    label="Orientation axis"
+                    value={detail.profile?.orientationAxis?.toFixed(2) ?? "—"}
+                  />
+                </div>
+                <div>
+                  <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
+                    Anchor tags
+                  </p>
+                  <TagList items={detail.profile?.anchorTags} />
+                </div>
+              </Section>
+
+              {/* Matches */}
+              <Section title={`Matches (${detail.matches?.length ?? 0})`}>
+                {!detail.matches || detail.matches.length === 0 ? (
+                  <span className="text-xs font-medium text-slate-500">
+                    Never been paired.
+                  </span>
+                ) : (
+                  <div className="space-y-2">
+                    {detail.matches.map((m) => (
+                      <MatchRow key={m.id} m={m} />
+                    ))}
+                  </div>
+                )}
+              </Section>
 
               {/* Psychological summary — prominent AI block */}
               <section>
@@ -186,57 +502,83 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
 
               {/* Profile attributes */}
               {detail.profile && (
-                <section>
-                  <h4 className="mb-3 text-xs font-bold tracking-tight text-white uppercase">
-                    Profile
-                  </h4>
-                  <div className="space-y-4 rounded-2xl bg-[#121316] p-5 shadow-xl ring-1 ring-white/5">
-                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                      <Field
-                        label="Height"
-                        value={
-                          detail.profile.height ? `${detail.profile.height} cm` : "—"
-                        }
-                      />
-                      <Field
-                        label="Age Range"
-                        value={
-                          detail.profile.ageRangeMin && detail.profile.ageRangeMax
-                            ? `${detail.profile.ageRangeMin}–${detail.profile.ageRangeMax}`
-                            : "—"
-                        }
-                      />
-                      <Field
-                        label="Photos"
-                        value={`${detail.profile.photos?.length ?? 0} uploaded`}
-                      />
-                    </div>
-                    <div>
-                      <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
-                        Hobbies
-                      </p>
-                      <TagList items={detail.profile.hobbies} />
-                    </div>
-                    <div>
-                      <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
-                        Partner Preferences
-                      </p>
-                      <TagList items={detail.profile.partnerPreferences} />
-                    </div>
-                    <div>
-                      <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
-                        Visual Preferences
-                      </p>
-                      <TagList items={detail.profile.visualPreferences} />
-                    </div>
-                    <div>
-                      <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
-                        Negative Constraints
-                      </p>
-                      <TagList items={detail.profile.negativeConstraints} />
-                    </div>
+                <Section title="Profile">
+                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                    <Field
+                      label="Height"
+                      value={detail.profile.height ? `${detail.profile.height} cm` : "—"}
+                    />
+                    <Field
+                      label="Wants age"
+                      value={
+                        detail.profile.ageRangeMin && detail.profile.ageRangeMax
+                          ? `${detail.profile.ageRangeMin}–${detail.profile.ageRangeMax}`
+                          : "—"
+                      }
+                    />
+                    <Field label="Ethnicity" value={detail.profile.ethnicity ?? "—"} />
                   </div>
-                </section>
+                  <div>
+                    <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
+                      Hobbies
+                    </p>
+                    <TagList items={detail.profile.hobbies} />
+                  </div>
+                  <div>
+                    <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
+                      Partner Preferences
+                    </p>
+                    <TagList items={detail.profile.partnerPreferences} />
+                  </div>
+                  <div>
+                    <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
+                      Negative Constraints
+                    </p>
+                    <TagList items={detail.profile.negativeConstraints} />
+                  </div>
+                  {detail.profile.fridayVibeText && (
+                    <div>
+                      <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
+                        Ideal Friday
+                      </p>
+                      <p className="text-xs leading-relaxed text-slate-300">
+                        {detail.profile.fridayVibeText}
+                      </p>
+                    </div>
+                  )}
+                  {detail.profile.vibeFocusText && (
+                    <div>
+                      <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
+                        Experience vs company
+                      </p>
+                      <p className="text-xs leading-relaxed text-slate-300">
+                        {detail.profile.vibeFocusText}
+                      </p>
+                    </div>
+                  )}
+                </Section>
+              )}
+
+              {/* Profiler answers — the icebreaker fuel */}
+              {detail.profilerAnswers && detail.profilerAnswers.length > 0 && (
+                <Section title={`Profiler answers (${detail.profilerAnswers.length})`}>
+                  <div className="space-y-2">
+                    {detail.profilerAnswers.map((a) => (
+                      <div key={a.questionId} className="text-xs">
+                        <span className="font-mono text-[11px] text-slate-500">
+                          {a.questionId}
+                        </span>
+                        <p
+                          className={
+                            a.skipped ? "text-slate-500 italic" : "font-medium text-slate-200"
+                          }
+                        >
+                          {a.skipped ? "skipped" : (a.answerText ?? "—")}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </Section>
               )}
 
               {/* Chat history preview */}
@@ -258,6 +600,19 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
           )}
         </div>
       </aside>
+
+      {lightbox && (
+        <div
+          onClick={() => setLightbox(null)}
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-[#121316]/90 p-6 backdrop-blur-xl"
+        >
+          <AuthedImage
+            mediaType="photo"
+            refKey={lightbox}
+            className="max-h-[90vh] max-w-[90vw] rounded-2xl object-contain shadow-2xl ring-1 ring-white/10"
+          />
+        </div>
+      )}
     </>
   );
 }

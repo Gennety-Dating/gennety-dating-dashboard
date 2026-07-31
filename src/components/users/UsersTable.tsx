@@ -12,11 +12,40 @@ const STATUS_STYLES: Record<string, string> = {
   paused: "bg-[#17181c] text-slate-400 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]",
 };
 
+const VERIFICATION_STYLES: Record<string, string> = {
+  verified: "bg-emerald-500/15 text-emerald-300",
+  rejected: "bg-rose-500/15 text-rose-300",
+  pending_review: "bg-amber-500/15 text-amber-300",
+  pending: "bg-sky-500/15 text-sky-300",
+};
+
 const STEP_STYLES: Record<string, string> = {
   completed: "bg-white/15 text-white [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.25)]",
   conversational: "bg-slate-200/15 text-slate-200 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]",
   language: "bg-[#17181c] text-slate-400 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]",
 };
+
+/**
+ * Elo → the 0..100 attractiveness the vision pass actually produced.
+ *
+ * The seed maps 0..100 onto Elo 200..800 at 6 Elo per point, so the raw Elo is
+ * reversible — and far more legible than a four-digit rating in a table. An
+ * unseeded profile sits at the 500 default, which is NOT a score: showing it as
+ * one would invent a measurement that was never taken.
+ */
+function Attractiveness({ profile }: { profile: UserListItem["profile"] }) {
+  const elo = profile?.eloScore;
+  if (typeof elo !== "number" || !profile?.eloSeededAt) {
+    return <span className="text-[11px] font-medium text-slate-500">—</span>;
+  }
+  const score = Math.round(Math.min(Math.max((elo - 200) / 6, 0), 100));
+  return (
+    <span className="font-bold text-white">
+      {score}
+      <span className="ml-1 text-[10px] font-medium text-slate-500">({elo})</span>
+    </span>
+  );
+}
 
 function Pill({ text, styles }: { text: string; styles: Record<string, string> }) {
   const cls = styles[text] ?? "bg-[#17181c] text-slate-300 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]";
@@ -52,7 +81,11 @@ export default function UsersTable({ users, loading, onRowClick }: Props) {
             <tr className="text-left text-[11px] font-bold tracking-wider text-slate-400 uppercase">
               <th className="px-6 py-4">Name</th>
               <th className="px-6 py-4">Gender</th>
-              <th className="px-6 py-4">Preference</th>
+              <th className="px-6 py-4">City</th>
+              <th className="px-6 py-4" title="Seeded from the AI vision pass at verification; drives V_league">
+                Attractiveness
+              </th>
+              <th className="px-6 py-4">Verified</th>
               <th className="px-6 py-4">Onboarding</th>
               <th className="px-6 py-4">Status</th>
               <th className="px-6 py-4">Registered</th>
@@ -62,7 +95,7 @@ export default function UsersTable({ users, loading, onRowClick }: Props) {
             {loading &&
               Array.from({ length: 8 }).map((_, i) => (
                 <tr key={`skel-${i}`}>
-                  {Array.from({ length: 6 }).map((_, j) => (
+                  {Array.from({ length: 8 }).map((_, j) => (
                     <td key={j} className="px-6 py-4">
                       <div className="h-3.5 w-24 animate-pulse rounded-xl bg-slate-800/50" />
                     </td>
@@ -72,7 +105,7 @@ export default function UsersTable({ users, loading, onRowClick }: Props) {
 
             {!loading && users.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-6 py-12 text-center text-xs font-medium text-slate-500">
+                <td colSpan={8} className="px-6 py-12 text-center text-xs font-medium text-slate-500">
                   No users found.
                 </td>
               </tr>
@@ -96,8 +129,14 @@ export default function UsersTable({ users, loading, onRowClick }: Props) {
                   <td className="px-6 py-4 capitalize font-medium text-slate-300">
                     {u.gender ?? "—"}
                   </td>
-                  <td className="px-6 py-4 capitalize font-medium text-slate-300">
-                    {u.preference ?? "—"}
+                  <td className="px-6 py-4 font-medium text-slate-300">
+                    {u.profile?.homeCity ?? "—"}
+                  </td>
+                  <td className="px-6 py-4">
+                    <Attractiveness profile={u.profile} />
+                  </td>
+                  <td className="px-6 py-4">
+                    <Pill text={u.verificationStatus ?? "—"} styles={VERIFICATION_STYLES} />
                   </td>
                   <td className="px-6 py-4">
                     <Pill text={u.onboardingStep} styles={STEP_STYLES} />

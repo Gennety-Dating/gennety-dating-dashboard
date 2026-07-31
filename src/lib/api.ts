@@ -214,11 +214,56 @@ export interface UserProfile {
   ageRangeMin: number | null;
   ageRangeMax: number | null;
   photos: string[];
+  /**
+   * Face-match score per photo, strictly 1:1 with `photos` — `photos[i]` was
+   * scored `photoFaceScores[i]` against the liveness selfie.
+   */
+  photoFaceScores?: number[];
+  /**
+   * The attractiveness league. Seeded at verification from the AI vision pass
+   * (0..100 → Elo 200..800) and read by the match engine's `V_league`
+   * multiplier, so this is the single number that decides who a user is shown
+   * to. 500 is the un-seeded default.
+   */
+  eloScore?: number;
+  eloMatchesPlayed?: number;
+  eloSeededAt?: string | null;
+  homeCity?: string | null;
+  homeCityKey?: string | null;
+}
+
+/** Everything `/admin/users/:id` adds on top of the list payload. */
+export interface UserProfileDetail extends UserProfile {
+  ethnicity?: string | null;
+  /** Per-photo audit behind `eloScore` — the vision model's own breakdown. */
+  eloSeedDetails?: unknown;
+  matchRadius?: string | null;
+  timeZone?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  lastMatchedAt?: string | null;
+  standbyCount?: number;
+  missedWeeks?: number;
+  lastMissedAt?: string | null;
+  silentIgnoreCount?: number;
+  /** True while the profile is withheld from the pool pending a re-embed. */
+  embeddingDirty?: boolean;
+  embeddingDirtyAt?: string | null;
+  fridayVibeText?: string | null;
+  vibeFocusText?: string | null;
+  energyAxis?: number | null;
+  orientationAxis?: number | null;
+  socialRole?: string | null;
+  anchorTags?: string[];
+  appearanceTags?: unknown;
+  typeRadarCompletedAt?: string | null;
+  updatedAt?: string | null;
 }
 
 export interface UserListItem {
   id: string;
   telegramId: string;
+  telegramUsername?: string | null;
   firstName: string;
   surname: string | null;
   age: number | null;
@@ -226,12 +271,43 @@ export interface UserListItem {
   preference: string | null;
   major: string | null;
   language: string | null;
+  platform?: string;
   status: string;
   onboardingStep: string;
+  registrationTrack?: string | null;
   universityDomain: string | null;
   email: string | null;
   createdAt: string;
+  lastMessageAt?: string | null;
+  verificationStatus?: string;
+  verifiedAt?: string | null;
+  verifiedSelfiePath?: string | null;
+  faceMatchScore?: number | null;
+  faceMatchedAt?: string | null;
   profile: UserProfile | null;
+}
+
+/** One pairing this user has been in, either side. */
+export interface UserMatchRow {
+  id: string;
+  status: string;
+  source: string | null;
+  createdAt: string;
+  agreedTime: string | null;
+  venueName: string | null;
+  synergyScore: number | null;
+  partnerId: string | null;
+  partnerName: string | null;
+  /** `null` = never answered — the difference between a pass and a ghost. */
+  myDecision: boolean | null;
+  partnerDecision: boolean | null;
+}
+
+export interface UserProfilerAnswer {
+  questionId: string;
+  priority: string;
+  answerText: string | null;
+  skipped: boolean;
 }
 
 export interface UsersListResponse {
@@ -250,6 +326,23 @@ export interface ChatMessage {
 
 export interface UserDetail extends UserListItem {
   messageHistory: ChatMessage[] | null;
+  profile: UserProfileDetail | null;
+  phone?: string | null;
+  phoneVerifiedAt?: string | null;
+  isEmailVerified?: boolean;
+  verificationSkippedAt?: string | null;
+  theme?: string | null;
+  researchOptIn?: boolean;
+  termsAcceptedAt?: string | null;
+  aiMemoryExportPreference?: string | null;
+  referralSource?: string | null;
+  ticketBalance?: number;
+  premiumUntil?: string | null;
+  premiumProvider?: string | null;
+  strikes?: number;
+  suspendedUntil?: string | null;
+  matches?: UserMatchRow[];
+  profilerAnswers?: UserProfilerAnswer[];
 }
 
 // ── Conversation viewer ─────────────────────────────────────────
@@ -301,6 +394,23 @@ export interface DialogAction {
   webApp?: string;
 }
 
+/**
+ * An attachment the transcript can actually render.
+ *
+ * `ref` is a Telegram `file_id` streamed through `GET /admin/media?type=
+ * telegram` — a different media type from the Aether `image` below (a Supabase
+ * object path), which is why it gets its own field. Moving formats (video,
+ * video note, animation, sticker) carry their POSTER frame, since the proxy
+ * streams images. `ref` is absent when Telegram gave us nothing renderable — a
+ * voice note, a thumbnail-less document — and the row is still worth showing
+ * as a labelled placeholder.
+ */
+export interface DialogMedia {
+  type: "telegram";
+  kind: string;
+  ref?: string;
+}
+
 export interface DialogMessage {
   id: string;
   source: DialogSource;
@@ -317,6 +427,7 @@ export interface DialogMessage {
   kind?: string;
   surface?: string | null;
   actions?: DialogAction[] | null;
+  media?: DialogMedia[] | null;
   matchId?: string | null;
 }
 
@@ -481,6 +592,31 @@ export interface WeeklyMatchesData {
 
 // ── Fetcher ─────────────────────────────────────────────────────
 
+/**
+ * When the analytics data on screen was actually computed.
+ *
+ * The backend serves the heavy endpoints from a cache with TTLs up to 30
+ * minutes, so "the page just loaded" and "these numbers are current" are two
+ * different claims. It reports the real generation time on every cached
+ * response (`X-Data-Generated-At`), and the last one seen is recorded here for
+ * the header to show — without threading a return shape through every caller.
+ */
+let lastGeneratedAt: string | null = null;
+
+export function getDataGeneratedAt(): string | null {
+  return lastGeneratedAt;
+}
+
+/**
+ * Ask the server to bypass its cache for this call.
+ *
+ * A Refresh button that re-serves the same cached payload is worse than none:
+ * it asserts the numbers are current when they may be half an hour old.
+ */
+export function fresh(path: string): string {
+  return path.includes("?") ? `${path}&fresh=1` : `${path}?fresh=1`;
+}
+
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const token = sessionStorage.getItem("admin_api_key");
   if (!token) throw new Error("Not authenticated");
@@ -503,6 +639,11 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
     throw new Error(`API error: ${res.status}`);
   }
 
+  // Exposed via CORS `exposedHeaders`; absent on the uncached endpoints, which
+  // must not clobber a real stamp from a cached one.
+  const generatedAt = res.headers.get("X-Data-Generated-At");
+  if (generatedAt) lastGeneratedAt = generatedAt;
+
   return res.json() as Promise<T>;
 }
 
@@ -522,29 +663,29 @@ export const getWeeklyMatches = (weekOf?: string) =>
     `/admin/analytics/weekly-matches${weekOf ? `?weekOf=${encodeURIComponent(weekOf)}` : ""}`,
   );
 
-export const getAudience = () =>
-  apiFetch<AudienceData>("/admin/analytics/audience");
+export const getAudience = (force = false) =>
+  apiFetch<AudienceData>(force ? fresh("/admin/analytics/audience") : "/admin/analytics/audience");
 
-export const getCities = () =>
-  apiFetch<CitiesData>("/admin/analytics/cities");
+export const getCities = (force = false) =>
+  apiFetch<CitiesData>(force ? fresh("/admin/analytics/cities") : "/admin/analytics/cities");
 
-export const getHeatmap = () =>
-  apiFetch<HeatmapData>("/admin/analytics/audience/heatmap");
+export const getHeatmap = (force = false) =>
+  apiFetch<HeatmapData>(force ? fresh("/admin/analytics/audience/heatmap") : "/admin/analytics/audience/heatmap");
 
-export const getAlgorithm = () =>
-  apiFetch<AlgorithmData>("/admin/analytics/algorithm");
+export const getAlgorithm = (force = false) =>
+  apiFetch<AlgorithmData>(force ? fresh("/admin/analytics/algorithm") : "/admin/analytics/algorithm");
 
-export const getGenderAnalytics = () =>
-  apiFetch<GenderData>("/admin/analytics/gender");
+export const getGenderAnalytics = (force = false) =>
+  apiFetch<GenderData>(force ? fresh("/admin/analytics/gender") : "/admin/analytics/gender");
 
-export const getRetention = () =>
-  apiFetch<RetentionData>("/admin/analytics/retention");
+export const getRetention = (force = false) =>
+  apiFetch<RetentionData>(force ? fresh("/admin/analytics/retention") : "/admin/analytics/retention");
 
-export const getDates = () =>
-  apiFetch<DatesData>("/admin/analytics/dates");
+export const getDates = (force = false) =>
+  apiFetch<DatesData>(force ? fresh("/admin/analytics/dates") : "/admin/analytics/dates");
 
-export const getVerification = () =>
-  apiFetch<VerificationData>("/admin/analytics/verification");
+export const getVerification = (force = false) =>
+  apiFetch<VerificationData>(force ? fresh("/admin/analytics/verification") : "/admin/analytics/verification");
 
 export const getUsers = (limit = 20, offset = 0) =>
   apiFetch<UsersListResponse>(`/admin/users?limit=${limit}&offset=${offset}`);

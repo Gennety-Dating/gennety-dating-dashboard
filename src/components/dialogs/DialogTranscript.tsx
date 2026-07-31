@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import type { DialogDetail, DialogMessage } from "../../lib/api";
+import type { DialogDetail, DialogMedia, DialogMessage, MediaType } from "../../lib/api";
 import AuthedImage from "../AuthedImage";
 
 interface Props {
@@ -29,11 +29,41 @@ const KIND_LABELS: Record<string, string> = {
   text: "text",
 };
 
+/**
+ * What a ref-less attachment gets instead of a thumbnail.
+ *
+ * Some formats simply have no image: a voice note is audio, a document may
+ * ship without a thumbnail. The event is still worth showing — "the bot sent
+ * a voice note here" is exactly the kind of thing this transcript exists to
+ * make visible — so it renders as a labelled chip rather than vanishing.
+ */
+const MEDIA_PLACEHOLDER: Record<string, string> = {
+  voice: "🎙 voice note",
+  document: "📎 file",
+  video: "🎬 video",
+  video_note: "⭕ video note",
+  animation: "🎞 GIF",
+  sticker: "🎨 sticker",
+  photo: "🖼 photo",
+};
+
+/** Formats whose thumbnail is a poster frame, not the media itself. */
+const PLAYABLE_KINDS = new Set(["video", "video_note", "animation"]);
+
 const SOURCE_STYLES: Record<string, string> = {
   agent: "bg-white/10 text-white ring-1 ring-white/20",
   aether: "bg-slate-200/15 text-slate-200 ring-1 ring-white/15",
   timeline: "bg-slate-200/10 text-slate-300 ring-1 ring-white/10",
 };
+
+/** Placeholder captions the backend writes when media carries no caption. */
+const CAPTIONLESS = /^\((photo card|photo album|video|video note \/ кружок|voice note|file)[^)]*\)$/;
+
+/** What the lightbox is showing — the ref alone can't say which proxy to use. */
+interface Lightbox {
+  mediaType: MediaType;
+  ref: string;
+}
 
 function formatTime(iso: string | null): string {
   if (!iso) return "";
@@ -52,9 +82,63 @@ function isInbound(m: DialogMessage): boolean {
   return m.direction === "in";
 }
 
+/**
+ * A caption the backend invented because the media had none is noise once the
+ * media itself is on screen — the picture already says "photo card".
+ */
+function visibleText(m: DialogMessage): string | null {
+  if (!m.text) return null;
+  const hasMedia = (m.media?.length ?? 0) > 0;
+  if (hasMedia && CAPTIONLESS.test(m.text.trim())) return null;
+  return m.text;
+}
+
+function MediaGrid({
+  media,
+  onOpen,
+}: {
+  media: DialogMedia[];
+  onOpen: (lightbox: Lightbox) => void;
+}) {
+  return (
+    <div className="mb-2 flex flex-wrap gap-1.5">
+      {media.map((item, i) =>
+        item.ref ? (
+          <button
+            key={`${item.ref}-${i}`}
+            type="button"
+            onClick={() => onOpen({ mediaType: "telegram", ref: item.ref! })}
+            title={item.kind}
+            className="relative block cursor-zoom-in overflow-hidden rounded-xl ring-1 ring-white/10 transition-all hover:ring-[#9f1239] hover:shadow-[0_0_15px_rgba(159,18,57,0.4)]"
+          >
+            <AuthedImage
+              mediaType="telegram"
+              refKey={item.ref}
+              className="h-40 w-40 object-cover"
+            />
+            {PLAYABLE_KINDS.has(item.kind) && (
+              <span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/25 text-2xl">
+                ▶
+              </span>
+            )}
+          </button>
+        ) : (
+          <span
+            key={`${item.kind}-${i}`}
+            className="rounded-xl bg-white/5 px-3 py-2 text-[11px] font-semibold text-slate-300 ring-1 ring-white/10"
+          >
+            {MEDIA_PLACEHOLDER[item.kind] ?? `📦 ${item.kind}`}
+          </span>
+        ),
+      )}
+    </div>
+  );
+}
+
 export default function DialogTranscript({ dialog }: Props) {
   const [showTechnical, setShowTechnical] = useState(false);
-  const [lightbox, setLightbox] = useState<string | null>(null);
+  const [showProfilePhotos, setShowProfilePhotos] = useState(false);
+  const [lightbox, setLightbox] = useState<Lightbox | null>(null);
 
   const visible = useMemo(
     () => dialog.messages.filter((m) => showTechnical || !m.technical),
@@ -91,16 +175,56 @@ export default function DialogTranscript({ dialog }: Props) {
             {visible.length} of {dialog.messages.length} shown
           </span>
         </div>
-        <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-slate-400 select-none hover:text-slate-300 transition-colors">
-          <input
-            type="checkbox"
-            checked={showTechnical}
-            onChange={(e) => setShowTechnical(e.target.checked)}
-            className="accent-[#9f1239] cursor-pointer rounded"
-          />
-          Show technical ({technicalCount})
-        </label>
+        <div className="flex items-center gap-3">
+          {/*
+            The profile gallery used to be a permanent strip pinned under the
+            transcript, which read as "the registration photos are stuck at the
+            bottom of the chat" — they are not chat messages at all, they are
+            the current contents of `Profile.photos`. It collapses here, out of
+            the message flow, so the chat below is only ever the conversation.
+          */}
+          {dialog.photos.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setShowProfilePhotos((v) => !v)}
+              className="cursor-pointer rounded-lg bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-slate-300 ring-1 ring-white/10 transition-colors hover:text-white"
+            >
+              {showProfilePhotos ? "▾" : "▸"} Profile photos ({dialog.photos.length})
+            </button>
+          )}
+          <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-slate-400 select-none hover:text-slate-300 transition-colors">
+            <input
+              type="checkbox"
+              checked={showTechnical}
+              onChange={(e) => setShowTechnical(e.target.checked)}
+              className="accent-[#9f1239] cursor-pointer rounded"
+            />
+            Show technical ({technicalCount})
+          </label>
+        </div>
       </div>
+
+      {/* Profile photo gallery — the CURRENT profile, not chat history */}
+      {showProfilePhotos && dialog.photos.length > 0 && (
+        <div className="border-b border-white/5 px-1 py-3">
+          <p className="mb-2 text-[10px] font-medium text-slate-500">
+            Current contents of the dating profile — not messages. Sent in chat during
+            onboarding, before the timeline starts recording.
+          </p>
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            {dialog.photos.map((p, i) => (
+              <button
+                key={`${p.ref}-${i}`}
+                type="button"
+                onClick={() => setLightbox({ mediaType: "photo", ref: p.ref })}
+                className="shrink-0 cursor-zoom-in overflow-hidden rounded-xl ring-1 ring-white/10 transition-all hover:ring-[#9f1239] hover:shadow-[0_0_15px_rgba(159,18,57,0.4)]"
+              >
+                <AuthedImage mediaType="photo" refKey={p.ref} className="h-24 w-24 object-cover" />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Transcript */}
       <div className="flex-1 space-y-3.5 overflow-y-auto px-1 py-4">
@@ -144,6 +268,8 @@ export default function DialogTranscript({ dialog }: Props) {
                 ? "bg-white text-slate-900 font-medium [box-shadow:0_4px_12px_rgba(0,0,0,0.3)]"
                 : "bg-[#17181c] text-slate-100 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]";
 
+            const body = visibleText(m);
+
             return (
               <div
                 key={m.id}
@@ -161,10 +287,16 @@ export default function DialogTranscript({ dialog }: Props) {
                     {m.createdAt && <span>• {formatTime(m.createdAt)}</span>}
                   </div>
 
+                  {/* Telegram media, inline and in place */}
+                  {m.media && m.media.length > 0 && (
+                    <MediaGrid media={m.media} onOpen={setLightbox} />
+                  )}
+
+                  {/* Aether chat image (a Supabase path, hence a different proxy type) */}
                   {m.image && (
                     <button
                       type="button"
-                      onClick={() => setLightbox(m.image!.ref)}
+                      onClick={() => setLightbox({ mediaType: "chat", ref: m.image!.ref })}
                       className="mb-2 block overflow-hidden rounded-xl cursor-zoom-in ring-1 ring-white/10 hover:ring-[#9f1239] hover:shadow-[0_0_15px_rgba(159,18,57,0.4)] transition-all"
                     >
                       <AuthedImage
@@ -175,7 +307,7 @@ export default function DialogTranscript({ dialog }: Props) {
                     </button>
                   )}
 
-                  {m.text && <div className="whitespace-pre-wrap">{m.text}</div>}
+                  {body && <div className="whitespace-pre-wrap">{body}</div>}
 
                   {/* Buttons on offer with this message */}
                   {m.actions && m.actions.length > 0 && (
@@ -216,35 +348,14 @@ export default function DialogTranscript({ dialog }: Props) {
         )}
       </div>
 
-      {/* Profile photos gallery */}
-      {dialog.photos.length > 0 && (
-        <div className="border-t border-white/5 px-1 pt-3.5">
-          <p className="mb-2 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-            Profile photos ({dialog.photos.length})
-          </p>
-          <div className="flex gap-2 overflow-x-auto pb-1">
-            {dialog.photos.map((p, i) => (
-              <button
-                key={`${p.ref}-${i}`}
-                type="button"
-                onClick={() => setLightbox(p.ref)}
-                className="cursor-zoom-in overflow-hidden rounded-xl ring-1 ring-white/10 transition-all hover:ring-[#9f1239] hover:shadow-[0_0_15px_rgba(159,18,57,0.4)] hover:scale-105"
-              >
-                <AuthedImage mediaType="photo" refKey={p.ref} className="h-16 w-16 object-cover" />
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
       {lightbox && (
         <div
           onClick={() => setLightbox(null)}
           className="fixed inset-0 z-[60] flex items-center justify-center bg-[#121316]/90 p-6 backdrop-blur-xl"
         >
           <AuthedImage
-            mediaType="photo"
-            refKey={lightbox}
+            mediaType={lightbox.mediaType}
+            refKey={lightbox.ref}
             className="max-h-[90vh] max-w-[90vw] rounded-2xl object-contain shadow-2xl ring-1 ring-white/10"
           />
         </div>

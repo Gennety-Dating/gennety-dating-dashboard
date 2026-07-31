@@ -1,14 +1,26 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { getUserConversation, type UserConversation } from "../lib/api";
-import ConversationView from "../components/users/ConversationView";
+import { getDialog, type DialogDetail } from "../lib/api";
+import DialogTranscript from "../components/dialogs/DialogTranscript";
 
+/**
+ * The full conversation for one user, reached from the Users table.
+ *
+ * Deliberately the SAME reader as the Dialogs page (`GET /admin/dialogs/:id` +
+ * `DialogTranscript`), not the older `/admin/users/:id/conversation`. That
+ * endpoint merges only two of the three stores — it cannot see `chat_events`,
+ * which is where every message the bot sends from its non-agent call sites
+ * lives, along with the buttons offered, the taps, the Mini App actions and
+ * the media. Keeping two readers meant the same conversation looked different
+ * depending on which page you opened it from, and the one linked as "full"
+ * was the emptier of the two.
+ */
 export default function UserConversationPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [result, setResult] = useState<{
     id: string;
-    data: UserConversation | null;
+    data: DialogDetail | null;
     error: string;
   } | null>(null);
 
@@ -22,7 +34,7 @@ export default function UserConversationPage() {
     if (!id) return;
     let cancelled = false;
 
-    getUserConversation(id)
+    getDialog(id, { limit: 500 })
       .then((d) => {
         if (!cancelled) setResult({ id, data: d, error: "" });
       })
@@ -41,7 +53,9 @@ export default function UserConversationPage() {
     };
   }, [id, navigate]);
 
-  const title = data?.displayName ?? (data ? `tg:${data.telegramId}` : "Conversation");
+  const participant = data?.participant;
+  const title =
+    participant?.displayName ?? (participant ? `tg:${participant.telegramId}` : "Conversation");
 
   return (
     <div className="flex h-screen flex-col bg-[#121316]">
@@ -54,8 +68,11 @@ export default function UserConversationPage() {
         </Link>
         <div className="min-w-0">
           <h1 className="truncate text-base font-extrabold tracking-tight text-white">{title}</h1>
-          {data && (
-            <p className="truncate text-xs font-medium text-rose-200/70">Telegram ID: {data.telegramId}</p>
+          {participant && (
+            <p className="truncate text-xs font-medium text-rose-200/70">
+              Telegram ID: {participant.telegramId}
+              {participant.telegramUsername ? ` · @${participant.telegramUsername}` : ""}
+            </p>
           )}
         </div>
       </header>
@@ -73,7 +90,7 @@ export default function UserConversationPage() {
           </div>
         )}
 
-        {data && !loading && <ConversationView conversation={data} />}
+        {data && !loading && <DialogTranscript dialog={data} />}
       </main>
     </div>
   );

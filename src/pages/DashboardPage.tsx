@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "../components/Logo";
+import DataFreshness from "../components/DataFreshness";
 import {
   getDemographics,
   getFunnel,
@@ -26,6 +27,7 @@ import {
   type RetentionData,
   type DatesData,
   type VerificationData,
+  getDataGeneratedAt,
 } from "../lib/api";
 import { clearApiKey } from "../lib/auth";
 import DemographicsSection from "../components/DemographicsSection";
@@ -122,9 +124,18 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
+  /**
+   * Bumped by Refresh. The analytics endpoints are served from a server-side
+   * cache with TTLs up to 30 minutes, so re-running the same requests would
+   * hand back the same numbers — `force` makes them actually recompute.
+   */
+  const [reloadToken, setReloadToken] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
+  const [generatedAt, setGeneratedAt] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
+    const force = reloadToken > 0;
 
     async function load() {
       try {
@@ -149,14 +160,14 @@ export default function DashboardPage() {
           getFunnel(),
           getMatches(),
           getReportsStats(),
-          getAudience(),
-          getCities().catch(() => null),
-          getHeatmap().catch(() => null),
-          getAlgorithm(),
-          getGenderAnalytics(),
-          getRetention(),
-          getDates(),
-          getVerification(),
+          getAudience(force),
+          getCities(force).catch(() => null),
+          getHeatmap(force).catch(() => null),
+          getAlgorithm(force),
+          getGenderAnalytics(force),
+          getRetention(force),
+          getDates(force),
+          getVerification(force),
         ]);
         if (!cancelled) {
           setData({
@@ -173,7 +184,9 @@ export default function DashboardPage() {
             dates,
             verification,
           });
+          setGeneratedAt(getDataGeneratedAt());
           setLoading(false);
+          setRefreshing(false);
         }
       } catch (err) {
         if (!cancelled) {
@@ -184,6 +197,7 @@ export default function DashboardPage() {
           }
           setError(msg);
           setLoading(false);
+          setRefreshing(false);
         }
       }
     }
@@ -192,7 +206,7 @@ export default function DashboardPage() {
     return () => {
       cancelled = true;
     };
-  }, [navigate]);
+  }, [navigate, reloadToken]);
 
   function handleLogout() {
     clearApiKey();
@@ -245,6 +259,14 @@ export default function DashboardPage() {
         </div>
 
         <div className="flex items-center gap-3">
+          <DataFreshness
+            generatedAt={generatedAt}
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+              setReloadToken((n) => n + 1);
+            }}
+          />
           <nav className="flex items-center gap-1.5 rounded-2xl bg-[#17181c] p-1.5 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
             <Link
               to="/"
