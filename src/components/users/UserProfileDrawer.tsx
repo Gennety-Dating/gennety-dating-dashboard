@@ -219,15 +219,22 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
     if (!userId) return;
     let cancel = false;
     setLoading(true);
-    getUserDetail(userId).then((res: any) => {
-      if (cancel) return;
-      if (res.data) {
-        setResult({ userId, detail: res.data, error: "" });
-      } else {
-        setResult({ userId, detail: null, error: res.error ?? "Failed to load user" });
-      }
-      setLoading(false);
-    });
+    // `apiFetch` resolves to the payload itself and THROWS on failure — it has
+    // no `{ data, error }` envelope. `/admin/users/:id` answers with the user
+    // object flat, so the old `res.data` check was never true and every
+    // successful load reported "Failed to load user".
+    getUserDetail(userId)
+      .then((detail) => {
+        if (cancel) return;
+        setResult({ userId, detail, error: "" });
+        setLoading(false);
+      })
+      .catch((err: unknown) => {
+        if (cancel) return;
+        const msg = err instanceof Error ? err.message : "Failed to load user";
+        setResult({ userId, detail: null, error: msg });
+        setLoading(false);
+      });
     return () => {
       cancel = true;
     };
