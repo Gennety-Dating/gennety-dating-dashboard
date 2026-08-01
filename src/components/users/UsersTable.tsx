@@ -75,6 +75,26 @@ function displayName(u: UserListItem): string {
   return parts.length > 0 ? parts.join(" ") : `tg:${u.telegramId}`;
 }
 
+/**
+ * Lifetime spend. A user who has never paid renders as a muted dash rather
+ * than `$0.00`, so "never bought anything" stays visually distinct from a
+ * genuine zero-value row.
+ */
+function Spent({ summary }: { summary: UserListItem["purchaseSummary"] }) {
+  if (!summary || summary.count === 0) {
+    return <span className="font-medium text-slate-600">—</span>;
+  }
+  return (
+    <div>
+      <div className="font-bold text-white">${(summary.usdCents / 100).toFixed(2)}</div>
+      <div className="text-[11px] font-medium text-slate-500">
+        {summary.count} purchase{summary.count === 1 ? "" : "s"}
+        {summary.refundedCount > 0 ? ` · ${summary.refundedCount} refunded` : ""}
+      </div>
+    </div>
+  );
+}
+
 export default function UsersTable({ users, loading, onRowClick }: Props) {
   return (
     <div className="glass-card-borderless overflow-hidden rounded-3xl">
@@ -91,6 +111,12 @@ export default function UsersTable({ users, loading, onRowClick }: Props) {
               <th className="px-6 py-4">Verified</th>
               <th className="px-6 py-4">Onboarding</th>
               <th className="px-6 py-4">Status</th>
+              <th
+                className="px-6 py-4"
+                title="Everything this user has ever paid for. Telegram Stars are converted at the documented $0.02/⭐ ticket rate, so the dollar figure is an estimate."
+              >
+                Spent
+              </th>
               <th className="px-6 py-4">Registered</th>
             </tr>
           </thead>
@@ -98,7 +124,7 @@ export default function UsersTable({ users, loading, onRowClick }: Props) {
             {loading &&
               Array.from({ length: 8 }).map((_, i) => (
                 <tr key={`skel-${i}`}>
-                  {Array.from({ length: 8 }).map((_, j) => (
+                  {Array.from({ length: 9 }).map((_, j) => (
                     <td key={j} className="px-6 py-4">
                       <div className="h-3.5 w-24 animate-pulse rounded-xl bg-slate-800/50" />
                     </td>
@@ -108,7 +134,7 @@ export default function UsersTable({ users, loading, onRowClick }: Props) {
 
             {!loading && users.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-6 py-12 text-center text-xs font-medium text-slate-500">
+                <td colSpan={9} className="px-6 py-12 text-center text-xs font-medium text-slate-500">
                   No users found.
                 </td>
               </tr>
@@ -146,6 +172,9 @@ export default function UsersTable({ users, loading, onRowClick }: Props) {
                   </td>
                   <td className="px-6 py-4">
                     <Pill text={u.status} styles={STATUS_STYLES} />
+                  </td>
+                  <td className="px-6 py-4">
+                    <Spent summary={u.purchaseSummary} />
                   </td>
                   <td className="px-6 py-4 font-medium text-slate-400">
                     {formatDate(u.createdAt)}

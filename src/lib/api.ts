@@ -285,6 +285,83 @@ export interface UserListItem {
   faceMatchScore?: number | null;
   faceMatchedAt?: string | null;
   profile: UserProfile | null;
+  /** Spend summary, batched server-side for the whole page (no N+1). */
+  purchaseSummary?: UserPurchaseSummary;
+}
+
+// ── Purchases ─────────────────────────────────────────────────
+// Mirrors GET /admin/purchases. The backend unifies four tables (ticket
+// ledger, subscription ledger, rematch purchases, venue-change purchases)
+// into one row shape — see apps/bot/src/services/purchases.ts.
+
+export type PurchaseKind = "tickets" | "date_ticket" | "premium" | "rematch" | "venue_change";
+export type PurchaseStatus = "settled" | "processing" | "refunded" | "refund_failed";
+export type PurchaseProvider = "telegram_stars" | "app_store" | "mock" | "unknown";
+
+/** The payer, inlined on every purchase row so the list needs no second call. */
+export interface PurchasePayer {
+  id: string;
+  firstName: string | null;
+  surname: string | null;
+  age: number | null;
+  gender: string | null;
+  telegramId: string;
+  telegramUsername: string | null;
+  phone: string | null;
+  email: string | null;
+  platform: string;
+  status: string;
+  ticketBalance: number;
+  premiumUntil: string | null;
+  /** A mobile-only account carries a synthetic NEGATIVE Telegram id. */
+  isMobileOnlyId: boolean;
+}
+
+export interface PurchaseRow {
+  id: string;
+  source: string;
+  kind: PurchaseKind;
+  userId: string;
+  provider: PurchaseProvider;
+  status: PurchaseStatus;
+  /** The source table's own status/reason string, unmapped. */
+  rawStatus: string;
+  amountStars: number | null;
+  amountCents: number | null;
+  currency: string | null;
+  /** Exact when the rail reports a price; a Stars estimate otherwise. */
+  usdCents: number | null;
+  amountIsEstimate: boolean;
+  detail: string | null;
+  matchId: string | null;
+  externalPaymentId: string | null;
+  createdAt: string;
+  user: PurchasePayer | null;
+}
+
+export interface PurchaseTotals {
+  count: number;
+  stars: number;
+  usdCents: number;
+  refundedCount: number;
+}
+
+export interface PurchasesResponse {
+  data: PurchaseRow[];
+  total: number;
+  limit: number;
+  offset: number;
+  totals: PurchaseTotals;
+  byKind: Array<{ kind: PurchaseKind; count: number; stars: number; usdCents: number }>;
+}
+
+/** Per-user spend summary carried by the user list and the user card. */
+export interface UserPurchaseSummary {
+  count: number;
+  stars: number;
+  usdCents: number;
+  refundedCount: number;
+  lastPurchaseAt: string | null;
 }
 
 /** One pairing this user has been in, either side. */
@@ -343,6 +420,9 @@ export interface UserDetail extends UserListItem {
   suspendedUntil?: string | null;
   matches?: UserMatchRow[];
   profilerAnswers?: UserProfilerAnswer[];
+  /** Everything this person ever paid for, newest first. */
+  purchases?: PurchaseRow[];
+  purchaseSummary?: UserPurchaseSummary;
 }
 
 // ── Conversation viewer ─────────────────────────────────────────
@@ -689,6 +769,30 @@ export const getVerification = (force = false) =>
 
 export const getUsers = (limit = 20, offset = 0) =>
   apiFetch<UsersListResponse>(`/admin/users?limit=${limit}&offset=${offset}`);
+
+/**
+ * One page of the purchase ledger. Deliberately uncached server-side — a
+ * founder checking whether a payment landed must not be shown a stale answer.
+ */
+export const getPurchases = (params: {
+  limit?: number;
+  offset?: number;
+  kind?: PurchaseKind | "";
+  status?: PurchaseStatus | "";
+  userId?: string;
+  since?: string;
+  until?: string;
+}) => {
+  const query = new URLSearchParams();
+  query.set("limit", String(params.limit ?? 50));
+  query.set("offset", String(params.offset ?? 0));
+  if (params.kind) query.set("kind", params.kind);
+  if (params.status) query.set("status", params.status);
+  if (params.userId) query.set("userId", params.userId);
+  if (params.since) query.set("since", params.since);
+  if (params.until) query.set("until", params.until);
+  return apiFetch<PurchasesResponse>(`/admin/purchases?${query.toString()}`);
+};
 
 export const getUserDetail = (id: string) =>
   apiFetch<UserDetail>(`/admin/users/${encodeURIComponent(id)}`);

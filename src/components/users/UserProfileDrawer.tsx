@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getUserDetail, type UserDetail, type UserMatchRow } from "../../lib/api";
+import {
+  getUserDetail,
+  type PurchaseRow,
+  type UserDetail,
+  type UserMatchRow,
+} from "../../lib/api";
 import { toTagList } from "../../lib/tags";
 import AuthedImage from "../AuthedImage";
 import PsychProfileBlock from "./PsychProfileBlock";
@@ -201,6 +206,59 @@ function MatchRow({ m }: { m: UserMatchRow }) {
         them: {decisionLabel(m.myDecision)} · partner: {decisionLabel(m.partnerDecision)}
         {m.venueName ? ` · ${m.venueName}` : ""}
         {m.agreedTime ? ` · ${formatDate(m.agreedTime)}` : ""}
+      </p>
+    </div>
+  );
+}
+
+const PURCHASE_KIND_LABEL: Record<string, string> = {
+  tickets: "ticket store",
+  date_ticket: "date ticket",
+  premium: "premium",
+  rematch: "rematch",
+  venue_change: "venue change",
+};
+
+/**
+ * One purchase. A Stars-derived dollar figure is marked `≈` because Telegram
+ * publishes no Stars→USD rate; an App Store row carries Apple's real price and
+ * is printed plainly.
+ */
+function PurchaseRowItem({ p }: { p: PurchaseRow }) {
+  const money =
+    p.amountStars != null
+      ? `${p.amountStars} ⭐${p.usdCents != null ? ` (≈ $${(p.usdCents / 100).toFixed(2)})` : ""}`
+      : p.amountCents != null
+        ? `$${(p.amountCents / 100).toFixed(2)}`
+        : "—";
+  return (
+    <div className="rounded-xl bg-[#17181c] px-3.5 py-2.5 ring-1 ring-white/5">
+      <div className="flex flex-wrap items-center gap-2">
+        <Badge text={PURCHASE_KIND_LABEL[p.kind] ?? p.kind} />
+        <span className="text-xs font-semibold text-slate-200">{money}</span>
+        <span
+          className={`text-[11px] font-medium ${
+            p.status === "refunded"
+              ? "text-slate-500 line-through"
+              : p.status === "refund_failed"
+                ? "text-rose-300"
+                : "text-slate-400"
+          }`}
+          title={`source status: ${p.rawStatus}`}
+        >
+          {p.status}
+        </span>
+        <span className="ml-auto text-[10px] font-medium text-slate-500">
+          {formatDate(p.createdAt)}
+        </span>
+      </div>
+      <p className="mt-1 text-[11px] font-medium text-slate-400">
+        {p.detail ? `${p.detail} · ` : ""}
+        {p.provider === "app_store"
+          ? "App Store"
+          : p.provider === "mock"
+            ? "mock (no real money)"
+            : "Telegram Stars"}
       </p>
     </div>
   );
@@ -517,6 +575,51 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
                       <MatchRow key={m.id} m={m} />
                     ))}
                   </div>
+                )}
+              </Section>
+
+              {/* Purchases — everything this person has ever paid for */}
+              <Section
+                title={
+                  detail.purchaseSummary
+                    ? `Purchases (${detail.purchaseSummary.count})`
+                    : "Purchases"
+                }
+              >
+                {!detail.purchases ? (
+                  // An absent array is not an empty one: a server predating this
+                  // field would otherwise read as "never paid a cent", which is a
+                  // claim about the user rather than about the API.
+                  <span className="text-xs font-medium text-slate-500">
+                    Purchase history not available from this server.
+                  </span>
+                ) : detail.purchases.length === 0 ? (
+                  <span className="text-xs font-medium text-slate-500">
+                    Never paid for anything.
+                  </span>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                      <Field
+                        label="Total spent"
+                        value={`$${((detail.purchaseSummary?.usdCents ?? 0) / 100).toFixed(2)}`}
+                      />
+                      <Field label="Stars" value={detail.purchaseSummary?.stars ?? 0} />
+                      <Field
+                        label="Refunded"
+                        value={detail.purchaseSummary?.refundedCount ?? 0}
+                      />
+                      <Field
+                        label="Last purchase"
+                        value={formatDate(detail.purchaseSummary?.lastPurchaseAt)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      {detail.purchases.map((p) => (
+                        <PurchaseRowItem key={p.id} p={p} />
+                      ))}
+                    </div>
+                  </>
                 )}
               </Section>
 

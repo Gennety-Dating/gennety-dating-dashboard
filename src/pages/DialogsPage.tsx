@@ -146,6 +146,12 @@ export default function DialogsPage() {
               Users
             </Link>
             <Link
+              to="/purchases"
+              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
+            >
+              Purchases
+            </Link>
+            <Link
               to="/dialogs"
               className="inner-glow-cherry rounded-xl px-4 py-2 text-xs font-bold tracking-wide text-white"
             >
