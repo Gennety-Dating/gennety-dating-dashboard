@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "../components/Logo";
-import { getUsers, type UserListItem } from "../lib/api";
+import { getAdminStats, getUsers, type AdminStatsData, type UserListItem } from "../lib/api";
 import { clearApiKey } from "../lib/auth";
 import UsersTable from "../components/users/UsersTable";
 import UserProfileDrawer from "../components/users/UserProfileDrawer";
 import SectionHeader from "../components/SectionHeader";
+import HealthSection from "../components/users/HealthSection";
+import HealthTabs, { type HealthTab } from "../components/users/HealthTabs";
 
 const PAGE_SIZE = 20;
 
@@ -19,6 +21,11 @@ export default function UsersPage() {
     error: string;
   } | null>(null);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [healthTab, setHealthTab] = useState<HealthTab>("all");
+  // Тестовые аккаунты по умолчанию скрыты: они портят любую цифру на экране.
+  // API их по умолчанию отдаёт, поэтому флаг всегда шлём явно.
+  const [includeTest, setIncludeTest] = useState(false);
+  const [stats, setStats] = useState<AdminStatsData | null>(null);
 
   const loading = result === null || result.page !== page;
   const users = result?.users ?? [];
@@ -27,8 +34,24 @@ export default function UsersPage() {
 
   useEffect(() => {
     let cancelled = false;
+    getAdminStats()
+      .then((res) => {
+        if (!cancelled) setStats(res);
+      })
+      .catch(() => {
+        // Здоровье базы — дополнение к списку. Если оно не загрузилось,
+        // список должен работать дальше, а не падать целиком.
+        if (!cancelled) setStats(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
-    getUsers(PAGE_SIZE, page * PAGE_SIZE)
+  useEffect(() => {
+    let cancelled = false;
+
+    getUsers(PAGE_SIZE, page * PAGE_SIZE, { health: healthTab, includeTest })
       .then((res) => {
         if (cancelled) return;
         setResult({ page, users: res.data, total: res.total, error: "" });
@@ -46,7 +69,23 @@ export default function UsersPage() {
     return () => {
       cancelled = true;
     };
-  }, [page, navigate]);
+  }, [page, navigate, healthTab, includeTest]);
+
+  // Смена вкладки/чекбокса меняет выборку целиком — остаться на 5-й странице
+  // отфильтрованного списка нельзя, поэтому пагинация сбрасывается вместе с
+  // фильтром (в обработчике, а не в эффекте — иначе лишний каскадный рендер).
+  function handleHealthTabChange(tab: HealthTab) {
+    setHealthTab(tab);
+    setPage(0);
+  }
+
+  function handleIncludeTestChange(next: boolean) {
+    setIncludeTest(next);
+    // Скрыли тестовые, стоя на их вкладке — уводим на «Все», иначе экран
+    // окажется пустым без объяснения.
+    if (!next && healthTab === "test") setHealthTab("all");
+    setPage(0);
+  }
 
   function handleLogout() {
     clearApiKey();
@@ -124,6 +163,16 @@ export default function UsersPage() {
             {error}
           </div>
         )}
+
+        <HealthSection stats={stats} loading={stats === null} />
+
+        <HealthTabs
+          active={healthTab}
+          onChange={handleHealthTabChange}
+          includeTest={includeTest}
+          onIncludeTestChange={handleIncludeTestChange}
+          stats={stats}
+        />
 
         <UsersTable
           users={users}

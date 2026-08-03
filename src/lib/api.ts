@@ -260,6 +260,95 @@ export interface UserProfileDetail extends UserProfile {
   updatedAt?: string | null;
 }
 
+// ── Account health ────────────────────────────────────────────
+// Mirrors apps/bot/src/admin/utils/user-health.ts. The classification is
+// computed server-side and is NOT stored on the user row, so the dashboard
+// must never re-derive it from status/verification — it would drift.
+
+export type UserHealthClass =
+  | "test"
+  | "suspicious"
+  | "stuck_onboarding"
+  | "cold_open_unengaged"
+  | "inactive"
+  | "live"
+  | "other";
+
+export interface UserHealthBadge {
+  classification: UserHealthClass | null;
+  /** For `stuck_onboarding`: the step the user stopped at. */
+  subclass: string | null;
+  matchmaking_eligible: boolean;
+}
+
+export interface UserHealthSummary {
+  byClass: Record<UserHealthClass, number>;
+  matchmaking_eligible: { count: number; of_total: number };
+  total: number;
+  /** Real users = total minus test accounts. Every conversion divides by this. */
+  real: number;
+  verified_real: number;
+  scanned: number;
+  truncated: boolean;
+  config: {
+    inactive_days: number;
+    cold_open_hours: number;
+    suspicious_min_messages: number;
+    suspicious_max_response_sec: number;
+    bot_batch_window_min: number;
+    bot_batch_min_users: number;
+  };
+}
+
+export interface OnboardingHealthFunnel {
+  registered_real: number;
+  gave_consent: number;
+  completed_onboarding: number;
+  active_verified: number;
+  conversion_consent_to_active_pct: number | null;
+  conversion_registered_to_active_pct: number | null;
+}
+
+/** Mirrors GET /admin/stats. */
+export interface AdminStatsData {
+  users: { total: number; byStatus: Record<string, number> };
+  onboarding: { byStep: Record<string, number> };
+  verification: { byStatus: Record<string, number> };
+  matches: { total: number; byStatus: Record<string, number>; live: number };
+  reports: { total: number; byTier: Record<string, number>; unreviewedTier3: number };
+  userHealth: UserHealthSummary;
+  funnel: OnboardingHealthFunnel;
+  generatedAt: string;
+}
+
+/** One account's classification plus WHICH rule fired. */
+export interface UserHealthDetail {
+  user_id: string;
+  classification: UserHealthClass;
+  subclass: string | null;
+  reason: string;
+  rules_fired: string[];
+  matchmaking_eligible: boolean;
+  user_summary: {
+    first_name: string | null;
+    status: string;
+    onboarding_step: string;
+    verification_status: string;
+    message_count_in: number;
+    created_at: string;
+    last_message_at: string | null;
+    days_since_last_message: number | null;
+  };
+  signals: {
+    photo_count: number;
+    face_match_score: number | null;
+    face_matched_at: string | null;
+    median_response_sec: number | null;
+    response_samples: number;
+    registration_burst_size: number;
+  };
+}
+
 export interface UserListItem {
   id: string;
   telegramId: string;
@@ -287,6 +376,8 @@ export interface UserListItem {
   profile: UserProfile | null;
   /** Spend summary, batched server-side for the whole page (no N+1). */
   purchaseSummary?: UserPurchaseSummary;
+  /** Account-health badge, classified server-side. */
+  health?: UserHealthBadge;
 }
 
 // ── Purchases ─────────────────────────────────────────────────
@@ -767,8 +858,28 @@ export const getDates = (force = false) =>
 export const getVerification = (force = false) =>
   apiFetch<VerificationData>(force ? fresh("/admin/analytics/verification") : "/admin/analytics/verification");
 
-export const getUsers = (limit = 20, offset = 0) =>
-  apiFetch<UsersListResponse>(`/admin/users?limit=${limit}&offset=${offset}`);
+export const getUsers = (
+  limit = 20,
+  offset = 0,
+  opts: { health?: UserHealthClass | "all"; includeTest?: boolean } = {},
+) => {
+  const params = new URLSearchParams({ limit: String(limit), offset: String(offset) });
+  if (opts.health && opts.health !== "all") params.set("health", opts.health);
+  // The API defaults to including test accounts; the dashboard defaults to
+  // hiding them, so the flag is sent explicitly rather than assumed.
+  if (opts.includeTest === false) params.set("includeTest", "false");
+  return apiFetch<UsersListResponse>(`/admin/users?${params.toString()}`);
+};
+
+/**
+ * Headline counters + account health + the onboarding funnel, in one call.
+ * Uncached server-side, so it always reflects the database right now.
+ */
+export const getAdminStats = () => apiFetch<AdminStatsData>("/admin/stats");
+
+/** One account's health verdict, with the rules that produced it. */
+export const getUserHealth = (userId: string) =>
+  apiFetch<UserHealthDetail>(`/admin/users/${userId}/health`);
 
 /**
  * One page of the purchase ledger. Deliberately uncached server-side — a

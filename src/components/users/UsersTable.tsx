@@ -1,4 +1,5 @@
 import type { UserListItem } from "../../lib/api";
+import { HEALTH_LABELS, HEALTH_STYLES } from "../../lib/health";
 
 interface Props {
   users: UserListItem[];
@@ -95,6 +96,27 @@ function Spent({ summary }: { summary: UserListItem["purchaseSummary"] }) {
   );
 }
 
+/**
+ * Класс здоровья строкой. Приходит с сервера уже посчитанным — выводить его
+ * из status/verification на клиенте нельзя, разойдётся с /admin/stats.
+ */
+function HealthBadge({ health }: { health: UserListItem["health"] }) {
+  const cls = health?.classification;
+  if (!cls) return <span className="font-medium text-slate-600">—</span>;
+  return (
+    <div>
+      <span
+        className={`inline-flex items-center rounded-full px-3 py-0.5 text-[11px] font-bold ${HEALTH_STYLES[cls]}`}
+      >
+        {HEALTH_LABELS[cls]}
+      </span>
+      {health?.subclass && (
+        <div className="mt-1 text-[10px] font-medium text-slate-500">{health.subclass}</div>
+      )}
+    </div>
+  );
+}
+
 export default function UsersTable({ users, loading, onRowClick }: Props) {
   return (
     <div className="glass-card-borderless overflow-hidden rounded-3xl">
@@ -113,6 +135,12 @@ export default function UsersTable({ users, loading, onRowClick }: Props) {
               <th className="px-6 py-4">Status</th>
               <th
                 className="px-6 py-4"
+                title="Классификация аккаунта: живой / застрял / зашёл и ушёл / остыл / подозрительный / тестовый. Считается сервером, только для чтения."
+              >
+                Health
+              </th>
+              <th
+                className="px-6 py-4"
                 title="Everything this user has ever paid for. Telegram Stars are converted at the documented $0.02/⭐ ticket rate, so the dollar figure is an estimate."
               >
                 Spent
@@ -124,7 +152,7 @@ export default function UsersTable({ users, loading, onRowClick }: Props) {
             {loading &&
               Array.from({ length: 8 }).map((_, i) => (
                 <tr key={`skel-${i}`}>
-                  {Array.from({ length: 9 }).map((_, j) => (
+                  {Array.from({ length: 10 }).map((_, j) => (
                     <td key={j} className="px-6 py-4">
                       <div className="h-3.5 w-24 animate-pulse rounded-xl bg-slate-800/50" />
                     </td>
@@ -134,7 +162,7 @@ export default function UsersTable({ users, loading, onRowClick }: Props) {
 
             {!loading && users.length === 0 && (
               <tr>
-                <td colSpan={9} className="px-6 py-12 text-center text-xs font-medium text-slate-500">
+                <td colSpan={10} className="px-6 py-12 text-center text-xs font-medium text-slate-500">
                   No users found.
                 </td>
               </tr>
@@ -172,6 +200,9 @@ export default function UsersTable({ users, loading, onRowClick }: Props) {
                   </td>
                   <td className="px-6 py-4">
                     <Pill text={u.status} styles={STATUS_STYLES} />
+                  </td>
+                  <td className="px-6 py-4">
+                    <HealthBadge health={u.health} />
                   </td>
                   <td className="px-6 py-4">
                     <Spent summary={u.purchaseSummary} />
