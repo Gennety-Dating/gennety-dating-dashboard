@@ -446,6 +446,105 @@ export interface PurchasesResponse {
   byKind: Array<{ kind: PurchaseKind; count: number; stars: number; usdCents: number }>;
 }
 
+// ── Monetization (GET /admin/analytics/monetization) ────────────
+// The conversion view. NOT the same thing as /admin/purchases: that one is
+// the LEDGER (which payments happened), this one is the RATE (what share of
+// people pay). The ledger has no denominator; this has no individual rows.
+//
+// Every denominator here excludes test/synthetic accounts, so `registeredReal`
+// is deliberately smaller than `AdminStatsData.users.total` — mirrors
+// apps/bot/src/admin/utils/monetization.ts.
+
+/** One conversion: payers / base. `pct` is null when the base is empty. */
+export interface ConversionSlice {
+  payers: number;
+  base: number;
+  pct: number | null;
+}
+
+export interface MonetizationRevenue {
+  allTimeUsdCents: number;
+  thisWeekUsdCents: number;
+  lastWeekUsdCents: number;
+  growthPct: number | null;
+  stars: number;
+  /** Revenue per real user. */
+  arpuUsdCents: number | null;
+  /** Revenue per paying user. */
+  arppuUsdCents: number | null;
+  avgOrderUsdCents: number | null;
+  /** Money that went through test accounts and is NOT in the figures above. */
+  excludedTestUsdCents: number;
+  /**
+   * Always true — Telegram publishes no Stars→USD rate, so dollar figures come
+   * from a documented constant. The UI is required to say so on screen.
+   */
+  usdIsEstimate: true;
+}
+
+export interface MonetizationKindRow {
+  kind: PurchaseKind;
+  /** Distinct payers, not rows. */
+  payers: number;
+  purchases: number;
+  usdCents: number;
+}
+
+export interface MonetizationCohortRow {
+  /** ISO date of the Monday of the signup week. */
+  weekStart: string;
+  size: number;
+  payers: number;
+  payingRatePct: number | null;
+  /** Too young to have converted yet — a low % here is absence, not a result. */
+  censored: boolean;
+}
+
+export interface MonetizationSegmentRow {
+  key: string;
+  users: number;
+  payers: number;
+  payingRatePct: number | null;
+  usdCents: number;
+}
+
+export interface MonetizationData {
+  headline: {
+    payers: number;
+    registeredReal: number;
+    payingRatePct: number | null;
+    ofRegistered: ConversionSlice;
+    ofActivated: ConversionSlice;
+    ofPaywallReached: ConversionSlice;
+    newPayersThisWeek: number;
+    newPayersLastWeek: number;
+  };
+  revenue: MonetizationRevenue;
+  byKind: MonetizationKindRow[];
+  cohorts: MonetizationCohortRow[];
+  segments: {
+    byChannel: MonetizationSegmentRow[];
+    byGender: MonetizationSegmentRow[];
+    byCity: MonetizationSegmentRow[];
+    byTrack: MonetizationSegmentRow[];
+  };
+  repeat: {
+    oncePayers: number;
+    repeatPayers: number;
+    repeatRatePct: number | null;
+    purchasesPerPayer: number | null;
+  };
+  timing: {
+    medianDaysToFirstPayment: number | null;
+    p90DaysToFirstPayment: number | null;
+  };
+  /** Paid and got it all back: not payers, but not nobody either. */
+  refundedOnlyPayers: number;
+  excludedTestUsers: number;
+  cohortMaturityDays: number;
+  truncated: boolean;
+}
+
 /** Per-user spend summary carried by the user list and the user card. */
 export interface UserPurchaseSummary {
   count: number;
@@ -857,6 +956,16 @@ export const getDates = (force = false) =>
 
 export const getVerification = (force = false) =>
   apiFetch<VerificationData>(force ? fresh("/admin/analytics/verification") : "/admin/analytics/verification");
+
+/**
+ * Paying-user conversion. Server-cached for 15 minutes like the other
+ * analytics tabs — unlike `/admin/purchases`, which is a ledger and is
+ * deliberately uncached.
+ */
+export const getMonetization = (force = false) =>
+  apiFetch<MonetizationData>(
+    force ? fresh("/admin/analytics/monetization") : "/admin/analytics/monetization",
+  );
 
 export const getUsers = (
   limit = 20,

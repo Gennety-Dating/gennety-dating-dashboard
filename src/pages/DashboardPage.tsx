@@ -15,6 +15,7 @@ import {
   getRetention,
   getDates,
   getVerification,
+  getMonetization,
   type DemographicsData,
   type FunnelData,
   type MatchesData,
@@ -27,6 +28,7 @@ import {
   type RetentionData,
   type DatesData,
   type VerificationData,
+  type MonetizationData,
   getDataGeneratedAt,
 } from "../lib/api";
 import { clearApiKey } from "../lib/auth";
@@ -39,6 +41,7 @@ import CitiesSection from "../components/CitiesSection";
 import AlgorithmSection from "../components/AlgorithmSection";
 import GenderSection from "../components/GenderSection";
 import GrowthSection from "../components/GrowthSection";
+import MonetizationSection from "../components/MonetizationSection";
 import WeeklyMatchesSection from "../components/WeeklyMatchesSection";
 
 type TabKey =
@@ -48,7 +51,8 @@ type TabKey =
   | "cities"
   | "algorithm"
   | "gender"
-  | "growth";
+  | "growth"
+  | "monetization";
 
 interface DashboardState {
   demographics: DemographicsData | null;
@@ -63,6 +67,7 @@ interface DashboardState {
   retention: RetentionData | null;
   dates: DatesData | null;
   verification: VerificationData | null;
+  monetization: MonetizationData | null;
 }
 
 const TABS: Array<{ key: TabKey; label: string; description: string }> = [
@@ -103,6 +108,12 @@ const TABS: Array<{ key: TabKey; label: string; description: string }> = [
     label: "Growth & trust",
     description: "Retention, date quality, verification, reports.",
   },
+  {
+    key: "monetization",
+    label: "Monetization",
+    description:
+      "What share of acquired users pay — and which channel, gender, city and track they come from.",
+  },
 ];
 
 export default function DashboardPage() {
@@ -120,6 +131,7 @@ export default function DashboardPage() {
     retention: null,
     dates: null,
     verification: null,
+    monetization: null,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -155,6 +167,7 @@ export default function DashboardPage() {
           retention,
           dates,
           verification,
+          monetization,
         ] = await Promise.all([
           getDemographics(),
           getFunnel(),
@@ -168,6 +181,9 @@ export default function DashboardPage() {
           getRetention(force),
           getDates(force),
           getVerification(force),
+          // Newest tab: tolerate a server that predates it rather than
+          // blanking the whole dashboard behind one 404.
+          getMonetization(force).catch(() => null),
         ]);
         if (!cancelled) {
           setData({
@@ -183,6 +199,7 @@ export default function DashboardPage() {
             retention,
             dates,
             verification,
+            monetization,
           });
           setGeneratedAt(getDataGeneratedAt());
           setLoading(false);
@@ -384,6 +401,10 @@ export default function DashboardPage() {
 
         {activeTab === "gender" && data.gender && (
           <GenderSection data={data.gender} />
+        )}
+
+        {activeTab === "monetization" && data.monetization && (
+          <MonetizationSection data={data.monetization} />
         )}
 
         {activeTab === "growth" &&
