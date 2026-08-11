@@ -403,9 +403,22 @@ export default function DashboardPage() {
           <GenderSection data={data.gender} />
         )}
 
-        {activeTab === "monetization" && data.monetization && (
-          <MonetizationSection data={data.monetization} />
-        )}
+        {activeTab === "monetization" &&
+          (data.monetization ? (
+            <MonetizationSection data={data.monetization} />
+          ) : (
+            // The dashboard auto-deploys on push while the API is deployed by
+            // hand, so this tab can legitimately land before its endpoint
+            // exists. Say that, rather than render an empty panel — a silently
+            // blank tab is indistinguishable from a broken one.
+            <div className="glass-card-borderless rounded-3xl p-8 text-center">
+              <p className="text-sm font-bold text-white">Monetization is not available yet</p>
+              <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed font-medium text-rose-200/60">
+                The API did not answer <code>/admin/analytics/monetization</code>. This tab ships
+                ahead of the server it reads, so it will fill in on the next backend deploy.
+              </p>
+            </div>
+          ))}
 
         {activeTab === "growth" &&
           data.retention &&
