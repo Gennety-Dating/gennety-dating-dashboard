@@ -117,54 +117,29 @@ export default function AudienceSection({ audience, heatmap }: Props) {
         </ChartCard>
       </div>
 
-      {/* Hobbies + Ethnicity */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <ChartCard
-          title="Top 20 hobbies"
-          description="Counts how many users list each hobby on their profile (case-insensitive, deduplicated by lowercased text)."
-        >
-          <ResponsiveContainer width="100%" height={420}>
-            <BarChart
-              data={audience.topHobbies.slice(0, 20)}
-              layout="vertical"
-              margin={{ left: 90, right: 16, top: 4, bottom: 4 }}
-            >
-              <XAxis type="number" hide />
-              <YAxis
-                dataKey="name"
-                type="category"
-                tick={{ fill: "#94a3b8", fontSize: 11 }}
-                width={85}
-              />
-              <Tooltip contentStyle={TOOLTIP_STYLE} />
-              <Bar dataKey="count" fill="#ec4899" radius={[0, 6, 6, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <ChartCard
-          title="Ethnic composition"
-          description="Free-text `ethnicity` field, normalised to lowercase. Counts may merge with normalisation — minor variants are not yet auto-grouped."
-        >
-          <ResponsiveContainer width="100%" height={420}>
-            <BarChart
-              data={audience.ethnicity.slice(0, 12)}
-              layout="vertical"
-              margin={{ left: 90, right: 16, top: 4, bottom: 4 }}
-            >
-              <XAxis type="number" hide />
-              <YAxis
-                dataKey="name"
-                type="category"
-                tick={{ fill: "#94a3b8", fontSize: 11 }}
-                width={85}
-              />
-              <Tooltip contentStyle={TOOLTIP_STYLE} />
-              <Bar dataKey="count" fill="#10b981" radius={[0, 6, 6, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartCard>
-      </div>
+      {/* Hobbies */}
+      <ChartCard
+        title="Top 20 hobbies"
+        description="Counts how many users list each hobby on their profile (case-insensitive, deduplicated by lowercased text)."
+      >
+        <ResponsiveContainer width="100%" height={420}>
+          <BarChart
+            data={audience.topHobbies.slice(0, 20)}
+            layout="vertical"
+            margin={{ left: 90, right: 16, top: 4, bottom: 4 }}
+          >
+            <XAxis type="number" hide />
+            <YAxis
+              dataKey="name"
+              type="category"
+              tick={{ fill: "#94a3b8", fontSize: 11 }}
+              width={85}
+            />
+            <Tooltip contentStyle={TOOLTIP_STYLE} />
+            <Bar dataKey="count" fill="#ec4899" radius={[0, 6, 6, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </ChartCard>
 
       {/* Psych grid */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">

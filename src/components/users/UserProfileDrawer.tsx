@@ -636,7 +636,7 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
               {/* Profile attributes */}
               {detail.profile && (
                 <Section title="Profile">
-                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                  <div className="grid grid-cols-2 gap-4">
                     <Field
                       label="Height"
                       value={detail.profile.height ? `${detail.profile.height} cm` : "—"}
@@ -649,7 +649,6 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
                           : "—"
                       }
                     />
-                    <Field label="Ethnicity" value={detail.profile.ethnicity ?? "—"} />
                   </div>
                   <div>
                     <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">

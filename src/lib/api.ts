@@ -40,7 +40,6 @@ export interface AudienceData {
   age: Array<{ bucket: string; count: number }>;
   majorClusters: Array<{ cluster: string; count: number }>;
   topHobbies: Array<{ name: string; count: number }>;
-  ethnicity: Array<{ name: string; count: number }>;
   socialEnergy: Array<{ value: string; count: number }>;
   attachmentStyle: Array<{ value: string; count: number }>;
   humorStyle: Array<{ value: string; count: number }>;
@@ -234,7 +233,6 @@ export interface UserProfile {
 
 /** Everything `/admin/users/:id` adds on top of the list payload. */
 export interface UserProfileDetail extends UserProfile {
-  ethnicity?: string | null;
   /** Per-photo audit behind `eloScore` — the vision model's own breakdown. */
   eloSeedDetails?: unknown;
   matchRadius?: string | null;
