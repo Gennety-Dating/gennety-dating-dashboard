@@ -16,6 +16,8 @@ import {
   getDates,
   getVerification,
   getMonetization,
+  getAdminDashboard,
+  type AdminDashboardData,
   type DemographicsData,
   type FunnelData,
   type MatchesData,
@@ -42,9 +44,11 @@ import AlgorithmSection from "../components/AlgorithmSection";
 import GenderSection from "../components/GenderSection";
 import GrowthSection from "../components/GrowthSection";
 import MonetizationSection from "../components/MonetizationSection";
+import CoreMetricsSection from "../components/CoreMetricsSection";
 import WeeklyMatchesSection from "../components/WeeklyMatchesSection";
 
 type TabKey =
+  | "core"
   | "overview"
   | "matches"
   | "audience"
@@ -68,9 +72,16 @@ interface DashboardState {
   dates: DatesData | null;
   verification: VerificationData | null;
   monetization: MonetizationData | null;
+  core: AdminDashboardData | null;
 }
 
 const TABS: Array<{ key: TabKey; label: string; description: string }> = [
+  {
+    key: "core",
+    label: "Core metrics",
+    description:
+      "The daily read: paid dates, net Match → Ticket conversion, gender balance. Test and synthetic accounts are out of every denominator.",
+  },
   {
     key: "overview",
     label: "Overview",
@@ -132,10 +143,11 @@ export default function DashboardPage() {
     dates: null,
     verification: null,
     monetization: null,
+    core: null,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState<TabKey>("overview");
+  const [activeTab, setActiveTab] = useState<TabKey>("core");
   /**
    * Bumped by Refresh. The analytics endpoints are served from a server-side
    * cache with TTLs up to 30 minutes, so re-running the same requests would
@@ -168,6 +180,7 @@ export default function DashboardPage() {
           dates,
           verification,
           monetization,
+          core,
         ] = await Promise.all([
           getDemographics(),
           getFunnel(),
@@ -184,6 +197,10 @@ export default function DashboardPage() {
           // Newest tab: tolerate a server that predates it rather than
           // blanking the whole dashboard behind one 404.
           getMonetization(force).catch(() => null),
+          // Same tolerance, and it earns it: `derived.conversion` is newer
+          // than this bundle's own deploy cadence, so a stale API answers
+          // without those fields (or 404s) and must not take the page down.
+          getAdminDashboard().catch(() => null),
         ]);
         if (!cancelled) {
           setData({
@@ -200,6 +217,7 @@ export default function DashboardPage() {
             dates,
             verification,
             monetization,
+            core,
           });
           setGeneratedAt(getDataGeneratedAt());
           setLoading(false);
@@ -376,6 +394,28 @@ export default function DashboardPage() {
 
       {/* Tab body */}
       <div className="mx-auto max-w-7xl">
+        {activeTab === "core" &&
+          (data.core?.conversion && data.core?.genderRatio ? (
+            <CoreMetricsSection data={data.core} />
+          ) : (
+            // The dashboard auto-deploys on push while the API is deployed by
+            // hand, so this tab can land ahead of the fields it reads. Testing
+            // `conversion` rather than the response itself matters: an older
+            // server answers /admin/dashboard perfectly well, just without
+            // these blocks, and rendering that would throw on undefined.
+            <div className="glass-card-borderless rounded-3xl p-8 text-center">
+              <p className="text-sm font-bold text-white">
+                Core metrics are not available yet
+              </p>
+              <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed font-medium text-rose-200/60">
+                The API answered <code>/admin/dashboard</code> without{" "}
+                <code>conversion</code> / <code>genderRatio</code>. This tab
+                ships ahead of the server it reads, so it will fill in on the
+                next backend deploy.
+              </p>
+            </div>
+          ))}
+
         {activeTab === "overview" && (
           <div className="space-y-10">
             {data.demographics && <DemographicsSection data={data.demographics} />}

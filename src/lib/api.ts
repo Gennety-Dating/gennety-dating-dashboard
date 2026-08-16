@@ -307,6 +307,58 @@ export interface OnboardingHealthFunnel {
   conversion_registered_to_active_pct: number | null;
 }
 
+/**
+ * Net Match → Date Ticket conversion.
+ *
+ * Every field is DERIVED server-side from columns the product already writes
+ * — there is no event table — which is why it is populated across the whole
+ * match history rather than starting on a deploy date.
+ *
+ * Two things a reader has to hold onto:
+ *
+ *  - `null` means "no data" (empty denominator), NOT 0%. A measured zero and
+ *    an absent measurement are different claims, and only one of them is an
+ *    argument for changing the product.
+ *  - `deductions` is the UNION of no-show / ghost / refund intersected with
+ *    paid matches, never their sum: a no-show is usually also a refund, so
+ *    adding them subtracts one ruined date twice.
+ */
+export interface MatchConversion {
+  /** Denominator: both sides said yes. Synthetic and test pairs removed. */
+  confirmed: number;
+  /** Numerator before deductions: BOTH ticket slots settled. */
+  ticketsPurchased: number;
+  /** One slot of two — not a date yet, and never counted as half a sale. */
+  ticketsPartial: number;
+  noShow: number;
+  ghostDuringScheduling: number;
+  refunded: number;
+  deductions: number;
+  netPct: number | null;
+  grossPct: number | null;
+  noShowRateOfPaidPct: number | null;
+  ghostRateOfPaidPct: number | null;
+  excludedSynthetic: number;
+  excludedTest: number;
+}
+
+/**
+ * Gender split of the real user base.
+ *
+ * `unknown` is not noise — gender is asked early in onboarding, so everyone
+ * who abandoned before that step lands here. Rendering the male share without
+ * naming that number describes a fraction of the base as the whole base.
+ */
+export interface GenderRatio {
+  male: number;
+  female: number;
+  unknown: number;
+  total: number;
+  malePctOfKnown: number | null;
+  femalePctOfKnown: number | null;
+  unknownPctOfTotal: number | null;
+}
+
 /** Mirrors GET /admin/stats. */
 export interface AdminStatsData {
   users: { total: number; byStatus: Record<string, number> };
@@ -316,7 +368,46 @@ export interface AdminStatsData {
   reports: { total: number; byTier: Record<string, number>; unreviewedTier3: number };
   userHealth: UserHealthSummary;
   funnel: OnboardingHealthFunnel;
+  conversion: MatchConversion;
+  genderRatio: GenderRatio;
   generatedAt: string;
+}
+
+/**
+ * The daily "Core metrics" block — GET /admin/dashboard.
+ *
+ * A superset of /admin/stats plus `derived`. The money-per-acquisition trio
+ * is permanently `null` until ad spend can be entered at all (design lives in
+ * the backend repo, AD_SPEND_TRACKING_DESIGN.md); it must render as "no data",
+ * never as zero, because "acquired for free" is a claim we cannot make.
+ */
+export interface AdminDashboardDerived {
+  /** North Star: dates whose SECOND ticket slot settled in the last 7 days. */
+  weeklyPaidDates: number;
+  matchToTicketConversionPct: number | null;
+  matchToTicketGrossPct: number | null;
+  matchNoShowRatePct: number | null;
+  matchGhostRatePct: number | null;
+  /**
+   * Named for what it measures. Installs are tracked nowhere — iOS has not
+   * shipped, and the channel is recorded at registration — so calling this
+   * "install → match" would put one metric's name over another's number.
+   */
+  registeredToMatchRate7dPct: number | null;
+  registeredReal7d: number;
+  matchedLast7Days: number;
+  cacPerPayingUsdCents: number | null;
+  cacPerActiveUsdCents: number | null;
+  ltvCac: number | null;
+  roas: number | null;
+  signupsLast7Days: number;
+  activeRate: number;
+  verifiedRate: number;
+  matchAcceptanceRate: number;
+}
+
+export interface AdminDashboardData extends AdminStatsData {
+  derived: AdminDashboardDerived;
 }
 
 /** One account's classification plus WHICH rule fired. */
@@ -983,6 +1074,13 @@ export const getUsers = (
  * Uncached server-side, so it always reflects the database right now.
  */
 export const getAdminStats = () => apiFetch<AdminStatsData>("/admin/stats");
+
+/**
+ * The daily Core-metrics superset. Uncached server-side like /admin/stats,
+ * so Refresh is honest here without a `force` parameter.
+ */
+export const getAdminDashboard = () =>
+  apiFetch<AdminDashboardData>("/admin/dashboard");
 
 /** One account's health verdict, with the rules that produced it. */
 export const getUserHealth = (userId: string) =>
