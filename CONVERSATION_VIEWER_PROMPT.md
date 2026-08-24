@@ -10,7 +10,7 @@
 Add a feature to the Gennety Dating **admin analytics dashboard** that lets an
 operator open any user and read their **full conversation with the bot in
 near-original form** — every user and bot message, in order, **with images
-rendered inline** (profile photos the user uploaded, Aether chat attachments).
+rendered inline** (profile photos the user uploaded, mobile chat attachments).
 Telegram-native chrome (reactions, keyboards) is out of scope; the goal is a
 readable, faithful transcript.
 
@@ -33,7 +33,7 @@ This is a **cross-repo** change:
   shows only **user + bot** turns (a clean transcript). A **"Show technical"**
   toggle reveals `system` prompts, `tool` calls, and tool results for debugging.
 - **Images:** rendered inline. Must work for both Telegram `file_id`s (proxied
-  server-side) and Supabase paths (Aether attachments + mobile profile photos).
+  server-side) and Supabase paths (mobile chat attachments + mobile profile photos).
 
 ## Current state (this is an ENHANCEMENT, not greenfield)
 
@@ -73,7 +73,7 @@ There are **TWO** conversation stores. The feature must merge both.
   (filters out `system` before persisting in menu-agent; onboarding keeps more).
 - This is what the dashboard currently shows.
 
-### Store 2 — `Message` table — Aether concierge (mobile, multimodal)
+### Store 2 — `Message` table — the mobile app chat (multimodal)
 
 - Prisma model `Message` (`@@map("messages")`):
   `{ id, userId, role: MessageRole(user|assistant|system), content: String,
@@ -142,13 +142,13 @@ Response shape (suggested):
   // Each item is one normalized turn:
   messages: Array<{
     id: string,                  // stable key (index-based for messageHistory)
-    source: "telegram" | "aether",
+    source: "telegram" | "mobile",
     role: "user" | "assistant" | "system" | "tool",
     text: string | null,         // content; null for pure tool-call turns
     createdAt: string | null,    // ISO; null for messageHistory (no timestamps)
     technical: boolean,          // true for system/tool/null-content turns
     toolCalls?: Array<{ name: string; arguments: string }>, // when present
-    image?: {                    // present only for Aether turns with imageUrl
+    image?: {                    // present only for mobile turns with imageUrl
       type: "chat",
       ref: string,               // Supabase chat path → /admin/media?type=chat&ref=
     },
@@ -168,10 +168,10 @@ Implementation notes:
 - Map `messageHistory` entries → normalized (mark `technical: true` when
   `role` is `system`/`tool` or `content` is null; surface `tool_calls` names).
 - Map `Message` rows → normalized with `createdAt` and `image` when `imageUrl`.
-- **Ordering:** Telegram `messageHistory` has no timestamps; Aether has them.
+- **Ordering:** Telegram `messageHistory` has no timestamps; the mobile chat has them.
   A user is realistically one-or-the-other (mobile-only users have a negative
   `telegramId` and no meaningful `messageHistory`). Simplest correct approach:
-  emit the `messageHistory` block (array order) then the Aether block
+  emit the `messageHistory` block (array order) then the mobile block
   (createdAt order); do **not** fabricate timestamps to interleave. Document
   this in a comment.
 - 404 if user not found. Stringify BigInt.
@@ -202,7 +202,7 @@ Rules:
 
 Extend `apps/bot/src/admin/server.test.ts`:
 - conversation endpoint: 404 unknown user; normalizes a `messageHistory` blob;
-  marks system/tool as `technical`; includes Aether `Message` rows + `image`
+  marks system/tool as `technical`; includes mobile `Message` rows + `image`
   ref; stringifies BigInt.
 - media endpoint: 401 without Bearer; 503 for `type=telegram` when `botApi`
   unset; 400 on bad `type`/`ref`; happy path streams bytes (mock the storage
@@ -242,7 +242,7 @@ Replace/upgrade `ChatHistoryBlock`. Telegram-like full-height transcript:
 - A **profile photos gallery** section (`photos[]` via `<AuthedImage>` thumbnails,
   click to enlarge) — these aren't interleaved in the transcript.
 - Empty state when no messages.
-- Optional niceties: source badge (Telegram vs Aether) when both present;
+- Optional niceties: source badge (Telegram vs app) when both present;
   scroll-to-bottom; copy-transcript.
 
 ### F4 — Surface (full-screen)
@@ -261,7 +261,7 @@ Per the decision, make it full-screen, not the cramped drawer box:
 
 - `npm run build` (tsc -b + vite) and `npm run lint` clean.
 - Verify against a real user with photos (Telegram file_id images proxy
-  correctly) and, if available, an Aether/mobile user (chat `imageUrl`).
+  correctly) and, if available, a mobile-app user (chat `imageUrl`).
 
 ## Security / privacy guardrails
 

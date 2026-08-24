@@ -37,8 +37,8 @@ export default function ConversationView({ conversation }: Props) {
     [conversation.messages],
   );
   const hasTelegram = conversation.messages.some((m) => m.source === "telegram");
-  const hasAether = conversation.messages.some((m) => m.source === "aether");
-  const bothSources = hasTelegram && hasAether;
+  const hasMobile = conversation.messages.some((m) => m.source === "mobile");
+  const bothSources = hasTelegram && hasMobile;
 
   return (
     <div className="flex h-full flex-col">
@@ -48,8 +48,8 @@ export default function ConversationView({ conversation }: Props) {
           {hasTelegram && (
             <span className="rounded-lg bg-white/5 px-2.5 py-0.5 font-semibold text-slate-300 ring-1 ring-white/10">Telegram</span>
           )}
-          {hasAether && (
-            <span className="rounded-lg bg-sky-500/10 px-2.5 py-0.5 font-semibold text-sky-300 ring-1 ring-sky-500/20">Aether</span>
+          {hasMobile && (
+            <span className="rounded-lg bg-sky-500/10 px-2.5 py-0.5 font-semibold text-sky-300 ring-1 ring-sky-500/20">Приложение</span>
           )}
           <span className="text-slate-400 font-medium">
             {visible.length} of {conversation.messages.length} shown
@@ -90,8 +90,8 @@ export default function ConversationView({ conversation }: Props) {
                 <div className={`rounded-2xl px-4 py-3 text-xs leading-relaxed ${bubbleCls}`}>
                   <div className="mb-1.5 flex items-center gap-2 text-[10px] font-semibold tracking-wider uppercase opacity-75">
                     <span>{m.role}</span>
-                    {bothSources && m.source === "aether" && (
-                      <span className="rounded bg-white/10 px-1.5 py-0.5 text-white ring-1 ring-white/20">aether</span>
+                    {bothSources && m.source === "mobile" && (
+                      <span className="rounded bg-white/10 px-1.5 py-0.5 text-white ring-1 ring-white/20">app</span>
                     )}
                     {m.createdAt && <span>• {formatTime(m.createdAt)}</span>}
                   </div>

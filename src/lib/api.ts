@@ -706,7 +706,7 @@ export interface UserDetail extends UserListItem {
 
 // ── Conversation viewer ─────────────────────────────────────────
 // Mirrors GET /admin/users/:id/conversation. Merges both backend stores
-// (Telegram messageHistory + Aether Message rows) into one normalized
+// (Telegram messageHistory + mobile-chat Message rows) into one normalized
 // transcript; profile photos come back as a separate gallery.
 
 export type MediaType = "telegram" | "photo" | "chat";
@@ -723,7 +723,7 @@ export interface ConversationImage {
 
 export interface ConversationMessage {
   id: string;
-  source: "telegram" | "aether";
+  source: "telegram" | "mobile";
   role: string;
   text: string | null;
   createdAt: string | null;
@@ -739,11 +739,11 @@ export interface ConversationPhoto {
 
 // ── Dialogs (GET /admin/dialogs) ────────────────────────────────
 // The richer conversation reader. Unlike /admin/users/:id/conversation
-// (agent + Aether only), this merges a THIRD store — `chat_events` — so the
+// (agent + mobile only), this merges a THIRD store — `chat_events` — so the
 // transcript shows what the bot actually SENT from its ~276 non-agent call
 // sites, which buttons were on offer, and what the user tapped.
 
-export type DialogSource = "agent" | "aether" | "timeline";
+export type DialogSource = "agent" | "mobile" | "timeline";
 export type DialogDirection = "in" | "out";
 
 /** A button that was on offer with an outbound message. */
@@ -757,7 +757,7 @@ export interface DialogAction {
  * An attachment the transcript can actually render.
  *
  * `ref` is a Telegram `file_id` streamed through `GET /admin/media?type=
- * telegram` — a different media type from the Aether `image` below (a Supabase
+ * telegram` — a different media type from the mobile `image` below (a Supabase
  * object path), which is why it gets its own field. Moving formats (video,
  * video note, animation, sticker) carry their POSTER frame, since the proxy
  * streams images. `ref` is absent when Telegram gave us nothing renderable — a
@@ -780,7 +780,7 @@ export interface DialogMessage {
   technical: boolean;
   /** agent rows only */
   toolCalls?: ConversationToolCall[];
-  /** aether rows only */
+  /** mobile-chat rows only */
   image?: ConversationImage;
   /** timeline rows only */
   kind?: string;
@@ -811,7 +811,7 @@ export interface DialogParticipant {
 export interface DialogCounts {
   total: number;
   agent: number;
-  aether: number;
+  mobile: number;
   timeline: number;
 }
 

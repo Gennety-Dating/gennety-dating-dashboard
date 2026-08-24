@@ -52,7 +52,7 @@ const PLAYABLE_KINDS = new Set(["video", "video_note", "animation"]);
 
 const SOURCE_STYLES: Record<string, string> = {
   agent: "bg-white/10 text-white ring-1 ring-white/20",
-  aether: "bg-slate-200/15 text-slate-200 ring-1 ring-white/15",
+  mobile: "bg-slate-200/15 text-slate-200 ring-1 ring-white/15",
   timeline: "bg-slate-200/10 text-slate-300 ring-1 ring-white/10",
 };
 
@@ -154,7 +154,7 @@ export default function DialogTranscript({ dialog }: Props) {
       {/* Source availability + technical toggle */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/5 px-1 pb-3">
         <div className="flex flex-wrap items-center gap-2 text-xs">
-          {(["agent", "aether", "timeline"] as const).map((s) => (
+          {(["agent", "mobile", "timeline"] as const).map((s) => (
             <span
               key={s}
               title={
@@ -292,7 +292,7 @@ export default function DialogTranscript({ dialog }: Props) {
                     <MediaGrid media={m.media} onOpen={setLightbox} />
                   )}
 
-                  {/* Aether chat image (a Supabase path, hence a different proxy type) */}
+                  {/* Mobile chat image (a Supabase path, hence a different proxy type) */}
                   {m.image && (
                     <button
                       type="button"
