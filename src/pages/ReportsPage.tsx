@@ -173,6 +173,12 @@ export default function ReportsPage() {
               Purchases
             </Link>
             <Link
+              to="/ad-spend"
+              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
+            >
+              Ad Spend
+            </Link>
+            <Link
               to="/dialogs"
               className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
             >

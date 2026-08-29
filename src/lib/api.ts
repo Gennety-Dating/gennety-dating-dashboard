@@ -377,9 +377,11 @@ export interface AdminStatsData {
  * The daily "Core metrics" block — GET /admin/dashboard.
  *
  * A superset of /admin/stats plus `derived`. The money-per-acquisition trio
- * is permanently `null` until ad spend can be entered at all (design lives in
- * the backend repo, AD_SPEND_TRACKING_DESIGN.md); it must render as "no data",
- * never as zero, because "acquired for free" is a claim we cannot make.
+ * (cacPerPayingUsdCents / cacPerActiveUsdCents / ltvCac / roas) is computed
+ * from ad spend entered on the /ad-spend page (AD_SPEND_TRACKING_DESIGN.md in
+ * the backend repo). It renders `null`, never zero, whenever the underlying
+ * spend or cohort is empty — "no data" and "acquired for free" are different
+ * claims, and only the first one is ever true here.
  */
 export interface AdminDashboardDerived {
   /** North Star: dates whose SECOND ticket slot settled in the last 7 days. */
@@ -400,6 +402,9 @@ export interface AdminDashboardDerived {
   cacPerActiveUsdCents: number | null;
   ltvCac: number | null;
   roas: number | null;
+  /** All spend entered, including content_production/agency/unattributed — the founder's own P&L total, wider than what CAC is computed from. */
+  totalMarketingSpendUsdCents: number;
+  adSpendByChannel: ChannelAcquisitionCostRow[];
   signupsLast7Days: number;
   activeRate: number;
   verifiedRate: number;
@@ -533,6 +538,93 @@ export interface PurchasesResponse {
   offset: number;
   totals: PurchaseTotals;
   byKind: Array<{ kind: PurchaseKind; count: number; stars: number; usdCents: number }>;
+}
+
+// ── Ad spend (GET/POST/DELETE /admin/ad-spend) ───────────────────
+// The founder's own record of acquisition spend — what /admin/dashboard's
+// CAC/LTV:CAC/ROAS fields are computed from (AD_SPEND_TRACKING_DESIGN.md in
+// the backend repo). Entered by hand, roughly weekly, so this is unpaginated
+// unlike PurchasesResponse.
+
+export const AD_SPEND_CATEGORIES = [
+  "performance_ads",
+  "influencer",
+  "offline_event",
+  "content_production",
+  "agency",
+  "other",
+] as const;
+export type AdSpendCategory = (typeof AD_SPEND_CATEGORIES)[number];
+
+/** Spend with no channel to attribute — content shoots, agency retainers. */
+export const AD_SPEND_UNATTRIBUTED_CHANNEL = "unattributed";
+
+/**
+ * Days past the spend period a conversion still counts toward it. `null` =
+ * no plausible signal at all, excluded from per-channel CAC (still counted
+ * in the P&L total). Mirrors admin/utils/ad-spend.ts in the backend repo —
+ * these are tunable defaults there, not a contract, so keep the two in sync
+ * by eye rather than assuming this file is authoritative.
+ */
+export const AD_SPEND_ATTRIBUTION_WINDOW_DAYS: Record<AdSpendCategory, number | null> = {
+  performance_ads: 3,
+  influencer: 14,
+  offline_event: 28,
+  content_production: null,
+  agency: null,
+  other: 7,
+};
+
+/** content_production/agency buy no trackable acquisition — the server enforces this too; this is only for the form's own validation message. */
+export function categoryRequiresUnattributed(category: AdSpendCategory): boolean {
+  return category === "content_production" || category === "agency";
+}
+
+export interface AdSpendRow {
+  id: string;
+  channel: string;
+  category: AdSpendCategory;
+  periodStart: string;
+  periodEnd: string;
+  amount: number;
+  currency: string;
+  amountUsdCents: number;
+  note: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdSpendListResponse {
+  data: AdSpendRow[];
+  total: number;
+}
+
+export interface AdSpendUpsertInput {
+  channel: string;
+  category: AdSpendCategory;
+  periodStart: string;
+  periodEnd: string;
+  amount: number;
+  currency: string;
+  amountUsdCents: number;
+  note?: string | null;
+}
+
+/**
+ * One channel's slice of /admin/dashboard's derived CAC block. `matured` is
+ * true only once every entry's attribution window has fully elapsed — a
+ * channel still inside its window reports real-so-far numbers with
+ * `matured: false`, never a hidden "wait and see" gap.
+ */
+export interface ChannelAcquisitionCostRow {
+  channel: string;
+  spendUsdCents: number;
+  signups: number;
+  newPayers: number;
+  newActive: number;
+  cplUsdCents: number | null;
+  cacPerPayingUsdCents: number | null;
+  matured: boolean;
 }
 
 // ── Monetization (GET /admin/analytics/monetization) ────────────
@@ -1109,6 +1201,40 @@ export const getPurchases = (params: {
   if (params.until) query.set("until", params.until);
   return apiFetch<PurchasesResponse>(`/admin/purchases?${query.toString()}`);
 };
+
+// ── Ad spend ───────────────────────────────────────────────────
+// Unpaginated — this is a founder-entered log, not a high-volume ledger.
+
+export const getAdSpend = (params?: {
+  channel?: string;
+  category?: AdSpendCategory | "";
+  from?: string;
+  to?: string;
+}) => {
+  const query = new URLSearchParams();
+  if (params?.channel) query.set("channel", params.channel);
+  if (params?.category) query.set("category", params.category);
+  if (params?.from) query.set("from", params.from);
+  if (params?.to) query.set("to", params.to);
+  const qs = query.toString();
+  return apiFetch<AdSpendListResponse>(`/admin/ad-spend${qs ? `?${qs}` : ""}`);
+};
+
+/** The channel picker's options — real users' first-touch channels union logged spend channels union "unattributed". */
+export const getAdSpendChannels = () =>
+  apiFetch<{ channels: string[] }>("/admin/ad-spend/channels");
+
+/** Upsert on (channel, category, periodStart, periodEnd) — re-submitting the same key updates the row instead of duplicating it. */
+export const upsertAdSpend = (body: AdSpendUpsertInput) =>
+  apiFetch<AdSpendRow>("/admin/ad-spend", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+
+export const deleteAdSpend = (id: string) =>
+  apiFetch<{ ok: boolean }>(`/admin/ad-spend/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
 
 export const getUserDetail = (id: string) =>
   apiFetch<UserDetail>(`/admin/users/${encodeURIComponent(id)}`);

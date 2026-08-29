@@ -1,4 +1,4 @@
-import type { AdminDashboardData } from "../lib/api";
+import type { AdminDashboardData, ChannelAcquisitionCostRow } from "../lib/api";
 import SectionHeader from "./SectionHeader";
 import StatCard from "./StatCard";
 
@@ -64,6 +64,37 @@ function BlockedCard({
         </p>
       )}
     </div>
+  );
+}
+
+/** One channel's row in the acquisition-cost breakdown table. */
+function ChannelRow({ row }: { row: ChannelAcquisitionCostRow }) {
+  return (
+    <tr className="border-b border-white/5 last:border-b-0">
+      <td className="px-4 py-3 font-semibold text-white">{row.channel}</td>
+      <td className="px-4 py-3 text-slate-300">{usd(row.spendUsdCents)}</td>
+      <td className="px-4 py-3 text-slate-300">{row.signups}</td>
+      <td className="px-4 py-3 text-slate-300">{row.newPayers}</td>
+      <td className="px-4 py-3 text-slate-300">{row.newActive}</td>
+      <td className="px-4 py-3 text-slate-300">{usd(row.cplUsdCents)}</td>
+      <td className="px-4 py-3 font-semibold text-white">
+        {usd(row.cacPerPayingUsdCents)}
+      </td>
+      <td className="px-4 py-3">
+        {row.matured ? (
+          <span className="rounded-lg bg-emerald-500/15 px-2 py-1 text-[10px] font-bold text-emerald-300">
+            Matured
+          </span>
+        ) : (
+          <span
+            className="rounded-lg bg-amber-500/15 px-2 py-1 text-[10px] font-bold text-amber-300"
+            title="This channel's spend is still inside its attribution window — the numbers so far are real, just not final."
+          >
+            Still accruing
+          </span>
+        )}
+      </td>
+    </tr>
   );
 }
 
@@ -148,7 +179,7 @@ export default function CoreMetricsSection({
           <BlockedCard
             label="CAC per paying"
             value={d.cacPerPayingUsdCents == null ? null : usd(d.cacPerPayingUsdCents)}
-            reason="Ad spend cannot be entered anywhere yet. Design in AD_SPEND_TRACKING_DESIGN.md; nothing is implemented, so this stays blank rather than showing $0."
+            reason="No attributable spend overlapping a signup yet — log spend on the Ad Spend page. Full breakdown by channel is below."
           />
         </div>
       </section>
@@ -281,18 +312,70 @@ export default function CoreMetricsSection({
         )}
       </section>
 
+      {/* ── Acquisition cost ──────────────────────────────────── */}
+      <section>
+        <SectionHeader
+          title="Acquisition cost"
+          description="Computed from spend logged on the Ad Spend page against the cohort it bought. A channel reads 'still accruing' until its category's whole attribution window has elapsed — the numbers so far are real, just not final."
+        />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <BlockedCard
+            label="CAC per active"
+            value={d.cacPerActiveUsdCents == null ? null : usd(d.cacPerActiveUsdCents)}
+            reason="No attributable spend overlapping an activation yet."
+          />
+          <BlockedCard
+            label="LTV : CAC"
+            value={d.ltvCac == null ? null : `${d.ltvCac.toFixed(2)}×`}
+            reason="Needs both a payer cohort and acquisition cost — see the CAC cards."
+          />
+          <BlockedCard
+            label="ROAS"
+            value={d.roas == null ? null : `${d.roas.toFixed(2)}×`}
+            reason="Revenue earned inside the spend's own attribution window, divided by that spend — needs both to exist."
+          />
+          <StatCard
+            label="Total marketing spend"
+            value={usd(d.totalMarketingSpendUsdCents)}
+            sub="all categories, all time"
+            info="Includes content production and agency retainers, which buy no trackable acquisition and are excluded from every CAC figure above — this is the founder's own P&L total, wider than what CAC is computed from."
+          />
+        </div>
+
+        {d.adSpendByChannel.length > 0 && (
+          <div className="glass-card-borderless mt-4 overflow-hidden rounded-3xl">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-[#121316]">
+                  <tr className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">
+                    <th className="px-4 py-3">Channel</th>
+                    <th className="px-4 py-3">Spend</th>
+                    <th className="px-4 py-3">Signups</th>
+                    <th className="px-4 py-3">New payers</th>
+                    <th className="px-4 py-3">New active</th>
+                    <th className="px-4 py-3">CPL</th>
+                    <th className="px-4 py-3">CAC</th>
+                    <th className="px-4 py-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {d.adSpendByChannel.map((row) => (
+                    <ChannelRow key={row.channel} row={row} />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </section>
+
       {/* ── Weekly ────────────────────────────────────────────── */}
       <section>
         <SectionHeader
           title="Weekly"
-          description="Three numbers that need something the product does not have yet. They are listed so the gap is visible, not so the panel looks full."
+          description="Two numbers that need something the product does not have yet. They are listed so the gap is visible, not so the panel looks full."
         />
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <BlockedCard
-            label="LTV : CAC"
-            value={d.ltvCac == null ? null : `${d.ltvCac.toFixed(2)}×`}
-            reason="Needs acquisition cost. No ad-spend entry exists, so the ratio has no denominator — see the CAC card above."
-          />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <BlockedCard
             label="Churn"
             reason="Measured on Premium subscriptions. Not one has ever been sold, so there is no cohort to lose."

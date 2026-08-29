@@ -5,6 +5,7 @@ import DashboardPage from "./pages/DashboardPage";
 import UsersPage from "./pages/UsersPage";
 import UserConversationPage from "./pages/UserConversationPage";
 import PurchasesPage from "./pages/PurchasesPage";
+import AdSpendPage from "./pages/AdSpendPage";
 import DialogsPage from "./pages/DialogsPage";
 import ReportsPage from "./pages/ReportsPage";
 
@@ -49,6 +50,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <PurchasesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ad-spend"
+          element={
+            <ProtectedRoute>
+              <AdSpendPage />
             </ProtectedRoute>
           }
         />
