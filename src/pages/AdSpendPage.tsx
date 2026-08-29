@@ -5,6 +5,7 @@ import SectionHeader from "../components/SectionHeader";
 import StatCard from "../components/StatCard";
 import AdSpendForm from "../components/adspend/AdSpendForm";
 import AdSpendTable from "../components/adspend/AdSpendTable";
+import CohortRetentionSection from "../components/adspend/CohortRetentionSection";
 import {
   deleteAdSpend,
   getAdSpend,
@@ -234,6 +235,8 @@ export default function AdSpendPage() {
           }}
           onDelete={handleDelete}
         />
+
+        <CohortRetentionSection />
       </div>
     </div>
   );

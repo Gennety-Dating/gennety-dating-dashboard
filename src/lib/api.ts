@@ -1309,3 +1309,82 @@ export const markReportReviewed = (id: string) =>
   apiFetch<{ ok: boolean }>(`/admin/reports/${encodeURIComponent(id)}/review`, {
     method: "PATCH",
   });
+
+// ── Cohort retention ─────────────────────────────────────────
+/**
+ * "Of the people who registered in one bucket, how many were still active N
+ * days later" — the classic cohort question, sliced by acquisition channel so
+ * it can be read beside CAC.
+ *
+ * Deliberately NOT the same thing as `RetentionData` above, which is a
+ * SURVIVAL curve (last activity ≥ N weeks out) and therefore always reads
+ * higher. Both are kept because they answer different questions; do not
+ * compare their numbers to each other.
+ */
+export type CohortBucket = "day" | "week" | "month";
+
+/** Why a cell has no number. `no-data` never becomes `ok` with time. */
+export type CohortCellStatus = "ok" | "immature" | "no-data";
+
+export interface RetentionMilestone {
+  day: number;
+  windowDays: number;
+}
+
+export interface CohortCell {
+  day: number;
+  windowDays: number;
+  status: CohortCellStatus;
+  retained: number | null;
+  retainedPct: number | null;
+  churnedPct: number | null;
+}
+
+export interface CohortAverageCell extends CohortCell {
+  cohorts: number;
+  users: number;
+}
+
+export interface CohortMatrixRow {
+  cohort: string;
+  cohortStart: string;
+  cohortEnd: string;
+  size: number;
+  lowSample: boolean;
+  cells: CohortCell[];
+}
+
+export interface ChannelRetentionRow {
+  channel: string;
+  signups: number;
+  cells: CohortAverageCell[];
+}
+
+export interface CohortRetentionData {
+  generatedAt: string;
+  timezone: string;
+  bucket: CohortBucket;
+  from: string;
+  to: string;
+  includeTest: boolean;
+  milestones: RetentionMilestone[];
+  coverage: {
+    /** First UTC day the activity table can speak for; null = empty table. */
+    activityFrom: string | null;
+    lastCompleteDay: string;
+  };
+  overall: {
+    bucket: CohortBucket;
+    milestones: RetentionMilestone[];
+    rows: CohortMatrixRow[];
+    average: CohortAverageCell[];
+    totalUsers: number;
+  };
+  byChannel: ChannelRetentionRow[];
+  excludedTestUsers: number;
+}
+
+export const getCohortRetention = (bucket: CohortBucket, force = false) => {
+  const path = `/admin/analytics/cohort-retention?bucket=${bucket}`;
+  return apiFetch<CohortRetentionData>(force ? fresh(path) : path);
+};
