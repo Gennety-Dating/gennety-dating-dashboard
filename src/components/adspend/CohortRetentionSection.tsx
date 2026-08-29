@@ -90,6 +90,10 @@ export default function CohortRetentionSection() {
   const [bucket, setBucket] = useState<CohortBucket>("week");
   const [data, setData] = useState<CohortRetentionData | null>(null);
   const [error, setError] = useState("");
+  // 404 is not a failure: it means the server has not shipped this endpoint yet
+  // (the dashboard auto-deploys on push, so it can lead the backend by minutes).
+  // A red error box would read as "the metric is broken" rather than "not live".
+  const [notDeployed, setNotDeployed] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -100,9 +104,16 @@ export default function CohortRetentionSection() {
         if (cancelled) return;
         setData(d);
         setError("");
+        setNotDeployed(false);
       })
       .catch((err) => {
         if (cancelled) return;
+        if ((err as { status?: number }).status === 404) {
+          setNotDeployed(true);
+          setError("");
+          return;
+        }
+        setNotDeployed(false);
         setError(err instanceof Error ? err.message : "Unknown error");
       })
       .finally(() => {
@@ -145,6 +156,14 @@ export default function CohortRetentionSection() {
           </span>
         )}
       </div>
+
+      {notDeployed && (
+        <div className="mb-4 rounded-2xl bg-slate-900/60 p-4 text-xs font-medium text-slate-400">
+          Not on this server yet — the backend deploy carrying this endpoint has
+          not landed. Nothing is wrong; the section fills in on its own once it
+          does.
+        </div>
+      )}
 
       {error && (
         <div className="mb-4 rounded-2xl bg-rose-950/40 p-4 text-xs font-medium text-rose-300">
@@ -199,7 +218,7 @@ export default function CohortRetentionSection() {
                     ))}
                   </tr>
                 ))}
-              {!loading && (data?.byChannel.length ?? 0) === 0 && (
+              {!loading && !notDeployed && (data?.byChannel.length ?? 0) === 0 && (
                 <tr>
                   <td colSpan={2 + milestones.length} className="px-6 py-10 text-center text-slate-500">
                     No registrations in this window.
@@ -243,7 +262,7 @@ export default function CohortRetentionSection() {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
-              {!loading && (data?.overall.rows.length ?? 0) === 0 && (
+              {!loading && !notDeployed && (data?.overall.rows.length ?? 0) === 0 && (
                 <tr>
                   <td colSpan={2 + milestones.length} className="px-6 py-10 text-center text-slate-500">
                     No registrations in this window.

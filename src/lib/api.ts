@@ -1087,7 +1087,13 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   }
 
   if (!res.ok) {
-    throw new Error(`API error: ${res.status}`);
+    // The status rides along so a caller can tell "this server does not serve
+    // this endpoint yet" (404, i.e. the backend is a deploy behind the client)
+    // from a real failure. The message is deliberately unchanged, so every
+    // existing consumer behaves exactly as before.
+    const err = new Error(`API error: ${res.status}`) as Error & { status?: number };
+    err.status = res.status;
+    throw err;
   }
 
   // Exposed via CORS `exposedHeaders`; absent on the uncached endpoints, which
