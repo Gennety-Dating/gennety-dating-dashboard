@@ -51,6 +51,41 @@ function Attractiveness({ profile }: { profile: UserListItem["profile"] }) {
   );
 }
 
+/**
+ * Where this person is, and whether we can match them there.
+ *
+ * The status comes from the server, never from the city name: a launched
+ * market and a city on the expansion list look identical in a table, and the
+ * difference is the whole question — one of these people can be matched this
+ * week, the other is waiting for us to open. A user who has not reached the
+ * city step yet is a dash, which is a third state and not "no city".
+ */
+function CityCell({ user }: { user: UserListItem }) {
+  const city = user.city;
+  // A server a deploy behind sends no `city` at all. Fall back to the raw
+  // profile name with NO badge rather than inventing a status: claiming
+  // "active" for a city we cannot check is the one thing this column must
+  // never do.
+  if (city === undefined) {
+    return (
+      <span className="font-medium text-slate-300">{user.profile?.homeCity ?? "—"}</span>
+    );
+  }
+  if (!city) return <span className="font-medium text-slate-600">—</span>;
+  return (
+    <div>
+      <div className="font-medium text-slate-300">{city.city}</div>
+      {city.status === "waitlist" ? (
+        <span className="mt-1 inline-flex items-center rounded-full bg-amber-500/15 px-2.5 py-0.5 text-[10px] font-bold text-amber-300">
+          Waitlist
+        </span>
+      ) : (
+        <div className="text-[10px] font-medium text-slate-500">{city.countryCode ?? ""}</div>
+      )}
+    </div>
+  );
+}
+
 function Pill({ text, styles }: { text: string; styles: Record<string, string> }) {
   const cls = styles[text] ?? "bg-[#17181c] text-slate-300 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]";
   return (
@@ -126,7 +161,12 @@ export default function UsersTable({ users, loading, onRowClick }: Props) {
             <tr className="text-left text-[11px] font-bold tracking-wider text-slate-400 uppercase">
               <th className="px-6 py-4">Name</th>
               <th className="px-6 py-4">Gender</th>
-              <th className="px-6 py-4">City</th>
+              <th
+                className="px-6 py-4"
+                title="Дом матчинга. «Waitlist» — человек выбрал город, который мы ещё не открыли: его нельзя смэтчить, регистрация остановлена на экране ожидания."
+              >
+                City
+              </th>
               <th className="px-6 py-4" title="Seeded from the AI vision pass at verification; drives V_league">
                 Attractiveness
               </th>
@@ -186,8 +226,8 @@ export default function UsersTable({ users, loading, onRowClick }: Props) {
                   <td className="px-6 py-4 capitalize font-medium text-slate-300">
                     {u.gender ?? "—"}
                   </td>
-                  <td className="px-6 py-4 font-medium text-slate-300">
-                    {u.profile?.homeCity ?? "—"}
+                  <td className="px-6 py-4">
+                    <CityCell user={u} />
                   </td>
                   <td className="px-6 py-4">
                     <Attractiveness profile={u.profile} />

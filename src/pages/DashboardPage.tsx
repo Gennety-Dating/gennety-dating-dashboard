@@ -9,6 +9,7 @@ import {
   getReportsStats,
   getAudience,
   getCities,
+  getWaitlist,
   getHeatmap,
   getAlgorithm,
   getGenderAnalytics,
@@ -24,6 +25,7 @@ import {
   type ReportsStatsData,
   type AudienceData,
   type CitiesData,
+  type WaitlistData,
   type HeatmapData,
   type AlgorithmData,
   type GenderData,
@@ -40,6 +42,7 @@ import MatchesSection from "../components/MatchesSection";
 import ReportsSection from "../components/ReportsSection";
 import AudienceSection from "../components/AudienceSection";
 import CitiesSection from "../components/CitiesSection";
+import WaitlistSection from "../components/WaitlistSection";
 import AlgorithmSection from "../components/AlgorithmSection";
 import GenderSection from "../components/GenderSection";
 import GrowthSection from "../components/GrowthSection";
@@ -65,6 +68,8 @@ interface DashboardState {
   reports: ReportsStatsData | null;
   audience: AudienceData | null;
   cities: CitiesData | null;
+  /** Спрос на ещё не открытые города. Отдельно от `cities` — см. WaitlistSection. */
+  waitlist: WaitlistData | null;
   heatmap: HeatmapData | null;
   algorithm: AlgorithmData | null;
   gender: GenderData | null;
@@ -136,6 +141,7 @@ export default function DashboardPage() {
     reports: null,
     audience: null,
     cities: null,
+    waitlist: null,
     heatmap: null,
     algorithm: null,
     gender: null,
@@ -173,6 +179,7 @@ export default function DashboardPage() {
           reports,
           audience,
           cities,
+          waitlist,
           heatmap,
           algorithm,
           gender,
@@ -188,6 +195,9 @@ export default function DashboardPage() {
           getReportsStats(),
           getAudience(force),
           getCities(force).catch(() => null),
+          // Не кэшируется на сервере, поэтому без `force`: сигнал спроса,
+          // которому полчаса, — единственное, чем он быть не должен.
+          getWaitlist().catch(() => null),
           getHeatmap(force).catch(() => null),
           getAlgorithm(force),
           getGenderAnalytics(force),
@@ -210,6 +220,7 @@ export default function DashboardPage() {
             reports,
             audience,
             cities,
+            waitlist,
             heatmap,
             algorithm,
             gender,
@@ -437,8 +448,11 @@ export default function DashboardPage() {
           <AudienceSection audience={data.audience} heatmap={data.heatmap} />
         )}
 
-        {activeTab === "cities" && data.cities && (
-          <CitiesSection data={data.cities} />
+        {activeTab === "cities" && (
+          <div className="space-y-12">
+            {data.cities && <CitiesSection data={data.cities} />}
+            <WaitlistSection data={data.waitlist} loading={loading} />
+          </div>
         )}
 
         {activeTab === "algorithm" && data.algorithm && (

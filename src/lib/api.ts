@@ -468,10 +468,63 @@ export interface UserListItem {
   faceMatchScore?: number | null;
   faceMatchedAt?: string | null;
   profile: UserProfile | null;
+  /**
+   * Where this person is, and whether we can match them there. Computed
+   * server-side from whichever of the two places their city lives — a launched
+   * dating city on the profile, or a city-waitlist row — so the dashboard never
+   * has to know which keys are launched. `null` = they have not answered the
+   * city step yet, which is a third thing and reads as a dash.
+   */
+  city?: UserCity | null;
   /** Spend summary, batched server-side for the whole page (no N+1). */
   purchaseSummary?: UserPurchaseSummary;
   /** Account-health badge, classified server-side. */
   health?: UserHealthBadge;
+}
+
+/** `active` = matchable here. `waitlist` = waiting for the city to open. */
+export type CityStatus = "active" | "waitlist";
+
+export interface UserCity {
+  cityKey: string;
+  city: string;
+  countryCode: string | null;
+  status: CityStatus;
+}
+
+// ── City catalog + waitlist ───────────────────────────────────
+// Mirrors GET /admin/cities and GET /admin/analytics/waitlist. Distinct from
+// `CitiesData` (/admin/analytics/cities), which distributes the EXISTING user
+// base across cities: nobody on the waitlist has a matching city to be
+// distributed by, so "people we serve here" and "people who want us here" are
+// two numbers, not one.
+
+export interface CityCatalogEntry {
+  cityKey: string;
+  city: string;
+  countryCode: string;
+  status: CityStatus;
+}
+
+export interface CityCatalogData {
+  cities: CityCatalogEntry[];
+}
+
+export interface WaitlistCityRow extends CityCatalogEntry {
+  total: number;
+  male: number;
+  female: number;
+  unknown: number;
+  firstJoinedAt: string | null;
+  lastJoinedAt: string | null;
+}
+
+export interface WaitlistData {
+  totalWaiting: number;
+  /** Every waitlist city, including the empty ones, busiest first. */
+  cities: WaitlistCityRow[];
+  /** Rows on a key the catalog no longer has. Normally empty. */
+  orphaned: Array<{ cityKey: string; total: number }>;
 }
 
 // ── Purchases ─────────────────────────────────────────────────
@@ -1157,15 +1210,35 @@ export const getMonetization = (force = false) =>
 export const getUsers = (
   limit = 20,
   offset = 0,
-  opts: { health?: UserHealthClass | "all"; includeTest?: boolean } = {},
+  opts: {
+    health?: UserHealthClass | "all";
+    includeTest?: boolean;
+    /** One city, whichever side it lives on. Empty = every city. */
+    cityKey?: string;
+    /** `active` | `waitlist` | `none`. Empty = no status filter. */
+    cityStatus?: CityStatus | "none" | "";
+  } = {},
 ) => {
   const params = new URLSearchParams({ limit: String(limit), offset: String(offset) });
   if (opts.health && opts.health !== "all") params.set("health", opts.health);
   // The API defaults to including test accounts; the dashboard defaults to
   // hiding them, so the flag is sent explicitly rather than assumed.
   if (opts.includeTest === false) params.set("includeTest", "false");
+  // Both filters are applied in SQL, so `total` and the pagination stay true
+  // to them rather than describing the unfiltered base.
+  if (opts.cityKey) params.set("cityKey", opts.cityKey);
+  if (opts.cityStatus) params.set("cityStatus", opts.cityStatus);
   return apiFetch<UsersListResponse>(`/admin/users?${params.toString()}`);
 };
+
+/** The city catalog — launched markets first, then the expansion list. */
+export const getCityCatalog = () => apiFetch<CityCatalogData>("/admin/cities");
+
+/**
+ * How many people are waiting per unlaunched city. Uncached server-side: the
+ * one thing a demand signal must not be is half an hour old.
+ */
+export const getWaitlist = () => apiFetch<WaitlistData>("/admin/analytics/waitlist");
 
 /**
  * Headline counters + account health + the onboarding funnel, in one call.

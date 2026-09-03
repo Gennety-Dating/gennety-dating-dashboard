@@ -1,13 +1,23 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "../components/Logo";
-import { getAdminStats, getUsers, type AdminStatsData, type UserListItem } from "../lib/api";
+import {
+  getAdminStats,
+  getCityCatalog,
+  getUsers,
+  getWaitlist,
+  type AdminStatsData,
+  type CityCatalogEntry,
+  type UserListItem,
+  type WaitlistData,
+} from "../lib/api";
 import { clearApiKey } from "../lib/auth";
 import UsersTable from "../components/users/UsersTable";
 import UserProfileDrawer from "../components/users/UserProfileDrawer";
 import SectionHeader from "../components/SectionHeader";
 import HealthSection from "../components/users/HealthSection";
 import HealthTabs, { type HealthTab } from "../components/users/HealthTabs";
+import CityFilter, { type CityStatusFilter } from "../components/users/CityFilter";
 
 const PAGE_SIZE = 20;
 
@@ -26,6 +36,13 @@ export default function UsersPage() {
   // API их по умолчанию отдаёт, поэтому флаг всегда шлём явно.
   const [includeTest, setIncludeTest] = useState(false);
   const [stats, setStats] = useState<AdminStatsData | null>(null);
+  // Город и его статус — два независимых среза списка. Оба уходят в запрос,
+  // а не фильтруют страницу на клиенте: иначе «12 из 480» и пролистывание
+  // почти пустых экранов.
+  const [cityKey, setCityKey] = useState("");
+  const [cityStatus, setCityStatus] = useState<CityStatusFilter>("");
+  const [catalog, setCatalog] = useState<CityCatalogEntry[]>([]);
+  const [waitlist, setWaitlist] = useState<WaitlistData | null>(null);
 
   const loading = result === null || result.page !== page;
   const users = result?.users ?? [];
@@ -48,10 +65,39 @@ export default function UsersPage() {
     };
   }, []);
 
+  // Каталог городов и счётчики ожидания — вспомогательные данные для фильтра.
+  // Если их нет (сервер на деплой отстал), фильтр по статусу продолжает
+  // работать, а выпадающий список городов просто остаётся пустым.
+  useEffect(() => {
+    let cancelled = false;
+    getCityCatalog()
+      .then((res) => {
+        if (!cancelled) setCatalog(res.cities);
+      })
+      .catch(() => {
+        if (!cancelled) setCatalog([]);
+      });
+    getWaitlist()
+      .then((res) => {
+        if (!cancelled) setWaitlist(res);
+      })
+      .catch(() => {
+        if (!cancelled) setWaitlist(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
 
-    getUsers(PAGE_SIZE, page * PAGE_SIZE, { health: healthTab, includeTest })
+    getUsers(PAGE_SIZE, page * PAGE_SIZE, {
+      health: healthTab,
+      includeTest,
+      cityKey,
+      cityStatus,
+    })
       .then((res) => {
         if (cancelled) return;
         setResult({ page, users: res.data, total: res.total, error: "" });
@@ -69,13 +115,25 @@ export default function UsersPage() {
     return () => {
       cancelled = true;
     };
-  }, [page, navigate, healthTab, includeTest]);
+  }, [page, navigate, healthTab, includeTest, cityKey, cityStatus]);
 
   // Смена вкладки/чекбокса меняет выборку целиком — остаться на 5-й странице
   // отфильтрованного списка нельзя, поэтому пагинация сбрасывается вместе с
   // фильтром (в обработчике, а не в эффекте — иначе лишний каскадный рендер).
   function handleHealthTabChange(tab: HealthTab) {
     setHealthTab(tab);
+    setPage(0);
+  }
+
+  // Смена города/статуса меняет выборку целиком — пагинация сбрасывается
+  // вместе с фильтром, ровно как у вкладок здоровья выше.
+  function handleCityKeyChange(next: string) {
+    setCityKey(next);
+    setPage(0);
+  }
+
+  function handleCityStatusChange(next: CityStatusFilter) {
+    setCityStatus(next);
     setPage(0);
   }
 
@@ -178,6 +236,15 @@ export default function UsersPage() {
           includeTest={includeTest}
           onIncludeTestChange={handleIncludeTestChange}
           stats={stats}
+        />
+
+        <CityFilter
+          catalog={catalog}
+          waitlist={waitlist}
+          cityKey={cityKey}
+          cityStatus={cityStatus}
+          onCityKeyChange={handleCityKeyChange}
+          onCityStatusChange={handleCityStatusChange}
         />
 
         <UsersTable
