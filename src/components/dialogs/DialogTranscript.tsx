@@ -109,7 +109,7 @@ function MediaGrid({
             type="button"
             onClick={() => onOpen({ mediaType: "telegram", ref: item.ref! })}
             title={item.kind}
-            className="relative block cursor-zoom-in overflow-hidden rounded-xl ring-1 ring-white/10 transition-all hover:ring-[#9f1239] hover:shadow-[0_0_15px_rgba(159,18,57,0.4)]"
+            className="relative block cursor-zoom-in overflow-hidden rounded-md ring-1 ring-white/10 transition-colors hover:ring-[#9f1239]"
           >
             <AuthedImage
               mediaType="telegram"
@@ -125,7 +125,7 @@ function MediaGrid({
         ) : (
           <span
             key={`${item.kind}-${i}`}
-            className="rounded-xl bg-white/5 px-3 py-2 text-[11px] font-semibold text-slate-300 ring-1 ring-white/10"
+            className="rounded-md bg-white/5 px-3 py-2 text-[11px] font-semibold text-slate-300 ring-1 ring-white/10"
           >
             {MEDIA_PLACEHOLDER[item.kind] ?? `📦 ${item.kind}`}
           </span>
@@ -162,7 +162,7 @@ export default function DialogTranscript({ dialog }: Props) {
                   ? `${s}: ${dialog.counts[s]} messages`
                   : `${s} store unavailable on this server`
               }
-              className={`rounded-lg px-2 py-0.5 text-[11px] font-semibold ${
+              className={`rounded-md px-2 py-0.5 text-[11px] font-semibold ${
                 dialog.sources[s]
                   ? SOURCE_STYLES[s]
                   : "bg-white/5 text-slate-500 line-through"
@@ -187,7 +187,7 @@ export default function DialogTranscript({ dialog }: Props) {
             <button
               type="button"
               onClick={() => setShowProfilePhotos((v) => !v)}
-              className="cursor-pointer rounded-lg bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-slate-300 ring-1 ring-white/10 transition-colors hover:text-white"
+              className="cursor-pointer rounded-md bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-slate-300 ring-1 ring-white/10 transition-colors hover:text-white"
             >
               {showProfilePhotos ? "▾" : "▸"} Profile photos ({dialog.photos.length})
             </button>
@@ -197,7 +197,7 @@ export default function DialogTranscript({ dialog }: Props) {
               type="checkbox"
               checked={showTechnical}
               onChange={(e) => setShowTechnical(e.target.checked)}
-              className="accent-[#9f1239] cursor-pointer rounded"
+              className="accent-slate-400 cursor-pointer rounded"
             />
             Show technical ({technicalCount})
           </label>
@@ -217,7 +217,7 @@ export default function DialogTranscript({ dialog }: Props) {
                 key={`${p.ref}-${i}`}
                 type="button"
                 onClick={() => setLightbox({ mediaType: "photo", ref: p.ref })}
-                className="shrink-0 cursor-zoom-in overflow-hidden rounded-xl ring-1 ring-white/10 transition-all hover:ring-[#9f1239] hover:shadow-[0_0_15px_rgba(159,18,57,0.4)]"
+                className="shrink-0 cursor-zoom-in overflow-hidden rounded-md ring-1 ring-white/10 transition-colors hover:ring-[#9f1239]"
               >
                 <AuthedImage mediaType="photo" refKey={p.ref} className="h-24 w-24 object-cover" />
               </button>
@@ -229,7 +229,7 @@ export default function DialogTranscript({ dialog }: Props) {
       {/* Transcript */}
       <div className="flex-1 space-y-3.5 overflow-y-auto px-1 py-4">
         {visible.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-white/10 bg-slate-950/40 p-6 text-center text-xs font-medium text-slate-400">
+          <div className="rounded-md border border-dashed border-white/10 bg-slate-950/40 p-6 text-center text-xs font-medium text-slate-400">
             {dialog.messages.length === 0
               ? "No conversation recorded for this user."
               : "Nothing to show — enable “Show technical” for system and tool activity."}
@@ -246,7 +246,7 @@ export default function DialogTranscript({ dialog }: Props) {
             if (isEvent) {
               return (
                 <div key={m.id} className="mx-auto flex w-fit max-w-[85%] flex-col items-center">
-                  <div className="rounded-full bg-white/10 px-3.5 py-1 text-xs font-medium text-slate-200 ring-1 ring-white/15 shadow-sm">
+                  <div className="rounded-full bg-white/10 px-3.5 py-1 text-xs font-medium text-slate-200 ring-1 ring-white/15">
                     {kindLabel === "button tap" ? "👆" : kindLabel === "payment" ? "⭐" : "📱"}{" "}
                     {m.text}
                     {m.surface && (
@@ -263,10 +263,10 @@ export default function DialogTranscript({ dialog }: Props) {
             }
 
             const bubbleCls = m.technical
-              ? "bg-[#121316] text-slate-400 italic [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.08)]"
+              ? "bg-canvas text-slate-400 italic"
               : inbound
-                ? "bg-white text-slate-900 font-medium [box-shadow:0_4px_12px_rgba(0,0,0,0.3)]"
-                : "bg-[#17181c] text-slate-100 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]";
+                ? "bg-white text-slate-900 font-medium"
+                : "bg-panel text-slate-100";
 
             const body = visibleText(m);
 
@@ -275,8 +275,8 @@ export default function DialogTranscript({ dialog }: Props) {
                 key={m.id}
                 className={`flex w-fit max-w-[80%] flex-col ${inbound ? "ml-auto" : "mr-auto"}`}
               >
-                <div className={`rounded-2xl px-4 py-3 text-xs leading-relaxed ${bubbleCls}`}>
-                  <div className="mb-1.5 flex flex-wrap items-center gap-1.5 text-[10px] font-semibold tracking-wider uppercase opacity-75">
+                <div className={`rounded-md px-4 py-3 text-xs leading-relaxed ${bubbleCls}`}>
+                  <div className="mb-1.5 flex flex-wrap items-center gap-1.5 text-[10px] font-semibold tracking-wide uppercase opacity-75">
                     <span>{inbound ? "user" : "bot"}</span>
                     <span className={`rounded-md px-1.5 py-0.5 ${SOURCE_STYLES[m.source] ?? ""}`}>
                       {m.source}
@@ -297,7 +297,7 @@ export default function DialogTranscript({ dialog }: Props) {
                     <button
                       type="button"
                       onClick={() => setLightbox({ mediaType: "chat", ref: m.image!.ref })}
-                      className="mb-2 block overflow-hidden rounded-xl cursor-zoom-in ring-1 ring-white/10 hover:ring-[#9f1239] hover:shadow-[0_0_15px_rgba(159,18,57,0.4)] transition-all"
+                      className="mb-2 block overflow-hidden rounded-md cursor-zoom-in ring-1 ring-white/10 hover:ring-[#9f1239] transition-colors"
                     >
                       <AuthedImage
                         mediaType="chat"
@@ -316,10 +316,10 @@ export default function DialogTranscript({ dialog }: Props) {
                         <span
                           key={`${a.label}-${i}`}
                           title={a.webApp ? `Mini App: ${a.webApp}` : a.data ?? ""}
-                          className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold ${
+                          className={`rounded-md px-2.5 py-1 text-[11px] font-semibold ${
                             a.webApp
                               ? "bg-white/10 text-white ring-1 ring-white/20"
-                              : "bg-[#17181c] text-slate-300 ring-1 ring-white/10"
+                              : "bg-panel text-slate-300 ring-1 ring-white/10"
                           }`}
                         >
                           {a.webApp && "🪟 "}
@@ -334,7 +334,7 @@ export default function DialogTranscript({ dialog }: Props) {
                       {m.toolCalls.map((tc, i) => (
                         <div
                           key={i}
-                          className="rounded-lg bg-[#17181c] px-2.5 py-1 font-mono text-[11px] leading-relaxed break-all text-slate-200 ring-1 ring-white/15"
+                          className="rounded-md bg-panel px-2.5 py-1 font-mono text-[11px] leading-relaxed break-all text-slate-200 ring-1 ring-white/15"
                         >
                           <span className="text-white font-semibold">{tc.name}</span>({tc.arguments})
                         </div>
@@ -351,12 +351,12 @@ export default function DialogTranscript({ dialog }: Props) {
       {lightbox && (
         <div
           onClick={() => setLightbox(null)}
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-[#121316]/90 p-6 backdrop-blur-xl"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-canvas/90 p-6"
         >
           <AuthedImage
             mediaType={lightbox.mediaType}
             refKey={lightbox.ref}
-            className="max-h-[90vh] max-w-[90vw] rounded-2xl object-contain shadow-2xl ring-1 ring-white/10"
+            className="max-h-[90vh] max-w-[90vw] rounded-md object-contain ring-1 ring-white/10"
           />
         </div>
       )}

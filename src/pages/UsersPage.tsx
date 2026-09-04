@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import Logo from "../components/Logo";
+import { useNavigate } from "react-router-dom";
+import AppHeader from "../components/AppHeader";
 import {
   getAdminStats,
   getCityCatalog,
@@ -11,13 +11,13 @@ import {
   type UserListItem,
   type WaitlistData,
 } from "../lib/api";
-import { clearApiKey } from "../lib/auth";
 import UsersTable from "../components/users/UsersTable";
 import UserProfileDrawer from "../components/users/UserProfileDrawer";
 import SectionHeader from "../components/SectionHeader";
 import HealthSection from "../components/users/HealthSection";
 import HealthTabs, { type HealthTab } from "../components/users/HealthTabs";
 import CityFilter, { type CityStatusFilter } from "../components/users/CityFilter";
+import ErrorBanner from "../components/ErrorBanner";
 
 const PAGE_SIZE = 20;
 
@@ -145,87 +145,21 @@ export default function UsersPage() {
     setPage(0);
   }
 
-  function handleLogout() {
-    clearApiKey();
-    navigate("/login", { replace: true });
-  }
-
   const maxPage = Math.max(0, Math.ceil(total / PAGE_SIZE) - 1);
   const from = total === 0 ? 0 : page * PAGE_SIZE + 1;
   const to = Math.min(total, (page + 1) * PAGE_SIZE);
 
   return (
-    <div className="min-h-screen bg-[#121316] px-4 py-6 sm:px-6 lg:px-8">
-      {/* Top Header */}
-      <div className="glass-card-borderless mx-auto mb-6 flex max-w-7xl items-center justify-between rounded-3xl p-4.5">
-        <div className="flex items-center gap-3.5">
-          <Logo className="h-11 w-11" />
-          <div>
-            <h1 className="text-xl font-extrabold tracking-tight text-white">
-              Gennety Analytics
-            </h1>
-            <p className="text-[11px] font-medium text-rose-200/70">Admin Dashboard</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <nav className="flex items-center gap-1.5 rounded-2xl bg-[#17181c] p-1.5 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
-            <Link
-              to="/"
-              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Analytics
-            </Link>
-            <Link
-              to="/users"
-              className="inner-glow-cherry rounded-xl px-4 py-2 text-xs font-bold tracking-wide text-white"
-            >
-              Users
-            </Link>
-            <Link
-              to="/purchases"
-              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Purchases
-            </Link>
-            <Link
-              to="/ad-spend"
-              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Ad Spend
-            </Link>
-            <Link
-              to="/dialogs"
-              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Dialogs
-            </Link>
-            <Link
-              to="/reports"
-              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Reports
-            </Link>
-          </nav>
-          <button
-            onClick={handleLogout}
-            className="inner-glow cursor-pointer rounded-2xl px-4 py-2.5 text-xs font-semibold text-rose-300/80 hover:text-rose-200"
-          >
-            Logout
-          </button>
-        </div>
-      </div>
+    <div className="min-h-screen bg-canvas px-4 py-5 sm:px-6 lg:px-8">
+      <AppHeader />
 
       <div className="mx-auto max-w-7xl">
         <SectionHeader
           title="User Profiles"
-          description="Browse registered users and review their AI-generated psychological profiles"
         />
 
         {error && (
-          <div className="mb-4 rounded-2xl bg-rose-950/40 p-4 text-xs font-medium text-rose-300 [box-shadow:inset_0_1px_1px_rgba(244,63,94,0.3),inset_0_0_10px_rgba(244,63,94,0.1)]">
-            {error}
-          </div>
+          <ErrorBanner className="mb-4" message={error} />
         )}
 
         <HealthSection stats={stats} loading={stats === null} />
@@ -253,13 +187,13 @@ export default function UsersPage() {
           onRowClick={setSelectedUserId}
         />
 
-        <div className="glass-card-borderless mt-5 flex items-center justify-between rounded-3xl p-4.5 text-xs text-slate-400">
+        <div className="panel mt-5 flex items-center justify-between rounded-lg p-3.5 text-xs text-slate-400">
           <div>
             {total > 0 ? (
               <>
-                Showing <span className="font-bold text-white">{from}</span>–
-                <span className="font-bold text-white">{to}</span> of{" "}
-                <span className="font-bold text-white">{total}</span> users
+                Showing <span className="font-semibold text-white">{from}</span>–
+                <span className="font-semibold text-white">{to}</span> of{" "}
+                <span className="font-semibold text-white">{total}</span> users
               </>
             ) : (
               !loading && "0 users"
@@ -269,17 +203,17 @@ export default function UsersPage() {
             <button
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={page === 0 || loading}
-              className="inner-glow cursor-pointer rounded-2xl px-4 py-2 text-xs font-semibold text-slate-200 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+              className="btn cursor-pointer rounded-md px-4 py-2 text-xs font-semibold text-slate-200 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
             >
               Previous
             </button>
             <span className="text-xs text-slate-400/80">
-              Page <span className="font-bold text-white">{page + 1}</span> / {maxPage + 1}
+              Page <span className="font-semibold text-white">{page + 1}</span> / {maxPage + 1}
             </span>
             <button
               onClick={() => setPage((p) => Math.min(maxPage, p + 1))}
               disabled={page >= maxPage || loading}
-              className="inner-glow cursor-pointer rounded-2xl px-4 py-2 text-xs font-semibold text-slate-200 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+              className="btn cursor-pointer rounded-md px-4 py-2 text-xs font-semibold text-slate-200 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
             >
               Next
             </button>

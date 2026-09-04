@@ -20,53 +20,47 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#121316] px-4">
-      {/* Ambient Deep Cherry background glow elements */}
-      <div className="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[550px] w-[650px] -translate-x-1/2 rounded-full bg-rose-950/30 blur-[140px]" />
-      <div className="pointer-events-none absolute -bottom-40 left-1/3 -z-10 h-[450px] w-[550px] rounded-full bg-rose-900/20 blur-[120px]" />
-
-      <form
-        onSubmit={handleSubmit}
-        className="glass-card-borderless w-full max-w-sm rounded-3xl p-8 transition-all"
-      >
-        <div className="mb-6 text-center">
-          <Logo className="mx-auto mb-3 h-12 w-12" />
-          <h1 className="text-2xl font-extrabold tracking-tight text-white">
+    <div className="flex min-h-screen items-center justify-center bg-canvas px-4">
+      <form onSubmit={handleSubmit} className="panel w-full max-w-sm rounded-lg p-6">
+        <div className="mb-5 flex items-center gap-2.5">
+          <Logo className="h-8 w-8" />
+          <h1 className="text-base font-semibold tracking-tight text-white">
             Gennety Admin
           </h1>
-          <p className="mt-1.5 text-xs font-medium text-rose-200/70">
-            Enter your Admin API key to access dashboard
-          </p>
         </div>
 
         {error && (
-          <p className="mb-4 rounded-2xl bg-rose-950/50 px-3.5 py-2.5 text-xs font-medium text-rose-300 [box-shadow:inset_0_1px_1px_rgba(244,63,94,0.3),inset_0_0_10px_rgba(244,63,94,0.1)]">
+          <p
+            role="alert"
+            className="mb-4 rounded-md border border-rose-500/30 bg-rose-950/30 px-3 py-2 text-xs text-rose-300"
+          >
             {error}
           </p>
         )}
 
-        <div className="mb-6">
-          <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-slate-300">
-            API Key
-          </label>
-          <input
-            type="password"
-            value={key}
-            onChange={(e) => {
-              setKey(e.target.value);
-              setError("");
-            }}
-            placeholder="sk-admin-..."
-            className="w-full rounded-2xl bg-[#17181c] px-4 py-3 text-sm text-white placeholder-slate-500 outline-none [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.2),inset_0_0_8px_rgba(255,255,255,0.04)] focus:[box-shadow:inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_0_14px_rgba(244,63,94,0.25)] transition-all duration-200"
-          />
-        </div>
+        <label
+          htmlFor="api-key"
+          className="mb-1.5 block text-[11px] font-medium tracking-wide text-slate-500 uppercase"
+        >
+          API key
+        </label>
+        <input
+          id="api-key"
+          type="password"
+          value={key}
+          onChange={(e) => {
+            setKey(e.target.value);
+            setError("");
+          }}
+          placeholder="sk-admin-…"
+          className="mb-5 w-full rounded-md border border-white/10 bg-canvas px-3 py-2.5 text-sm text-white placeholder-slate-600 outline-none focus:border-white/30"
+        />
 
         <button
           type="submit"
-          className="inner-glow-cherry group relative w-full cursor-pointer overflow-hidden rounded-2xl py-3.5 text-xs font-bold tracking-wide uppercase text-white shadow-xl transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
+          className="btn-primary w-full cursor-pointer rounded-md py-2.5 text-xs font-medium"
         >
-          <span className="relative z-10">Sign In</span>
-          <div className="absolute inset-0 bg-white/10 opacity-0 transition-opacity group-hover:opacity-100" />
+          Sign in
         </button>
       </form>
     </div>

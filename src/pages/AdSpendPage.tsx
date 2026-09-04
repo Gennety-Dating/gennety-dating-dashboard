@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import Logo from "../components/Logo";
+import { useNavigate } from "react-router-dom";
+import AppHeader from "../components/AppHeader";
 import SectionHeader from "../components/SectionHeader";
 import StatCard from "../components/StatCard";
 import AdSpendForm from "../components/adspend/AdSpendForm";
@@ -14,7 +14,7 @@ import {
   type AdSpendRow,
   type AdSpendUpsertInput,
 } from "../lib/api";
-import { clearApiKey } from "../lib/auth";
+import ErrorBanner from "../components/ErrorBanner";
 
 /**
  * The founder's own log of acquisition spend — what /admin/dashboard's
@@ -77,11 +77,6 @@ export default function AdSpendPage() {
     setRefreshKey((k) => k + 1);
   }
 
-  function handleLogout() {
-    clearApiKey();
-    navigate("/login", { replace: true });
-  }
-
   function handleSubmit(input: AdSpendUpsertInput) {
     setSubmitting(true);
     setFormError("");
@@ -127,77 +122,20 @@ export default function AdSpendPage() {
   const uniqueChannels = new Set(rows.map((r) => r.channel)).size;
 
   return (
-    <div className="min-h-screen bg-[#121316] px-4 py-6 sm:px-6 lg:px-8">
-      <div className="glass-card-borderless mx-auto mb-6 flex max-w-7xl items-center justify-between rounded-3xl p-4.5">
-        <div className="flex items-center gap-3.5">
-          <Logo className="h-11 w-11" />
-          <div>
-            <h1 className="text-xl font-extrabold tracking-tight text-white">Gennety Analytics</h1>
-            <p className="text-[11px] font-medium text-rose-200/70">Admin Dashboard</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <nav className="flex items-center gap-1.5 rounded-2xl bg-[#17181c] p-1.5 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
-            <Link
-              to="/"
-              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Analytics
-            </Link>
-            <Link
-              to="/users"
-              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Users
-            </Link>
-            <Link
-              to="/purchases"
-              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Purchases
-            </Link>
-            <Link
-              to="/ad-spend"
-              className="inner-glow-cherry rounded-xl px-4 py-2 text-xs font-bold tracking-wide text-white"
-            >
-              Ad Spend
-            </Link>
-            <Link
-              to="/dialogs"
-              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Dialogs
-            </Link>
-            <Link
-              to="/reports"
-              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Reports
-            </Link>
-          </nav>
-          <button
-            onClick={handleLogout}
-            className="inner-glow cursor-pointer rounded-2xl px-4 py-2.5 text-xs font-semibold text-rose-300/80 hover:text-rose-200"
-          >
-            Logout
-          </button>
-        </div>
-      </div>
+    <div className="min-h-screen bg-canvas px-4 py-5 sm:px-6 lg:px-8">
+      <AppHeader />
 
       <div className="mx-auto max-w-7xl">
         <SectionHeader
           title="Ad Spend"
-          description="What was spent to acquire users, by channel and campaign — feeds CAC / LTV:CAC / ROAS on the Analytics page"
+          description="Spend by channel and campaign. Feeds CAC, LTV:CAC and ROAS on the Analytics page."
         />
 
         {(error || deleteError) && (
-          <div className="mb-4 rounded-2xl bg-rose-950/40 p-4 text-xs font-medium text-rose-300 [box-shadow:inset_0_1px_1px_rgba(244,63,94,0.3),inset_0_0_10px_rgba(244,63,94,0.1)]">
-            {error || deleteError}
-          </div>
+          <ErrorBanner className="mb-4" message={error || deleteError} />
         )}
 
-        <div className="mb-5 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
           <StatCard
             label="Total spend"
             value={usd(totalSpendCents)}

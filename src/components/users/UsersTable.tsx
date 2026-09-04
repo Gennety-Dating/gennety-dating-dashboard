@@ -8,9 +8,9 @@ interface Props {
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  active: "bg-white/15 text-white [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.25)]",
-  onboarding: "bg-slate-200/15 text-slate-200 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]",
-  paused: "bg-[#17181c] text-slate-400 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]",
+  active: "bg-white/15 text-white",
+  onboarding: "bg-slate-200/15 text-slate-200",
+  paused: "bg-panel text-slate-400",
 };
 
 const VERIFICATION_STYLES: Record<string, string> = {
@@ -21,9 +21,9 @@ const VERIFICATION_STYLES: Record<string, string> = {
 };
 
 const STEP_STYLES: Record<string, string> = {
-  completed: "bg-white/15 text-white [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.25)]",
-  conversational: "bg-slate-200/15 text-slate-200 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]",
-  language: "bg-[#17181c] text-slate-400 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]",
+  completed: "bg-white/15 text-white",
+  conversational: "bg-slate-200/15 text-slate-200",
+  language: "bg-panel text-slate-400",
 };
 
 /**
@@ -44,7 +44,7 @@ function Attractiveness({ profile }: { profile: UserListItem["profile"] }) {
   }
   const score = Math.round(Math.min(Math.max((elo - 200) / 6, 0), 100));
   return (
-    <span className="font-bold text-white">
+    <span className="font-semibold text-white">
       {score}
       <span className="ml-1 text-[10px] font-medium text-slate-500">({elo})</span>
     </span>
@@ -76,7 +76,7 @@ function CityCell({ user }: { user: UserListItem }) {
     <div>
       <div className="font-medium text-slate-300">{city.city}</div>
       {city.status === "waitlist" ? (
-        <span className="mt-1 inline-flex items-center rounded-full bg-amber-500/15 px-2.5 py-0.5 text-[10px] font-bold text-amber-300">
+        <span className="mt-1 inline-flex items-center rounded-full bg-amber-500/15 px-2.5 py-0.5 text-[10px] font-semibold text-amber-300">
           Waitlist
         </span>
       ) : (
@@ -87,10 +87,10 @@ function CityCell({ user }: { user: UserListItem }) {
 }
 
 function Pill({ text, styles }: { text: string; styles: Record<string, string> }) {
-  const cls = styles[text] ?? "bg-[#17181c] text-slate-300 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]";
+  const cls = styles[text] ?? "bg-panel text-slate-300";
   return (
     <span
-      className={`inline-flex items-center rounded-full px-3 py-0.5 text-[11px] font-bold capitalize ${cls}`}
+      className={`inline-flex items-center rounded-full px-3 py-0.5 text-[11px] font-semibold capitalize ${cls}`}
     >
       {text}
     </span>
@@ -122,7 +122,7 @@ function Spent({ summary }: { summary: UserListItem["purchaseSummary"] }) {
   }
   return (
     <div>
-      <div className="font-bold text-white">${(summary.usdCents / 100).toFixed(2)}</div>
+      <div className="font-semibold text-white">${(summary.usdCents / 100).toFixed(2)}</div>
       <div className="text-[11px] font-medium text-slate-500">
         {summary.count} purchase{summary.count === 1 ? "" : "s"}
         {summary.refundedCount > 0 ? ` · ${summary.refundedCount} refunded` : ""}
@@ -141,7 +141,7 @@ function HealthBadge({ health }: { health: UserListItem["health"] }) {
   return (
     <div>
       <span
-        className={`inline-flex items-center rounded-full px-3 py-0.5 text-[11px] font-bold ${HEALTH_STYLES[cls]}`}
+        className={`inline-flex items-center rounded-full px-3 py-0.5 text-[11px] font-semibold ${HEALTH_STYLES[cls]}`}
       >
         {HEALTH_LABELS[cls]}
       </span>
@@ -154,11 +154,11 @@ function HealthBadge({ health }: { health: UserListItem["health"] }) {
 
 export default function UsersTable({ users, loading, onRowClick }: Props) {
   return (
-    <div className="glass-card-borderless overflow-hidden rounded-3xl">
+    <div className="panel overflow-hidden rounded-lg">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-white/[0.03] text-xs">
-          <thead className="bg-[#121316]">
-            <tr className="text-left text-[11px] font-bold tracking-wider text-slate-400 uppercase">
+          <thead className="bg-canvas">
+            <tr className="text-left text-[11px] font-semibold tracking-wide text-slate-400 uppercase">
               <th className="px-6 py-4">Name</th>
               <th className="px-6 py-4">Gender</th>
               <th
@@ -194,7 +194,7 @@ export default function UsersTable({ users, loading, onRowClick }: Props) {
                 <tr key={`skel-${i}`}>
                   {Array.from({ length: 10 }).map((_, j) => (
                     <td key={j} className="px-6 py-4">
-                      <div className="h-3.5 w-24 animate-pulse rounded-xl bg-slate-800/50" />
+                      <div className="h-3.5 w-24 animate-pulse rounded-md bg-slate-800/50" />
                     </td>
                   ))}
                 </tr>
@@ -213,10 +213,10 @@ export default function UsersTable({ users, loading, onRowClick }: Props) {
                 <tr
                   key={u.id}
                   onClick={() => onRowClick(u.id)}
-                  className="group cursor-pointer transition-all duration-150 hover:bg-white/[0.02]"
+                  className="group cursor-pointer transition-colors duration-150 hover:bg-white/[0.02]"
                 >
                   <td className="px-6 py-4">
-                    <div className="font-bold text-white transition-colors group-hover:text-rose-300">
+                    <div className="font-semibold text-white transition-colors group-hover:text-rose-300">
                       {displayName(u)}
                     </div>
                     <div className="text-[11px] font-medium text-slate-400">

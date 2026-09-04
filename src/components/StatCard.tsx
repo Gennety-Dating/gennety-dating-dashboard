@@ -1,14 +1,12 @@
+import InfoHint from "./InfoHint";
+
 interface StatCardProps {
   label: string;
   value: string | number;
   sub?: string;
+  /** Raises the value to the largest step in the scale. Reserved for the North Star metric. */
   accent?: boolean;
-  /**
-   * Optional explainer surfaced via a small ⓘ marker. Hover reveals what
-   * the metric measures and how it's computed — non-obvious aggregates
-   * like "completion rate" or "false-positive proxy" need this so the
-   * dashboard reader doesn't misread them.
-   */
+  /** Methodology note, surfaced on hover/focus of the ⓘ marker rather than printed under the value. */
   info?: string;
   /** Tiny n-data warning. Renders below the value when sample size is too small to draw conclusions. */
   lowSample?: boolean;
@@ -23,35 +21,25 @@ export default function StatCard({
   lowSample,
 }: StatCardProps) {
   return (
-    <div className="glass-card-borderless group relative overflow-hidden rounded-3xl p-5.5 transition-all duration-300 hover:-translate-y-0.5">
-      {accent && (
-        <div className="pointer-events-none absolute -top-12 -right-12 h-28 w-28 rounded-full bg-rose-600/15 blur-2xl transition-all duration-300 group-hover:bg-rose-600/25" />
-      )}
+    <div className="panel rounded-lg p-4">
       <div className="flex items-start justify-between gap-2">
-        <p className="text-[11px] font-bold tracking-wider text-slate-400 uppercase">
+        <p className="text-[11px] font-medium tracking-wide text-slate-500 uppercase">
           {label}
         </p>
-        {info && (
-          <span
-            title={info}
-            className="inner-glow cursor-help rounded-full px-2 py-0.5 text-[10px] font-semibold leading-4 text-slate-300 transition-colors hover:text-rose-200"
-          >
-            i
-          </span>
-        )}
+        {info && <InfoHint text={info} />}
       </div>
+      {/* `tabular-nums` is not decoration: these cards sit in a 4-up grid and
+          the eye compares them column-wise, which proportional digits break. */}
       <p
-        className={`mt-2.5 text-3.5xl font-black tracking-tight ${
-          accent
-            ? "text-gradient-cherry"
-            : "text-white"
+        className={`mt-2 font-semibold tracking-tight text-white tabular-nums ${
+          accent ? "text-3xl" : "text-2xl"
         }`}
       >
         {value}
       </p>
-      {sub && <p className="mt-1 text-xs font-medium text-slate-400/80">{sub}</p>}
+      {sub && <p className="mt-1 text-xs text-slate-500">{sub}</p>}
       {lowSample && (
-        <span className="mt-2.5 inline-block rounded-xl bg-white/10 px-2.5 py-0.5 text-[10px] font-bold tracking-wider text-slate-200 uppercase [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
+        <span className="mt-2 inline-block rounded-md border border-amber-500/25 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-amber-300/90 uppercase">
           low sample
         </span>
       )}

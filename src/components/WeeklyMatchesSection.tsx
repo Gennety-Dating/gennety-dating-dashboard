@@ -46,7 +46,7 @@ function UserCard({ user }: { user: WeeklyMatchesUserCard }) {
             key={ref}
             mediaType={refMediaType(ref)}
             refKey={ref}
-            className="h-16 w-16 rounded-lg object-cover"
+            className="h-16 w-16 rounded-md object-cover"
           />
         ))}
       </div>
@@ -56,7 +56,7 @@ function UserCard({ user }: { user: WeeklyMatchesUserCard }) {
 
 function PairCard({ pair }: { pair: WeeklyMatchesPair }) {
   return (
-    <div className="glass-card-borderless rounded-3xl p-5">
+    <div className="panel rounded-lg p-5">
       <div className="mb-3 flex items-center gap-2">
         <span className="text-[11px] uppercase tracking-wide text-slate-500">
           {pair.status}
@@ -67,7 +67,7 @@ function PairCard({ pair }: { pair: WeeklyMatchesPair }) {
           </span>
         )}
       </div>
-      <div className="flex items-start gap-4">
+      <div className="flex items-start gap-3">
         <UserCard user={pair.users[0]} />
         <div className="self-center text-slate-600">✕</div>
         <UserCard user={pair.users[1]} />

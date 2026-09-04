@@ -3,13 +3,13 @@ interface LogoProps {
   size?: number;
 }
 
-export default function Logo({ className = "h-11 w-11", size }: LogoProps) {
+export default function Logo({ className = "h-7 w-7", size }: LogoProps) {
   const style = size ? { width: `${size}px`, height: `${size}px` } : undefined;
 
   return (
     <div
       style={style}
-      className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-2xl shadow-xl shadow-rose-950/60 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.4),inset_0_0_14px_rgba(255,255,255,0.15)] ${className}`}
+      className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-md ${className}`}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

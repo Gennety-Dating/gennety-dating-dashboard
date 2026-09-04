@@ -47,21 +47,19 @@ function BlockedCard({
 }) {
   const has = value != null;
   return (
-    <div className="glass-card-borderless rounded-3xl p-5.5">
-      <p className="text-[11px] font-bold tracking-wider text-slate-400 uppercase">
+    <div className="panel rounded-lg p-4">
+      <p className="text-[11px] font-medium tracking-wide text-slate-500 uppercase">
         {label}
       </p>
       <p
-        className={`mt-2.5 text-2xl font-black tracking-tight ${
-          has ? "text-white" : "text-slate-500"
+        className={`mt-2 text-2xl font-semibold tracking-tight tabular-nums ${
+          has ? "text-white" : "text-slate-600"
         }`}
       >
         {has ? value : NO_DATA}
       </p>
       {!has && (
-        <p className="mt-1.5 text-xs leading-relaxed font-medium text-slate-400/70">
-          {reason}
-        </p>
+        <p className="mt-1 text-xs leading-relaxed text-slate-500">{reason}</p>
       )}
     </div>
   );
@@ -82,12 +80,12 @@ function ChannelRow({ row }: { row: ChannelAcquisitionCostRow }) {
       </td>
       <td className="px-4 py-3">
         {row.matured ? (
-          <span className="rounded-lg bg-emerald-500/15 px-2 py-1 text-[10px] font-bold text-emerald-300">
+          <span className="rounded-md bg-emerald-500/15 px-2 py-1 text-[10px] font-semibold text-emerald-300">
             Matured
           </span>
         ) : (
           <span
-            className="rounded-lg bg-amber-500/15 px-2 py-1 text-[10px] font-bold text-amber-300"
+            className="rounded-md bg-amber-500/15 px-2 py-1 text-[10px] font-semibold text-amber-300"
             title="This channel's spend is still inside its attribution window — the numbers so far are real, just not final."
           >
             Still accruing
@@ -110,21 +108,21 @@ function FunnelStep({
   hint: string;
   tone?: "plain" | "accent" | "negative";
 }) {
+  // "accent" is the denominator row, not a colour: it is the number the rest
+  // of the funnel is measured against, so it gets weight, not a gradient.
   const valueClass =
-    tone === "accent"
-      ? "text-gradient-cherry"
-      : tone === "negative"
-        ? "text-rose-300"
-        : "text-white";
+    tone === "negative" ? "text-rose-300" : "text-white";
   return (
-    <div className="flex items-baseline justify-between gap-4 border-b border-white/5 py-3 last:border-b-0">
+    <div className="flex items-baseline justify-between gap-3 border-b border-white/5 py-2 last:border-b-0">
       <div className="min-w-0">
-        <p className="text-xs font-bold text-white">{label}</p>
-        <p className="mt-0.5 text-[11px] leading-relaxed font-medium text-slate-400/80">
-          {hint}
-        </p>
+        <p className="text-xs font-medium text-white">{label}</p>
+        <p className="mt-0.5 text-[11px] text-slate-500">{hint}</p>
       </div>
-      <p className={`shrink-0 text-xl font-black tracking-tight ${valueClass}`}>
+      <p
+        className={`shrink-0 tracking-tight tabular-nums ${valueClass} ${
+          tone === "accent" ? "text-xl font-semibold" : "text-lg font-medium"
+        }`}
+      >
         {tone === "negative" && value > 0 ? `−${value}` : value}
       </p>
     </div>
@@ -144,14 +142,14 @@ export default function CoreMetricsSection({
   const excluded = c.excludedSynthetic + c.excludedTest;
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
       {/* ── Daily ─────────────────────────────────────────────── */}
       <section>
         <SectionHeader
           title="Core metrics"
           description="The four numbers worth reading every day. Everything here excludes synthetic and test accounts — so none of these denominators is users.total."
         />
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
             accent
             label="Weekly paid dates"
@@ -190,7 +188,7 @@ export default function CoreMetricsSection({
           title="Gender ratio"
           description="Matching is strictly two-sided, so pairs per drop are bounded by the smaller side. The unknown share is part of the finding, not a footnote."
         />
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <StatCard
             label="Among those who answered"
             value={
@@ -228,46 +226,46 @@ export default function CoreMetricsSection({
           title="Match → ticket, step by step"
           description="Where confirmed pairs stop. Every row is derived from columns the product already writes, so this covers the entire match history — not just since the metric shipped."
         />
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-          <div className="glass-card-borderless rounded-3xl p-6 lg:col-span-2">
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
+          <div className="panel rounded-lg p-6 lg:col-span-2">
             <FunnelStep
               label="Confirmed matches"
               value={c.confirmed}
-              hint="Both sides said yes. The denominator."
+              hint="Both sides said yes — the denominator"
               tone="accent"
             />
             <FunnelStep
               label="Both tickets paid"
               value={c.ticketsPurchased}
-              hint="The calendar opens only when both slots settle, so one ticket is not half a sale."
+              hint="The calendar opens only once both slots settle"
             />
             <FunnelStep
               label="One ticket of two"
               value={c.ticketsPartial}
-              hint="Waiting on the other side. Not a date, and not counted either way."
+              hint="Waiting on the other side; counted neither way"
             />
             <FunnelStep
               label="No-show"
               value={c.noShow}
-              hint="Someone was left waiting. Answered at T+24h — silence reads as unknown, never as a no-show."
+              hint="Answered at T+24h; silence reads as unknown"
               tone="negative"
             />
             <FunnelStep
               label="Ghosted during planning"
               value={c.ghostDuringScheduling}
-              hint="Went quiet between accepting and the date being locked in."
+              hint="Went quiet between accepting and lock-in"
               tone="negative"
             />
             <FunnelStep
               label="Refunded"
               value={c.refunded}
-              hint="A ticket returned to a wallet. Usually the same match as a row above — which is why they are not added up."
+              hint="Usually the same match as a row above, so never summed"
               tone="negative"
             />
             <FunnelStep
               label="Deductions applied"
               value={c.deductions}
-              hint="Union of the three rows above, intersected with paid matches. Each ruined date subtracts once."
+              hint="Union of the three rows above, among paid matches"
               tone="negative"
             />
           </div>
@@ -300,14 +298,10 @@ export default function CoreMetricsSection({
         {excluded > 0 && (
           <p className="mt-4 text-[11px] leading-relaxed font-medium text-slate-400/70">
             Excluded from every number above:{" "}
-            <span className="font-bold text-slate-300">{c.excludedSynthetic}</span>{" "}
-            synthetic {c.excludedSynthetic === 1 ? "match" : "matches"} (the
-            stand-in partner declines by construction and cannot buy a ticket)
-            and{" "}
-            <span className="font-bold text-slate-300">{c.excludedTest}</span>{" "}
-            test {c.excludedTest === 1 ? "pair" : "pairs"}. Leaving them in
-            would make the conversion a permanent zero by design rather than by
-            fact.
+            <span className="font-semibold text-slate-300">{c.excludedSynthetic}</span>{" "}
+            synthetic {c.excludedSynthetic === 1 ? "match" : "matches"} and{" "}
+            <span className="font-semibold text-slate-300">{c.excludedTest}</span>{" "}
+            test {c.excludedTest === 1 ? "pair" : "pairs"}.
           </p>
         )}
       </section>
@@ -318,7 +312,7 @@ export default function CoreMetricsSection({
           title="Acquisition cost"
           description="Computed from spend logged on the Ad Spend page against the cohort it bought. A channel reads 'still accruing' until its category's whole attribution window has elapsed — the numbers so far are real, just not final."
         />
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <BlockedCard
             label="CAC per active"
             value={d.cacPerActiveUsdCents == null ? null : usd(d.cacPerActiveUsdCents)}
@@ -343,11 +337,11 @@ export default function CoreMetricsSection({
         </div>
 
         {d.adSpendByChannel.length > 0 && (
-          <div className="glass-card-borderless mt-4 overflow-hidden rounded-3xl">
+          <div className="panel mt-4 overflow-hidden rounded-lg">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-[#121316]">
-                  <tr className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">
+                <thead className="bg-canvas">
+                  <tr className="text-[10px] font-semibold tracking-wide text-slate-500 uppercase">
                     <th className="px-4 py-3">Channel</th>
                     <th className="px-4 py-3">Spend</th>
                     <th className="px-4 py-3">Signups</th>
@@ -375,7 +369,7 @@ export default function CoreMetricsSection({
           title="Weekly"
           description="Two numbers that need something the product does not have yet. They are listed so the gap is visible, not so the panel looks full."
         />
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <BlockedCard
             label="Churn"
             reason="Measured on Premium subscriptions. Not one has ever been sold, so there is no cohort to lose."

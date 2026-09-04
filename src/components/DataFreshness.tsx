@@ -37,12 +37,12 @@ export default function DataFreshness({ generatedAt, refreshing, onRefresh }: Pr
     : false;
 
   return (
-    <div className="flex items-center gap-2.5">
+    <div className="flex items-center gap-2">
       {age && (
         <span
           title={`Computed ${new Date(generatedAt!).toLocaleString()} — server-side cache`}
-          className={`hidden text-[11px] font-medium sm:inline ${
-            stale ? "text-amber-300" : "text-slate-400"
+          className={`hidden text-[11px] tabular-nums sm:inline ${
+            stale ? "text-amber-300" : "text-slate-500"
           }`}
         >
           data {age}
@@ -53,7 +53,7 @@ export default function DataFreshness({ generatedAt, refreshing, onRefresh }: Pr
         onClick={onRefresh}
         disabled={refreshing}
         title="Recompute server-side, bypassing the analytics cache"
-        className="inner-glow cursor-pointer rounded-2xl px-3.5 py-2 text-xs font-bold text-slate-300 transition-colors hover:text-white disabled:cursor-wait disabled:opacity-50"
+        className="btn cursor-pointer rounded-md px-2.5 py-1.5 text-xs font-medium disabled:cursor-wait disabled:opacity-50"
       >
         {refreshing ? "Refreshing…" : "↻ Refresh"}
       </button>

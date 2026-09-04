@@ -10,6 +10,7 @@ import { toTagList } from "../../lib/tags";
 import AuthedImage from "../AuthedImage";
 import PsychProfileBlock from "./PsychProfileBlock";
 import ChatHistoryBlock from "./ChatHistoryBlock";
+import ErrorBanner from "../ErrorBanner";
 
 interface Props {
   userId: string | null;
@@ -19,7 +20,7 @@ interface Props {
 function Field({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div>
-      <p className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
+      <p className="text-[10px] font-semibold tracking-wide text-slate-400 uppercase">
         {label}
       </p>
       <p className="mt-0.5 text-xs font-semibold text-slate-200">{value ?? "—"}</p>
@@ -30,8 +31,8 @@ function Field({ label, value }: { label: string; value: React.ReactNode }) {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h4 className="mb-3 text-xs font-bold tracking-tight text-white uppercase">{title}</h4>
-      <div className="space-y-4 rounded-2xl bg-[#121316] p-5 shadow-xl ring-1 ring-white/5">
+      <h4 className="mb-3 text-xs font-semibold tracking-tight text-white uppercase">{title}</h4>
+      <div className="space-y-4 rounded-md bg-canvas p-5 ring-1 ring-white/5">
         {children}
       </div>
     </section>
@@ -46,7 +47,7 @@ function TagList({ items }: { items: string[] | string | undefined | null }) {
       {tags.map((t, i) => (
         <span
           key={`${t}-${i}`}
-          className="rounded-xl bg-[#121316] px-3 py-1 text-xs font-semibold text-slate-300 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]"
+          className="rounded-md bg-canvas px-3 py-1 text-xs font-semibold text-slate-300"
         >
           {t}
         </span>
@@ -106,21 +107,21 @@ function EloBlock({ detail }: { detail: UserDetail }) {
 
   return (
     <>
-      <div className="flex items-end justify-between gap-4">
+      <div className="flex items-end justify-between gap-3">
         <div>
-          <p className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
+          <p className="text-[10px] font-semibold tracking-wide text-slate-400 uppercase">
             Attractiveness score
           </p>
-          <p className="mt-0.5 text-3xl font-black text-white">
+          <p className="mt-0.5 text-3xl font-semibold text-white">
             {seeded ? attractiveness : "—"}
-            <span className="ml-1 text-sm font-bold text-slate-500">/ 100</span>
+            <span className="ml-1 text-sm font-semibold text-slate-500">/ 100</span>
           </p>
         </div>
         <div className="text-right">
-          <p className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
+          <p className="text-[10px] font-semibold tracking-wide text-slate-400 uppercase">
             Elo
           </p>
-          <p className="mt-0.5 text-xl font-black text-white">{elo}</p>
+          <p className="mt-0.5 text-xl font-semibold text-white">{elo}</p>
         </div>
       </div>
 
@@ -136,7 +137,7 @@ function EloBlock({ detail }: { detail: UserDetail }) {
         <span>800</span>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         <Field
           label="Seeded"
           value={
@@ -167,7 +168,7 @@ const VERIFICATION_TONE: Record<string, string> = {
 function Badge({ text, tone }: { text: string; tone?: string }) {
   return (
     <span
-      className={`inline-flex items-center rounded-full px-3 py-0.5 text-[11px] font-bold ring-1 ${
+      className={`inline-flex items-center rounded-full px-3 py-0.5 text-[11px] font-semibold ring-1 ${
         tone ?? "bg-white/10 text-slate-300 ring-white/15"
       }`}
     >
@@ -184,7 +185,7 @@ function decisionLabel(value: boolean | null): string {
 
 function MatchRow({ m }: { m: UserMatchRow }) {
   return (
-    <div className="rounded-xl bg-[#17181c] px-3.5 py-2.5 ring-1 ring-white/5">
+    <div className="rounded-md bg-panel px-3.5 py-2.5 ring-1 ring-white/5">
       <div className="flex flex-wrap items-center gap-2">
         <Badge text={m.status} />
         <span className="text-xs font-semibold text-slate-200">
@@ -232,7 +233,7 @@ function PurchaseRowItem({ p }: { p: PurchaseRow }) {
         ? `$${(p.amountCents / 100).toFixed(2)}`
         : "—";
   return (
-    <div className="rounded-xl bg-[#17181c] px-3.5 py-2.5 ring-1 ring-white/5">
+    <div className="rounded-md bg-panel px-3.5 py-2.5 ring-1 ring-white/5">
       <div className="flex flex-wrap items-center gap-2">
         <Badge text={PURCHASE_KIND_LABEL[p.kind] ?? p.kind} />
         <span className="text-xs font-semibold text-slate-200">{money}</span>
@@ -318,21 +319,21 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
     <>
       <div
         onClick={onClose}
-        className={`fixed inset-0 z-40 bg-[#121316]/80 backdrop-blur-md transition-opacity duration-300 ${
+        className={`fixed inset-0 z-40 bg-canvas/80 transition-opacity ${
           open ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       />
       <aside
-        className={`fixed inset-y-0 right-0 z-50 w-full max-w-2xl overflow-y-auto bg-[#121316]/95 shadow-2xl backdrop-blur-2xl [box-shadow:inset_1px_0_1px_rgba(255,255,255,0.1)] transition-transform duration-300 ${
+        className={`fixed inset-y-0 right-0 z-50 w-full max-w-2xl overflow-y-auto bg-canvas/95 transition-transform ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="sticky top-0 z-10 flex items-center justify-between bg-[#17181c]/95 px-6 py-4.5 backdrop-blur-xl [box-shadow:inset_0_-1px_0_rgba(255,255,255,0.06)]">
-          <h2 className="text-base font-extrabold tracking-tight text-white">User Profile</h2>
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-panel/95 px-6 py-3">
+          <h2 className="text-base font-semibold tracking-tight text-white">User Profile</h2>
           <button
             onClick={onClose}
             aria-label="Close"
-            className="inner-glow cursor-pointer rounded-2xl px-4 py-2 text-xs font-bold text-slate-300 hover:text-white"
+            className="btn cursor-pointer rounded-md px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
           >
             Close
           </button>
@@ -341,23 +342,21 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
         <div className="space-y-6 px-6 py-6">
           {loading && (
             <div className="flex items-center justify-center py-20">
-              <div className="h-7 w-7 animate-spin rounded-full border-2 border-rose-600 border-t-white" />
+              <div className="h-7 w-7 animate-spin rounded-full border-2 border-white/15 border-t-white/70" />
             </div>
           )}
 
           {error && !loading && (
-            <div className="rounded-2xl bg-rose-950/40 p-4 text-xs font-medium text-rose-300 [box-shadow:inset_0_1px_1px_rgba(244,63,94,0.3)]">
-              {error}
-            </div>
+            <ErrorBanner message={error} />
           )}
 
           {detail && !loading && (
             <>
               {/* Header card */}
-              <div className="rounded-3xl bg-[#121316] p-6 shadow-2xl [box-shadow:inset_0_1px_1.5px_rgba(255,255,255,0.15)]">
-                <div className="flex items-start justify-between gap-4">
+              <div className="rounded-lg bg-canvas p-6">
+                <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h3 className="text-2xl font-black text-white">
+                    <h3 className="text-2xl font-semibold text-white">
                       {displayName(detail)}
                     </h3>
                     <p className="mt-1 text-xs font-medium text-slate-400">
@@ -385,7 +384,7 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
+                    <p className="text-[10px] font-semibold tracking-wide text-slate-400 uppercase">
                       Registered
                     </p>
                     <p className="mt-0.5 text-xs font-medium text-slate-300">
@@ -394,7 +393,7 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
                   </div>
                 </div>
 
-                <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3">
+                <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
                   <Field label="Age" value={detail.age ?? "—"} />
                   <Field
                     label="Gender"
@@ -448,7 +447,7 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
                         key={`${ref}-${i}`}
                         type="button"
                         onClick={() => setLightbox(ref)}
-                        className="cursor-zoom-in overflow-hidden rounded-xl ring-1 ring-white/10 transition-all hover:ring-[#9f1239]"
+                        className="cursor-zoom-in overflow-hidden rounded-md ring-1 ring-white/10 transition-colors hover:ring-[#9f1239]"
                       >
                         <AuthedImage
                           mediaType="photo"
@@ -460,7 +459,7 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
                           this photo's own match against the liveness selfie —
                           the number that decides whether the account verifies.
                         */}
-                        <span className="block bg-[#17181c] px-1 py-0.5 text-center text-[10px] font-semibold text-slate-400">
+                        <span className="block bg-panel px-1 py-0.5 text-center text-[10px] font-semibold text-slate-400">
                           face {pct(faceScores[i])}
                         </span>
                       </button>
@@ -471,7 +470,7 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
 
               {/* Verification */}
               <Section title="Verification">
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                   <Field
                     label="Status"
                     value={
@@ -503,7 +502,7 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
                   <button
                     type="button"
                     onClick={() => setLightbox(detail.verifiedSelfiePath!)}
-                    className="cursor-zoom-in overflow-hidden rounded-xl ring-1 ring-white/10 transition-all hover:ring-[#9f1239]"
+                    className="cursor-zoom-in overflow-hidden rounded-md ring-1 ring-white/10 transition-colors hover:ring-[#9f1239]"
                   >
                     <AuthedImage
                       mediaType="photo"
@@ -516,7 +515,7 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
 
               {/* Matchability — why this person is or isn't in the pool */}
               <Section title="Matchability">
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                   <Field label="Last matched" value={formatDate(detail.profile?.lastMatchedAt)} />
                   <Field label="Missed drops" value={detail.profile?.missedWeeks ?? "—"} />
                   <Field
@@ -547,7 +546,7 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
                   />
                 </div>
                 <div>
-                  <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
+                  <p className="mb-1.5 text-[10px] font-semibold tracking-wide text-slate-400 uppercase">
                     Anchor tags
                   </p>
                   <TagList items={detail.profile?.anchorTags} />
@@ -599,7 +598,7 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
                   </span>
                 ) : (
                   <>
-                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                       <Field
                         label="Total spent"
                         value={`$${((detail.purchaseSummary?.usdCents ?? 0) / 100).toFixed(2)}`}
@@ -625,7 +624,7 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
 
               {/* Psychological summary — prominent AI block */}
               <section>
-                <h4 className="mb-3 text-xs font-bold tracking-tight text-white uppercase">
+                <h4 className="mb-3 text-xs font-semibold tracking-tight text-white uppercase">
                   Psychological Dump
                 </h4>
                 <PsychProfileBlock
@@ -636,7 +635,7 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
               {/* Profile attributes */}
               {detail.profile && (
                 <Section title="Profile">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-3">
                     <Field
                       label="Height"
                       value={detail.profile.height ? `${detail.profile.height} cm` : "—"}
@@ -651,26 +650,26 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
                     />
                   </div>
                   <div>
-                    <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
+                    <p className="mb-1.5 text-[10px] font-semibold tracking-wide text-slate-400 uppercase">
                       Hobbies
                     </p>
                     <TagList items={detail.profile.hobbies} />
                   </div>
                   <div>
-                    <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
+                    <p className="mb-1.5 text-[10px] font-semibold tracking-wide text-slate-400 uppercase">
                       Partner Preferences
                     </p>
                     <TagList items={detail.profile.partnerPreferences} />
                   </div>
                   <div>
-                    <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
+                    <p className="mb-1.5 text-[10px] font-semibold tracking-wide text-slate-400 uppercase">
                       Negative Constraints
                     </p>
                     <TagList items={detail.profile.negativeConstraints} />
                   </div>
                   {detail.profile.fridayVibeText && (
                     <div>
-                      <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
+                      <p className="mb-1.5 text-[10px] font-semibold tracking-wide text-slate-400 uppercase">
                         Ideal Friday
                       </p>
                       <p className="text-xs leading-relaxed text-slate-300">
@@ -680,7 +679,7 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
                   )}
                   {detail.profile.vibeFocusText && (
                     <div>
-                      <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
+                      <p className="mb-1.5 text-[10px] font-semibold tracking-wide text-slate-400 uppercase">
                         Experience vs company
                       </p>
                       <p className="text-xs leading-relaxed text-slate-300">
@@ -716,12 +715,12 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
               {/* Chat history preview */}
               <section>
                 <div className="mb-3 flex items-center justify-between gap-3">
-                  <h4 className="text-xs font-bold tracking-tight text-white uppercase">
+                  <h4 className="text-xs font-semibold tracking-tight text-white uppercase">
                     Chat History
                   </h4>
                   <Link
                     to={`/users/${detail.id}`}
-                    className="shrink-0 rounded-xl bg-violet-600/20 px-3 py-1.5 text-xs font-semibold text-violet-200 ring-1 ring-violet-500/30 transition-all hover:bg-violet-600/30"
+                    className="shrink-0 rounded-md bg-violet-600/20 px-3 py-1.5 text-xs font-semibold text-violet-200 ring-1 ring-violet-500/30 transition-colors hover:bg-violet-600/30"
                   >
                     Open full conversation &rarr;
                   </Link>
@@ -736,12 +735,12 @@ export default function UserProfileDrawer({ userId, onClose }: Props) {
       {lightbox && (
         <div
           onClick={() => setLightbox(null)}
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-[#121316]/90 p-6 backdrop-blur-xl"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-canvas/90 p-6"
         >
           <AuthedImage
             mediaType="photo"
             refKey={lightbox}
-            className="max-h-[90vh] max-w-[90vw] rounded-2xl object-contain shadow-2xl ring-1 ring-white/10"
+            className="max-h-[90vh] max-w-[90vw] rounded-md object-contain ring-1 ring-white/10"
           />
         </div>
       )}

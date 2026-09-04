@@ -54,7 +54,7 @@ export default function CityFilter({
 
   return (
     <div className="mb-4 flex flex-wrap items-center gap-3">
-      <div className="flex flex-wrap items-center gap-1.5 rounded-2xl bg-[#17181c] p-1.5 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
+      <div className="flex flex-wrap items-center gap-1.5 rounded-md bg-panel p-1.5">
         {STATUSES.map((status) => {
           const isActive = cityStatus === status.value;
           return (
@@ -63,9 +63,9 @@ export default function CityFilter({
               onClick={() => onCityStatusChange(status.value)}
               className={`${
                 isActive
-                  ? "inner-glow-cherry text-white"
-                  : "inner-glow text-slate-300 hover:text-white"
-              } cursor-pointer rounded-xl px-3.5 py-2 text-[11px] font-bold tracking-wide`}
+                  ? "btn-primary text-white"
+                  : "btn text-slate-300 hover:text-white"
+              } cursor-pointer rounded-md px-3.5 py-2 text-[11px] font-semibold tracking-wide`}
             >
               {status.label}
               {status.value === "waitlist" && waitlist && (
@@ -81,7 +81,7 @@ export default function CityFilter({
       <select
         value={cityKey}
         onChange={(e) => onCityKeyChange(e.target.value)}
-        className="inner-glow cursor-pointer rounded-2xl bg-[#17181c] px-4 py-2.5 text-[11px] font-semibold text-slate-200 outline-none hover:text-white"
+        className="btn cursor-pointer rounded-md bg-panel px-4 py-2.5 text-[11px] font-semibold text-slate-200 outline-none hover:text-white"
       >
         <option value="">Все города</option>
         {groups.map((group) => (

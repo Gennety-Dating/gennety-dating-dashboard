@@ -102,11 +102,11 @@ interface Props {
 
 export default function PurchasesTable({ rows, loading, onRowClick }: Props) {
   return (
-    <div className="glass-card-borderless overflow-hidden rounded-3xl">
+    <div className="panel overflow-hidden rounded-lg">
       <div className="overflow-x-auto">
         <table className="w-full text-left text-xs">
-          <thead className="bg-[#121316]">
-            <tr className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">
+          <thead className="bg-canvas">
+            <tr className="text-[10px] font-semibold tracking-wide text-slate-500 uppercase">
               <th className="px-6 py-4">When</th>
               <th className="px-6 py-4">Who</th>
               <th className="px-6 py-4">Contact</th>
@@ -159,7 +159,7 @@ export default function PurchasesTable({ rows, loading, onRowClick }: Props) {
                     </td>
                     <td className="px-6 py-4">
                       <span
-                        className={`rounded-lg px-2 py-1 text-[10px] font-bold ${
+                        className={`rounded-md px-2 py-1 text-[10px] font-semibold ${
                           KIND_STYLE[row.kind] ?? "bg-slate-500/20 text-slate-300"
                         }`}
                       >
@@ -170,7 +170,7 @@ export default function PurchasesTable({ rows, loading, onRowClick }: Props) {
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-bold text-white">{money.primary}</div>
+                      <div className="font-semibold text-white">{money.primary}</div>
                       {money.secondary && (
                         <div
                           className="text-[11px] text-slate-500"
@@ -185,7 +185,7 @@ export default function PurchasesTable({ rows, loading, onRowClick }: Props) {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`rounded-lg px-2 py-1 text-[10px] font-bold ${
+                        className={`rounded-md px-2 py-1 text-[10px] font-semibold ${
                           STATUS_STYLE[row.status] ?? "bg-slate-500/20 text-slate-300"
                         }`}
                         title={`source status: ${row.rawStatus}`}

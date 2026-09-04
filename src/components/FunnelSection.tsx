@@ -9,6 +9,7 @@ import {
 } from "recharts";
 import type { FunnelData } from "../lib/api";
 import SectionHeader from "./SectionHeader";
+import { TOOLTIP_STYLE } from "../lib/chartTheme";
 
 const STEP_ORDER = ["language", "conversational", "completed"];
 const STEP_LABELS: Record<string, string> = {
@@ -23,14 +24,6 @@ const STATUS_COLORS: Record<string, string> = {
   onboarding: "#f59e0b",
   active: "#e11d48",
   paused: "#64748b",
-};
-
-const TOOLTIP_STYLE = {
-  backgroundColor: "#17181c",
-  border: "none",
-  borderRadius: 12,
-  color: "#ffffff",
-  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.6)",
 };
 
 interface Props {
@@ -51,13 +44,12 @@ export default function FunnelSection({ data }: Props) {
     <section>
       <SectionHeader
         title="Onboarding Funnel"
-        description="User progression through onboarding steps"
       />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Funnel Steps */}
-        <div className="glass-card-borderless rounded-3xl p-5.5">
-          <h3 className="mb-3 text-sm font-extrabold text-white">
+        <div className="panel rounded-lg p-4">
+          <h3 className="mb-3 text-sm font-semibold text-white">
             Funnel Steps
           </h3>
           <ResponsiveContainer width="100%" height={220}>
@@ -81,8 +73,8 @@ export default function FunnelSection({ data }: Props) {
         </div>
 
         {/* Status Breakdown */}
-        <div className="glass-card-borderless rounded-3xl p-5.5">
-          <h3 className="mb-4 text-sm font-extrabold text-white">
+        <div className="panel rounded-lg p-4">
+          <h3 className="mb-4 text-sm font-semibold text-white">
             User Status Breakdown
           </h3>
           <div className="space-y-4">
@@ -103,9 +95,9 @@ export default function FunnelSection({ data }: Props) {
                       </span>
                     </span>
                   </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-[#121316] [box-shadow:inset_0_1px_1px_rgba(0,0,0,0.5)]">
+                  <div className="h-2 overflow-hidden rounded-full bg-canvas">
                     <div
-                      className="h-full rounded-full transition-all"
+                      className="h-full rounded-full transition-colors"
                       style={{
                         width: `${pct}%`,
                         backgroundColor:

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import Logo from "../components/Logo";
+import { useNavigate } from "react-router-dom";
+import AppHeader from "../components/AppHeader";
 import SectionHeader from "../components/SectionHeader";
 import StatCard from "../components/StatCard";
 import PurchasesTable from "../components/purchases/PurchasesTable";
 import UserProfileDrawer from "../components/users/UserProfileDrawer";
 import { getPurchases, type PurchasesResponse, type PurchaseKind, type PurchaseStatus } from "../lib/api";
-import { clearApiKey } from "../lib/auth";
+import ErrorBanner from "../components/ErrorBanner";
 
 /**
  * Revenue ledger — every real money movement in the product, newest first.
@@ -92,11 +92,6 @@ export default function PurchasesPage() {
   const data = result?.key === queryKey ? result.data : null;
   const error = result?.key === queryKey ? result.error : "";
 
-  function handleLogout() {
-    clearApiKey();
-    navigate("/login", { replace: true });
-  }
-
   const rows = data?.data ?? [];
   const total = data?.total ?? 0;
   const totals = data?.totals;
@@ -105,77 +100,20 @@ export default function PurchasesPage() {
   const to = Math.min(total, (page + 1) * PAGE_SIZE);
 
   return (
-    <div className="min-h-screen bg-[#121316] px-4 py-6 sm:px-6 lg:px-8">
-      <div className="glass-card-borderless mx-auto mb-6 flex max-w-7xl items-center justify-between rounded-3xl p-4.5">
-        <div className="flex items-center gap-3.5">
-          <Logo className="h-11 w-11" />
-          <div>
-            <h1 className="text-xl font-extrabold tracking-tight text-white">Gennety Analytics</h1>
-            <p className="text-[11px] font-medium text-rose-200/70">Admin Dashboard</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <nav className="flex items-center gap-1.5 rounded-2xl bg-[#17181c] p-1.5 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
-            <Link
-              to="/"
-              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Analytics
-            </Link>
-            <Link
-              to="/users"
-              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Users
-            </Link>
-            <Link
-              to="/purchases"
-              className="inner-glow-cherry rounded-xl px-4 py-2 text-xs font-bold tracking-wide text-white"
-            >
-              Purchases
-            </Link>
-            <Link
-              to="/ad-spend"
-              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Ad Spend
-            </Link>
-            <Link
-              to="/dialogs"
-              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Dialogs
-            </Link>
-            <Link
-              to="/reports"
-              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Reports
-            </Link>
-          </nav>
-          <button
-            onClick={handleLogout}
-            className="inner-glow cursor-pointer rounded-2xl px-4 py-2.5 text-xs font-semibold text-rose-300/80 hover:text-rose-200"
-          >
-            Logout
-          </button>
-        </div>
-      </div>
+    <div className="min-h-screen bg-canvas px-4 py-5 sm:px-6 lg:px-8">
+      <AppHeader />
 
       <div className="mx-auto max-w-7xl">
         <SectionHeader
           title="Purchases"
-          description="Every real money movement — ticket store, date-ticket gate, Premium, Rematch and venue change, across Telegram Stars and the App Store"
+          description="Every real money movement, across Telegram Stars and the App Store."
         />
 
         {error && (
-          <div className="mb-4 rounded-2xl bg-rose-950/40 p-4 text-xs font-medium text-rose-300 [box-shadow:inset_0_1px_1px_rgba(244,63,94,0.3),inset_0_0_10px_rgba(244,63,94,0.1)]">
-            {error}
-          </div>
+          <ErrorBanner className="mb-4" message={error} />
         )}
 
-        <div className="mb-5 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
           <StatCard
             label="Purchases"
             value={totals?.count ?? 0}
@@ -204,7 +142,7 @@ export default function PurchasesPage() {
           />
         </div>
 
-        <div className="glass-card-borderless mb-5 flex flex-wrap items-center gap-2 rounded-3xl p-4">
+        <div className="panel mb-5 flex flex-wrap items-center gap-2 rounded-lg p-4">
           <div className="flex flex-wrap gap-1.5">
             {KIND_FILTERS.map((filter) => (
               <button
@@ -213,10 +151,10 @@ export default function PurchasesPage() {
                   setKind(filter.value);
                   setPage(0);
                 }}
-                className={`cursor-pointer rounded-xl px-3 py-1.5 text-[11px] font-semibold ${
+                className={`cursor-pointer rounded-md px-3 py-1.5 text-[11px] font-semibold ${
                   kind === filter.value
-                    ? "inner-glow-cherry text-white"
-                    : "inner-glow text-slate-300 hover:text-white"
+                    ? "btn-primary text-white"
+                    : "btn text-slate-300 hover:text-white"
                 }`}
               >
                 {filter.label}
@@ -230,7 +168,7 @@ export default function PurchasesPage() {
                 setStatus(e.target.value as PurchaseStatus | "");
                 setPage(0);
               }}
-              className="cursor-pointer rounded-xl bg-[#17181c] px-3 py-2 text-[11px] font-semibold text-slate-300 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]"
+              className="cursor-pointer rounded-md border border-white/10 bg-canvas px-3 py-2 text-[11px] font-medium text-slate-300 outline-none focus:border-white/30"
             >
               {STATUS_FILTERS.map((filter) => (
                 <option key={filter.value || "any"} value={filter.value}>
@@ -242,11 +180,11 @@ export default function PurchasesPage() {
         </div>
 
         {data && data.byKind.length > 0 && (
-          <div className="glass-card-borderless mb-5 flex flex-wrap gap-x-6 gap-y-2 rounded-3xl p-4 text-xs">
+          <div className="panel mb-5 flex flex-wrap gap-x-6 gap-y-2 rounded-lg p-4 text-xs">
             {data.byKind.map((entry) => (
               <div key={entry.kind}>
                 <span className="text-slate-400">{KIND_LABEL[entry.kind] ?? entry.kind}: </span>
-                <span className="font-bold text-white">{usd(entry.usdCents)}</span>
+                <span className="font-semibold text-white">{usd(entry.usdCents)}</span>
                 <span className="text-slate-500"> · {entry.count}</span>
               </div>
             ))}
@@ -255,13 +193,13 @@ export default function PurchasesPage() {
 
         <PurchasesTable rows={rows} loading={loading} onRowClick={setSelectedUserId} />
 
-        <div className="glass-card-borderless mt-5 flex items-center justify-between rounded-3xl p-4.5 text-xs text-slate-400">
+        <div className="panel mt-5 flex items-center justify-between rounded-lg p-3.5 text-xs text-slate-400">
           <div>
             {total > 0 ? (
               <>
-                Showing <span className="font-bold text-white">{from}</span>–
-                <span className="font-bold text-white">{to}</span> of{" "}
-                <span className="font-bold text-white">{total}</span> purchases
+                Showing <span className="font-semibold text-white">{from}</span>–
+                <span className="font-semibold text-white">{to}</span> of{" "}
+                <span className="font-semibold text-white">{total}</span> purchases
               </>
             ) : (
               "No purchases"
@@ -271,14 +209,14 @@ export default function PurchasesPage() {
             <button
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={page === 0}
-              className="inner-glow cursor-pointer rounded-2xl px-4 py-2 font-semibold text-slate-300 disabled:cursor-not-allowed disabled:opacity-40"
+              className="btn cursor-pointer rounded-md px-4 py-2 font-semibold text-slate-300 disabled:cursor-not-allowed disabled:opacity-40"
             >
               Previous
             </button>
             <button
               onClick={() => setPage((p) => Math.min(maxPage, p + 1))}
               disabled={page >= maxPage}
-              className="inner-glow cursor-pointer rounded-2xl px-4 py-2 font-semibold text-slate-300 disabled:cursor-not-allowed disabled:opacity-40"
+              className="btn cursor-pointer rounded-md px-4 py-2 font-semibold text-slate-300 disabled:cursor-not-allowed disabled:opacity-40"
             >
               Next
             </button>

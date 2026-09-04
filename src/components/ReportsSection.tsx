@@ -10,17 +10,10 @@ import {
 import type { ReportsStatsData } from "../lib/api";
 import SectionHeader from "./SectionHeader";
 import StatCard from "./StatCard";
+import { TOOLTIP_STYLE } from "../lib/chartTheme";
 
 const TIER_COLORS = ["#e11d48", "#f59e0b", "#ef4444"]; // rose, amber, red
 const TIER_LABELS = ["T1 · Disappointment", "T2 · Ghosting", "T3 · Safety"];
-
-const TOOLTIP_STYLE = {
-  backgroundColor: "#17181c",
-  border: "none",
-  borderRadius: 12,
-  color: "#ffffff",
-  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.6)",
-};
 
 interface Props {
   data: ReportsStatsData;
@@ -36,10 +29,9 @@ export default function ReportsSection({ data }: Props) {
     <section>
       <SectionHeader
         title="Moderation Reports"
-        description="AI-triaged report distribution and pending reviews"
       />
 
-      <div className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatCard label="Total Reports" value={data.total.toLocaleString()} />
         <StatCard
           label="Tier 1"
@@ -59,8 +51,8 @@ export default function ReportsSection({ data }: Props) {
         />
       </div>
 
-      <div className="glass-card-borderless rounded-3xl p-5.5">
-        <h3 className="mb-3 text-sm font-extrabold text-white">
+      <div className="panel rounded-lg p-4">
+        <h3 className="mb-3 text-sm font-semibold text-white">
           Reports by Tier
         </h3>
         <ResponsiveContainer width="100%" height={200}>

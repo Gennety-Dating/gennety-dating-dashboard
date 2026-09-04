@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { getDialog, type DialogDetail } from "../lib/api";
 import DialogTranscript from "../components/dialogs/DialogTranscript";
+import ErrorBanner from "../components/ErrorBanner";
 
 /**
  * The full conversation for one user, reached from the Users table.
@@ -58,18 +59,18 @@ export default function UserConversationPage() {
     participant?.displayName ?? (participant ? `tg:${participant.telegramId}` : "Conversation");
 
   return (
-    <div className="flex h-screen flex-col bg-[#121316]">
-      <header className="glass-card-borderless flex items-center gap-4 px-5 py-4">
+    <div className="flex h-screen flex-col bg-canvas">
+      <header className="panel flex items-center gap-3 px-5 py-4">
         <Link
           to="/users"
-          className="inner-glow shrink-0 rounded-2xl px-4 py-2 text-xs font-bold text-slate-300 hover:text-white"
+          className="btn shrink-0 rounded-md px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
         >
           &larr; Back to Users
         </Link>
         <div className="min-w-0">
-          <h1 className="truncate text-base font-extrabold tracking-tight text-white">{title}</h1>
+          <h1 className="truncate text-base font-semibold tracking-tight text-white">{title}</h1>
           {participant && (
-            <p className="truncate text-xs font-medium text-rose-200/70">
+            <p className="truncate text-xs font-medium text-slate-500">
               Telegram ID: {participant.telegramId}
               {participant.telegramUsername ? ` · @${participant.telegramUsername}` : ""}
             </p>
@@ -80,14 +81,12 @@ export default function UserConversationPage() {
       <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col overflow-hidden px-4 py-6 sm:px-6">
         {loading && (
           <div className="flex flex-1 items-center justify-center">
-            <div className="h-7 w-7 animate-spin rounded-full border-2 border-rose-600 border-t-white" />
+            <div className="h-7 w-7 animate-spin rounded-full border-2 border-white/15 border-t-white/70" />
           </div>
         )}
 
         {error && !loading && (
-          <div className="rounded-2xl bg-rose-950/40 p-4 text-xs font-medium text-rose-300 [box-shadow:inset_0_1px_1px_rgba(244,63,94,0.3)]">
-            {error}
-          </div>
+          <ErrorBanner message={error} />
         )}
 
         {data && !loading && <DialogTranscript dialog={data} />}

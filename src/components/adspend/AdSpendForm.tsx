@@ -8,6 +8,7 @@ import {
   type AdSpendRow,
   type AdSpendUpsertInput,
 } from "../../lib/api";
+import ErrorBanner from "../ErrorBanner";
 
 /**
  * Log one spend entry. A category drives two things a channel category
@@ -208,17 +209,17 @@ export default function AdSpendForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="glass-card-borderless mb-5 rounded-3xl p-5"
+      className="panel mb-5 rounded-lg p-5"
     >
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-sm font-bold text-white">
+        <h3 className="text-sm font-semibold text-white">
           {editing ? "Edit entry" : "Log spend"}
         </h3>
         {editing && (
           <button
             type="button"
             onClick={onCancelEdit}
-            className="inner-glow cursor-pointer rounded-xl px-3 py-1.5 text-[11px] font-semibold text-slate-300 hover:text-white"
+            className="btn cursor-pointer rounded-md px-3 py-1.5 text-[11px] font-semibold text-slate-300 hover:text-white"
           >
             Cancel edit
           </button>
@@ -227,7 +228,7 @@ export default function AdSpendForm({
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <div className="lg:col-span-2">
-          <label className="mb-1 block text-[10px] font-bold tracking-wider text-slate-500 uppercase">
+          <label className="mb-1 block text-[10px] font-semibold tracking-wide text-slate-500 uppercase">
             Channel
           </label>
           <input
@@ -236,7 +237,7 @@ export default function AdSpendForm({
             disabled={requiresUnattributed}
             onChange={(e) => update("channel", e.target.value)}
             placeholder={requiresUnattributed ? AD_SPEND_UNATTRIBUTED_CHANNEL : "tg:campaign_name"}
-            className="w-full rounded-xl bg-[#17181c] px-3 py-2 text-xs font-medium text-white [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)] disabled:opacity-50"
+            className="w-full rounded-md border border-white/10 bg-canvas px-3 py-2 text-xs font-medium text-white outline-none focus:border-white/30 disabled:opacity-50"
           />
           <datalist id="ad-spend-channels">
             {channels.map((c) => (
@@ -246,13 +247,13 @@ export default function AdSpendForm({
         </div>
 
         <div className="lg:col-span-2">
-          <label className="mb-1 block text-[10px] font-bold tracking-wider text-slate-500 uppercase">
+          <label className="mb-1 block text-[10px] font-semibold tracking-wide text-slate-500 uppercase">
             Category
           </label>
           <select
             value={form.category}
             onChange={(e) => update("category", e.target.value as AdSpendCategory)}
-            className="w-full cursor-pointer rounded-xl bg-[#17181c] px-3 py-2 text-xs font-medium text-white [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]"
+            className="w-full cursor-pointer rounded-md border border-white/10 bg-canvas px-3 py-2 text-xs font-medium text-white outline-none focus:border-white/30"
           >
             {AD_SPEND_CATEGORIES.map((c) => (
               <option key={c} value={c}>
@@ -268,31 +269,31 @@ export default function AdSpendForm({
         </div>
 
         <div>
-          <label className="mb-1 block text-[10px] font-bold tracking-wider text-slate-500 uppercase">
+          <label className="mb-1 block text-[10px] font-semibold tracking-wide text-slate-500 uppercase">
             Period start
           </label>
           <input
             type="date"
             value={form.periodStart}
             onChange={(e) => update("periodStart", e.target.value)}
-            className="w-full rounded-xl bg-[#17181c] px-3 py-2 text-xs font-medium text-white [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]"
+            className="w-full rounded-md border border-white/10 bg-canvas px-3 py-2 text-xs font-medium text-white outline-none focus:border-white/30"
           />
         </div>
 
         <div>
-          <label className="mb-1 block text-[10px] font-bold tracking-wider text-slate-500 uppercase">
+          <label className="mb-1 block text-[10px] font-semibold tracking-wide text-slate-500 uppercase">
             Period end
           </label>
           <input
             type="date"
             value={form.periodEnd}
             onChange={(e) => update("periodEnd", e.target.value)}
-            className="w-full rounded-xl bg-[#17181c] px-3 py-2 text-xs font-medium text-white [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]"
+            className="w-full rounded-md border border-white/10 bg-canvas px-3 py-2 text-xs font-medium text-white outline-none focus:border-white/30"
           />
         </div>
 
         <div>
-          <label className="mb-1 block text-[10px] font-bold tracking-wider text-slate-500 uppercase">
+          <label className="mb-1 block text-[10px] font-semibold tracking-wide text-slate-500 uppercase">
             Amount
           </label>
           <input
@@ -301,24 +302,24 @@ export default function AdSpendForm({
             step="0.01"
             value={form.amount}
             onChange={(e) => update("amount", e.target.value)}
-            className="w-full rounded-xl bg-[#17181c] px-3 py-2 text-xs font-medium text-white [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]"
+            className="w-full rounded-md border border-white/10 bg-canvas px-3 py-2 text-xs font-medium text-white outline-none focus:border-white/30"
           />
         </div>
 
         <div>
-          <label className="mb-1 block text-[10px] font-bold tracking-wider text-slate-500 uppercase">
+          <label className="mb-1 block text-[10px] font-semibold tracking-wide text-slate-500 uppercase">
             Currency
           </label>
           <input
             value={form.currency}
             onChange={(e) => update("currency", e.target.value.toUpperCase())}
             maxLength={3}
-            className="w-full rounded-xl bg-[#17181c] px-3 py-2 text-xs font-medium text-white uppercase [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]"
+            className="w-full rounded-md border border-white/10 bg-canvas px-3 py-2 text-xs font-medium text-white uppercase outline-none focus:border-white/30"
           />
         </div>
 
         <div>
-          <label className="mb-1 block text-[10px] font-bold tracking-wider text-slate-500 uppercase">
+          <label className="mb-1 block text-[10px] font-semibold tracking-wide text-slate-500 uppercase">
             USD equivalent
           </label>
           <input
@@ -330,7 +331,7 @@ export default function AdSpendForm({
               setTouchedUsd(true);
               update("amountUsd", e.target.value);
             }}
-            className="w-full rounded-xl bg-[#17181c] px-3 py-2 text-xs font-medium text-white [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]"
+            className="w-full rounded-md border border-white/10 bg-canvas px-3 py-2 text-xs font-medium text-white outline-none focus:border-white/30"
           />
           {form.currency !== "USD" && (
             <p className="mt-1 text-[10px] text-slate-500">Suggested from an approximate rate — always editable.</p>
@@ -338,29 +339,27 @@ export default function AdSpendForm({
         </div>
 
         <div className="col-span-2 lg:col-span-4">
-          <label className="mb-1 block text-[10px] font-bold tracking-wider text-slate-500 uppercase">
+          <label className="mb-1 block text-[10px] font-semibold tracking-wide text-slate-500 uppercase">
             Note {noteRequired && <span className="text-rose-400">(required)</span>}
           </label>
           <input
             value={form.note}
             onChange={(e) => update("note", e.target.value)}
             placeholder="What this bought — a campaign name, an event, a deliverable"
-            className="w-full rounded-xl bg-[#17181c] px-3 py-2 text-xs font-medium text-white [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]"
+            className="w-full rounded-md border border-white/10 bg-canvas px-3 py-2 text-xs font-medium text-white outline-none focus:border-white/30"
           />
         </div>
       </div>
 
       {(validationError || error) && (
-        <div className="mt-3 rounded-2xl bg-rose-950/40 p-3 text-xs font-medium text-rose-300 [box-shadow:inset_0_1px_1px_rgba(244,63,94,0.3),inset_0_0_10px_rgba(244,63,94,0.1)]">
-          {validationError || error}
-        </div>
+        <ErrorBanner className="mt-3" message={validationError || error} />
       )}
 
       <div className="mt-4 flex justify-end">
         <button
           type="submit"
           disabled={submitting}
-          className="inner-glow-cherry cursor-pointer rounded-2xl px-5 py-2.5 text-xs font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
+          className="btn-primary cursor-pointer rounded-md px-5 py-2.5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
         >
           {submitting ? "Saving…" : editing ? "Save changes" : "Log spend"}
         </button>

@@ -13,14 +13,7 @@ import type { GenderData } from "../lib/api";
 import SectionHeader from "./SectionHeader";
 import StatCard from "./StatCard";
 import ChartCard from "./charts/ChartCard";
-
-const TOOLTIP_STYLE = {
-  backgroundColor: "#17181c",
-  border: "none",
-  borderRadius: 12,
-  color: "#ffffff",
-  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.6)",
-};
+import { TOOLTIP_STYLE } from "../lib/chartTheme";
 
 interface Props {
   data: GenderData;
@@ -43,10 +36,10 @@ export default function GenderSection({ data }: Props) {
     <section className="space-y-8">
       <SectionHeader
         title="Gender balance"
-        description="Drives matchability — if either side runs short, half the user base waits in vain. Use these to target growth campaigns at underrepresented universities."
+        description="Matching is two-sided: pairs per drop are bounded by the smaller side."
       />
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatCard
           label="M : F ratio"
           value={ratio !== null ? `${ratio} : 1` : "—"}
@@ -127,7 +120,7 @@ export default function GenderSection({ data }: Props) {
               return (
                 <div
                   key={g}
-                  className="rounded-2xl bg-[#17181c] p-4 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]"
+                  className="rounded-md bg-panel p-4"
                 >
                   <div className="flex items-baseline justify-between">
                     <span className="text-xs tracking-wide text-slate-400 uppercase">
@@ -195,7 +188,7 @@ export default function GenderSection({ data }: Props) {
       {/* Skewed universities table */}
       <ChartCard
         title="Skewed universities"
-        description="Universities where one gender exceeds 70% of the user base (with ≥10 total users). These are where targeted recruitment has the biggest impact. Action: run growth campaigns to the under-represented side."
+        description="Universities where one gender exceeds 70% of the user base, among those with at least 10 users."
       >
         {data.skewedUniversities.length === 0 ? (
           <p className="py-8 text-center text-sm text-slate-500">

@@ -9,6 +9,7 @@ import {
 import type { MatchesData } from "../lib/api";
 import SectionHeader from "./SectionHeader";
 import StatCard from "./StatCard";
+import { TOOLTIP_STYLE } from "../lib/chartTheme";
 
 const STATUS_COLORS: Record<string, string> = {
   Proposed: "#f59e0b",
@@ -16,14 +17,6 @@ const STATUS_COLORS: Record<string, string> = {
   Scheduled: "#e11d48",
   Cancelled: "#ef4444",
   Completed: "#10b981",
-};
-
-const TOOLTIP_STYLE = {
-  backgroundColor: "#17181c",
-  border: "none",
-  borderRadius: 12,
-  color: "#ffffff",
-  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.6)",
 };
 
 interface Props {
@@ -51,10 +44,9 @@ export default function MatchesSection({ data }: Props) {
     <section>
       <SectionHeader
         title="Match Efficiency"
-        description="Matchmaking lifecycle and acceptance metrics"
       />
 
-      <div className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         <StatCard
           label="Total Proposed"
           value={data.totalProposed.toLocaleString()}
@@ -79,8 +71,8 @@ export default function MatchesSection({ data }: Props) {
         />
       </div>
 
-      <div className="glass-card-borderless rounded-3xl p-5.5">
-        <h3 className="mb-3 text-sm font-extrabold text-white">
+      <div className="panel rounded-lg p-4">
+        <h3 className="mb-3 text-sm font-semibold text-white">
           Match Status Distribution
         </h3>
         <ResponsiveContainer width="100%" height={280}>

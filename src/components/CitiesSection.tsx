@@ -11,14 +11,7 @@ import type { CitiesData } from "../lib/api";
 import SectionHeader from "./SectionHeader";
 import StatCard from "./StatCard";
 import ChartCard from "./charts/ChartCard";
-
-const TOOLTIP_STYLE = {
-  backgroundColor: "#17181c",
-  border: "none",
-  borderRadius: 12,
-  color: "#ffffff",
-  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.6)",
-};
+import { TOOLTIP_STYLE } from "../lib/chartTheme";
 
 interface Props {
   data: CitiesData;
@@ -43,7 +36,7 @@ export default function CitiesSection({ data }: Props) {
         description="Male/female split per city. Users who have been on a date are placed by the departure point they marked heading out; everyone else by the city they're currently matched in."
       />
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatCard label="Total users" value={totalUsers.toLocaleString()} accent />
         <StatCard
           label="Cities"

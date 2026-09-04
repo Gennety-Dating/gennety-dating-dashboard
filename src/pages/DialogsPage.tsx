@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Logo from "../components/Logo";
+import AppHeader from "../components/AppHeader";
 import {
   getDialogs,
   getDialog,
   type DialogListRow,
   type DialogDetail,
 } from "../lib/api";
-import { clearApiKey } from "../lib/auth";
 import DialogTranscript from "../components/dialogs/DialogTranscript";
 import SectionHeader from "../components/SectionHeader";
+import ErrorBanner from "../components/ErrorBanner";
 
 const PAGE_SIZE = 25;
 
@@ -118,97 +118,34 @@ export default function DialogsPage() {
   const current = detail && detail.id === selectedId ? detail : null;
 
   return (
-    <div className="min-h-screen bg-[#121316] px-4 py-6 sm:px-6 lg:px-8">
-      {/* Top Header */}
-      <div className="glass-card-borderless mx-auto mb-6 flex max-w-[110rem] items-center justify-between rounded-3xl p-4.5">
-        <div className="flex items-center gap-3.5">
-          <Logo className="h-11 w-11" />
-          <div>
-            <h1 className="text-xl font-extrabold tracking-tight text-white">
-              Gennety Analytics
-            </h1>
-            <p className="text-[11px] font-medium text-rose-200/70">Admin Dashboard</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <nav className="flex items-center gap-1.5 rounded-2xl bg-[#17181c] p-1.5 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
-            <Link
-              to="/"
-              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Analytics
-            </Link>
-            <Link
-              to="/users"
-              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Users
-            </Link>
-            <Link
-              to="/purchases"
-              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Purchases
-            </Link>
-            <Link
-              to="/ad-spend"
-              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Ad Spend
-            </Link>
-            <Link
-              to="/dialogs"
-              className="inner-glow-cherry rounded-xl px-4 py-2 text-xs font-bold tracking-wide text-white"
-            >
-              Dialogs
-            </Link>
-            <Link
-              to="/reports"
-              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Reports
-            </Link>
-          </nav>
-          <button
-            onClick={() => {
-              clearApiKey();
-              navigate("/login", { replace: true });
-            }}
-            className="inner-glow cursor-pointer rounded-2xl px-4 py-2.5 text-xs font-semibold text-rose-300/80 hover:text-rose-200"
-          >
-            Logout
-          </button>
-        </div>
-      </div>
+    <div className="min-h-screen bg-canvas px-4 py-5 sm:px-6 lg:px-8">
+      <AppHeader />
 
       <div className="mx-auto max-w-[110rem]">
         <SectionHeader
           title="Dialogs"
-          description="Real user↔bot conversations — every message the bot sent, the buttons it offered, and what the user tapped."
+          description="Every message the bot sent, the buttons it offered, and what the user tapped."
         />
 
         {list?.error && (
-          <div className="mb-4 rounded-2xl bg-rose-950/40 p-4 text-xs font-medium text-rose-300 [box-shadow:inset_0_1px_1px_rgba(244,63,94,0.3),inset_0_0_10px_rgba(244,63,94,0.1)]">
-            {list.error}
-          </div>
+          <ErrorBanner className="mb-4" message={list.error} />
         )}
 
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-[22rem_1fr]">
           {/* ── List pane ─────────────────────────────────────── */}
-          <div className="glass-card-borderless flex max-h-[78vh] flex-col rounded-3xl overflow-hidden">
-            <div className="space-y-2.5 p-4 bg-[#17181c]/90 [box-shadow:inset_0_-1px_0_rgba(255,255,255,0.06)]">
+          <div className="panel flex max-h-[78vh] flex-col rounded-lg overflow-hidden">
+            <div className="space-y-2.5 border-b border-white/10 p-4">
               <div className="flex gap-2">
                 <input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && applyFilters()}
                   placeholder="Name, email, @username..."
-                  className="min-w-0 flex-1 rounded-2xl bg-[#121316] px-3.5 py-2.5 text-xs text-slate-200 placeholder:text-slate-500 outline-none [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.2)] focus:[box-shadow:inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_0_12px_rgba(244,63,94,0.25)] transition-all"
+                  className="min-w-0 flex-1 rounded-md border border-white/10 bg-canvas px-3 py-2 text-xs text-slate-200 placeholder:text-slate-500 outline-none transition-colors focus:border-white/30"
                 />
                 <button
                   onClick={applyFilters}
-                  className="inner-glow-cherry cursor-pointer rounded-2xl px-4 py-2.5 text-xs font-bold text-white transition-all"
+                  className="btn-primary cursor-pointer rounded-md px-4 py-2.5 text-xs font-semibold text-white transition-colors"
                 >
                   Go
                 </button>
@@ -221,7 +158,7 @@ export default function DialogsPage() {
                     setPage(0);
                     setApplied({ status: e.target.value, search: search.trim() });
                   }}
-                  className="w-full appearance-none cursor-pointer rounded-2xl bg-[#121316] pl-4 pr-10 py-2.5 text-xs font-medium text-slate-200 outline-none [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.2)] focus:[box-shadow:inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_0_12px_rgba(244,63,94,0.25)] transition-all"
+                  className="w-full cursor-pointer appearance-none rounded-md border border-white/10 bg-canvas py-2 pr-10 pl-3 text-xs font-medium text-slate-200 outline-none transition-colors focus:border-white/30"
                 >
                   {STATUS_OPTIONS.map((s) => (
                     <option key={s} value={s}>
@@ -240,7 +177,7 @@ export default function DialogsPage() {
             <div className="flex-1 overflow-y-auto divide-y divide-white/[0.03]">
               {listLoading ? (
                 <div className="flex justify-center py-12">
-                  <div className="h-7 w-7 animate-spin rounded-full border-2 border-rose-600 border-t-white" />
+                  <div className="h-7 w-7 animate-spin rounded-full border-2 border-white/15 border-t-white/70" />
                 </div>
               ) : rows.length === 0 ? (
                 <p className="px-3 py-10 text-center text-xs font-medium text-slate-500">No dialogs found.</p>
@@ -252,14 +189,14 @@ export default function DialogsPage() {
                     <button
                       key={r.id}
                       onClick={() => setSelectedId(r.id)}
-                      className={`block w-full cursor-pointer px-4 py-3.5 text-left transition-all ${
+                      className={`block w-full cursor-pointer px-4 py-3.5 text-left transition-colors ${
                         active
-                          ? "bg-rose-950/40 [box-shadow:inset_3px_0_0_#f43f5e,inset_0_1px_1px_rgba(255,255,255,0.1)]"
+                          ? "bg-white/8"
                           : "hover:bg-white/[0.02]"
                       }`}
                     >
                       <div className="flex items-baseline justify-between gap-2">
-                        <span className="truncate text-xs font-bold text-slate-100">
+                        <span className="truncate text-xs font-semibold text-slate-100">
                           {p.displayName ?? `tg:${p.telegramId}`}
                         </span>
                         <span className="shrink-0 text-[10px] font-medium text-slate-400">
@@ -267,7 +204,7 @@ export default function DialogsPage() {
                         </span>
                       </div>
                       <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px]">
-                        <span className="rounded-xl bg-white/5 px-2 py-0.5 font-medium text-slate-300 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">{p.status}</span>
+                        <span className="rounded-md bg-white/5 px-2 py-0.5 font-medium text-slate-300">{p.status}</span>
                         {p.city && <span className="text-slate-400">{p.city}</span>}
                         <span className="text-slate-400/80">· {r.counts.total} msg</span>
                       </div>
@@ -285,23 +222,23 @@ export default function DialogsPage() {
               )}
             </div>
 
-            <div className="flex items-center justify-between bg-[#121316] px-4 py-3 text-xs text-slate-400 [box-shadow:inset_0_1px_0_rgba(255,255,255,0.06)]">
+            <div className="flex items-center justify-between border-t border-white/10 px-4 py-3 text-xs text-slate-400">
               <span className="font-semibold">{total} total</span>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setPage((p) => Math.max(0, p - 1))}
                   disabled={page === 0 || listLoading}
-                  className="inner-glow cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                  className="btn cursor-pointer rounded-md px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   ‹
                 </button>
-                <span className="text-xs font-bold text-slate-300">
+                <span className="text-xs font-semibold text-slate-300">
                   {page + 1}/{maxPage + 1}
                 </span>
                 <button
                   onClick={() => setPage((p) => Math.min(maxPage, p + 1))}
                   disabled={page >= maxPage || listLoading}
-                  className="inner-glow cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                  className="btn cursor-pointer rounded-md px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   ›
                 </button>
@@ -310,23 +247,21 @@ export default function DialogsPage() {
           </div>
 
           {/* ── Transcript pane ───────────────────────────────── */}
-          <div className="glass-card-borderless flex max-h-[78vh] min-h-[30rem] flex-col rounded-3xl p-6">
+          <div className="panel flex max-h-[78vh] min-h-[30rem] flex-col rounded-lg p-6">
             {!selectedId ? (
               <div className="flex flex-1 items-center justify-center text-xs font-medium text-slate-500">
                 Select a dialog to read it.
               </div>
             ) : detailLoading ? (
               <div className="flex flex-1 items-center justify-center">
-                <div className="h-7 w-7 animate-spin rounded-full border-2 border-rose-600 border-t-white" />
+                <div className="h-7 w-7 animate-spin rounded-full border-2 border-white/15 border-t-white/70" />
               </div>
             ) : current?.error ? (
-              <div className="rounded-2xl bg-rose-950/40 p-4 text-xs font-medium text-rose-300 [box-shadow:inset_0_1px_1px_rgba(244,63,94,0.3)]">
-                {current.error}
-              </div>
+              <ErrorBanner message={current.error} />
             ) : current?.data ? (
               <>
-                <div className="mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-1 pb-3.5 [box-shadow:inset_0_-1px_0_rgba(255,255,255,0.06)]">
-                  <h3 className="text-base font-extrabold tracking-tight text-white">
+                <div className="mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-white/10 pb-3">
+                  <h3 className="text-base font-semibold tracking-tight text-white">
                     {current.data.participant.displayName ??
                       `tg:${current.data.participant.telegramId}`}
                   </h3>
@@ -337,7 +272,7 @@ export default function DialogsPage() {
                   </span>
                   <Link
                     to={`/users/${current.data.participant.userId}`}
-                    className="ml-auto text-xs font-bold text-rose-400 transition-colors hover:text-rose-300"
+                    className="ml-auto text-xs font-semibold text-rose-400 transition-colors hover:text-rose-300"
                   >
                     Full profile &rarr;
                   </Link>

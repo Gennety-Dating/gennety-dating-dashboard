@@ -3,14 +3,7 @@ import type { WaitlistData } from "../lib/api";
 import SectionHeader from "./SectionHeader";
 import StatCard from "./StatCard";
 import ChartCard from "./charts/ChartCard";
-
-const TOOLTIP_STYLE = {
-  backgroundColor: "#17181c",
-  border: "none",
-  borderRadius: 12,
-  color: "#ffffff",
-  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.6)",
-};
+import { TOOLTIP_STYLE } from "../lib/chartTheme";
 
 interface Props {
   data: WaitlistData | null;
@@ -57,7 +50,7 @@ export default function WaitlistSection({ data, loading }: Props) {
         description="People who picked a city we haven't opened yet. Their registration stops at the waitlist screen — they have no matching city and appear nowhere in City distribution above."
       />
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatCard
           label="Waiting"
           value={loading ? "…" : (data?.totalWaiting ?? 0).toLocaleString()}
@@ -95,7 +88,7 @@ export default function WaitlistSection({ data, loading }: Props) {
       </div>
 
       {data && data.orphaned.length > 0 && (
-        <div className="rounded-2xl bg-amber-950/40 p-4 text-xs font-medium text-amber-300 [box-shadow:inset_0_1px_1px_rgba(245,158,11,0.3)]">
+        <div className="rounded-md bg-amber-950/40 p-4 text-xs font-medium text-amber-300">
           Есть записи на городах, которых больше нет в каталоге — обычно это
           город, который запустили, пока в нём кто-то ждал:{" "}
           {data.orphaned.map((o) => `${o.cityKey} (${o.total})`).join(", ")}. Их

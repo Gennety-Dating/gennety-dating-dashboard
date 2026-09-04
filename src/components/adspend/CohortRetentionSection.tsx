@@ -8,6 +8,7 @@ import {
   type CohortRetentionData,
   type RetentionMilestone,
 } from "../../lib/api";
+import ErrorBanner from "../ErrorBanner";
 
 /**
  * Cohort retention, on the Ads page rather than in Growth, on purpose: a
@@ -80,7 +81,7 @@ function Cell({ cell }: { cell: CohortCell | CohortAverageCell }) {
       ? `${cell.retained}/${cell.users} across ${cell.cohorts} cohort${cell.cohorts === 1 ? "" : "s"}`
       : `${cell.retained} returned`;
   return (
-    <span className={`font-bold ${cellTone(cell.retainedPct)}`} title={sub}>
+    <span className={`font-semibold ${cellTone(cell.retainedPct)}`} title={sub}>
       {cell.retainedPct?.toFixed(1)}%
     </span>
   );
@@ -130,7 +131,7 @@ export default function CohortRetentionSection() {
     <div className="mt-8">
       <SectionHeader
         title="Cohort retention"
-        description="Of the people who registered in one bucket, how many came back N days later. Sliced by channel, because a cheap signup that never returns is not cheap. '—' means the cohort is too young to score; '·' means the activity table cannot see that window at all — neither is a zero."
+        description="Of the people who registered in one bucket, how many came back N days later, sliced by channel. '—' means the cohort is too young to score; '·' means the activity table cannot see that window at all. Neither is a zero."
       />
 
       <div className="mb-4 flex flex-wrap items-center gap-2">
@@ -139,10 +140,8 @@ export default function CohortRetentionSection() {
             key={b.value}
             type="button"
             onClick={() => setBucket(b.value)}
-            className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-colors ${
-              bucket === b.value
-                ? "bg-rose-600/25 text-rose-200"
-                : "bg-white/5 text-slate-400 hover:bg-white/10"
+            className={`cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium ${
+              bucket === b.value ? "btn-primary" : "btn"
             }`}
           >
             {b.label}
@@ -158,7 +157,7 @@ export default function CohortRetentionSection() {
       </div>
 
       {notDeployed && (
-        <div className="mb-4 rounded-2xl bg-slate-900/60 p-4 text-xs font-medium text-slate-400">
+        <div className="mb-4 rounded-md bg-slate-900/60 p-4 text-xs font-medium text-slate-400">
           Not on this server yet — the backend deploy carrying this endpoint has
           not landed. Nothing is wrong; the section fills in on its own once it
           does.
@@ -166,9 +165,7 @@ export default function CohortRetentionSection() {
       )}
 
       {error && (
-        <div className="mb-4 rounded-2xl bg-rose-950/40 p-4 text-xs font-medium text-rose-300">
-          {error}
-        </div>
+        <ErrorBanner className="mb-4" message={error} />
       )}
 
       {/*
@@ -177,7 +174,7 @@ export default function CohortRetentionSection() {
         a dead product rather than as an unplugged instrument.
       */}
       {data && data.coverage.activityFrom === null && (
-        <div className="mb-4 rounded-2xl bg-amber-950/40 p-4 text-xs font-medium text-amber-200">
+        <div className="mb-4 rounded-md bg-amber-950/40 p-4 text-xs font-medium text-amber-200">
           <strong>No activity data at all.</strong> `user_activity_days` is empty, so
           nothing on this page can be measured yet — every cell reads “not observed”,
           which is not the same as “nobody came back”. Run the activity backfill to
@@ -193,11 +190,11 @@ export default function CohortRetentionSection() {
       )}
 
       {/* ── By channel: the row that belongs next to CAC ── */}
-      <div className="glass-card-borderless mb-5 overflow-hidden rounded-3xl">
+      <div className="panel mb-5 overflow-hidden rounded-lg">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#121316]">
-              <tr className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">
+            <thead className="bg-canvas">
+              <tr className="text-[10px] font-semibold tracking-wide text-slate-500 uppercase">
                 <th className="px-6 py-4">Channel</th>
                 <th className="px-6 py-4 text-right">Signups</th>
                 {milestones.map((m) => (
@@ -247,11 +244,11 @@ export default function CohortRetentionSection() {
       </div>
 
       {/* ── The matrix itself ── */}
-      <div className="glass-card-borderless overflow-hidden rounded-3xl">
+      <div className="panel overflow-hidden rounded-lg">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#121316]">
-              <tr className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">
+            <thead className="bg-canvas">
+              <tr className="text-[10px] font-semibold tracking-wide text-slate-500 uppercase">
                 <th className="px-6 py-4">Cohort</th>
                 <th className="px-6 py-4 text-right">Size</th>
                 {milestones.map((m) => (
@@ -276,7 +273,7 @@ export default function CohortRetentionSection() {
                       {row.cohort}
                       {row.lowSample && (
                         <span
-                          className="ml-2 rounded bg-slate-500/20 px-1.5 py-0.5 text-[9px] font-bold text-slate-400"
+                          className="ml-2 rounded bg-slate-500/20 px-1.5 py-0.5 text-[9px] font-semibold text-slate-400"
                           title="Fewer than 20 people: one person moves this by five points or more, so read it as a direction, not a rate."
                         >
                           low n
@@ -293,7 +290,7 @@ export default function CohortRetentionSection() {
                 ))}
               {!loading && data && data.overall.rows.length > 0 && (
                 <tr className="bg-white/[0.02]">
-                  <td className="px-6 py-4 font-bold whitespace-nowrap text-white">
+                  <td className="px-6 py-4 font-semibold whitespace-nowrap text-white">
                     Weighted average
                   </td>
                   <td className="px-6 py-4 text-right font-mono text-slate-300">

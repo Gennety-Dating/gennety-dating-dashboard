@@ -15,14 +15,7 @@ import type {
 import SectionHeader from "./SectionHeader";
 import StatCard from "./StatCard";
 import ChartCard from "./charts/ChartCard";
-
-const TOOLTIP_STYLE = {
-  backgroundColor: "#17181c",
-  border: "none",
-  borderRadius: 12,
-  color: "#ffffff",
-  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.6)",
-};
+import { TOOLTIP_STYLE } from "../lib/chartTheme";
 
 /** Below this many people a percentage is arithmetic, not a finding. */
 const LOW_SAMPLE = 20;
@@ -78,16 +71,16 @@ function ratePct(pct: number | null): string {
 /** One of the three denominators, rendered as "x of y". */
 function ConversionRow({ label, slice, hint }: { label: string; slice: ConversionSlice; hint: string }) {
   return (
-    <div className="glass-card-borderless rounded-2xl px-4 py-3">
+    <div className="panel rounded-md px-4 py-3">
       <div className="flex items-baseline justify-between gap-3">
-        <p className="text-[11px] font-bold tracking-wider text-slate-400 uppercase">{label}</p>
-        <p className="text-lg font-black tracking-tight text-white">{ratePct(slice.pct)}</p>
+        <p className="text-[11px] font-semibold tracking-wide text-slate-400 uppercase">{label}</p>
+        <p className="text-lg font-semibold tracking-tight text-white">{ratePct(slice.pct)}</p>
       </div>
       <p className="mt-0.5 text-xs font-medium text-slate-400/80">
         {slice.payers} of {slice.base}
         {slice.base === 0 && " — nobody has reached this stage yet"}
       </p>
-      <p className="mt-1.5 text-[11px] leading-relaxed font-medium text-rose-200/50">{hint}</p>
+      <p className="mt-1.5 text-[11px] leading-relaxed font-medium text-slate-500">{hint}</p>
     </div>
   );
 }
@@ -100,7 +93,7 @@ function SegmentTable({ rows }: { rows: MonetizationSegmentRow[] }) {
     <div className="overflow-x-auto">
       <table className="w-full text-left text-xs">
         <thead>
-          <tr className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+          <tr className="text-[10px] font-semibold tracking-wide text-slate-400 uppercase">
             <th className="pb-2 pr-4">Segment</th>
             <th className="pb-2 pr-4 text-right">Users</th>
             <th className="pb-2 pr-4 text-right">Payers</th>
@@ -146,20 +139,20 @@ export default function MonetizationSection({ data }: Props) {
     }));
 
   return (
-    <section className="space-y-10">
+    <section className="space-y-8">
       <SectionHeader
         title="Monetization"
         description="What share of the people we acquired actually pay. Test and synthetic accounts are excluded from every numerator, denominator and revenue figure — so the base here is smaller than the raw user count, and deliberately so."
       />
 
       {data.truncated && (
-        <p className="rounded-2xl bg-amber-950/40 px-4 py-3 text-xs font-semibold text-amber-200">
+        <p className="rounded-md bg-amber-950/40 px-4 py-3 text-xs font-semibold text-amber-200">
           The purchase index hit its fetch ceiling — these figures are partial.
         </p>
       )}
 
       {/* Headline: the number the founder asked for. */}
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
+      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
         <StatCard
           label="Paying users"
           value={ratePct(headline.payingRatePct)}
@@ -185,7 +178,7 @@ export default function MonetizationSection({ data }: Props) {
       {/* Revenue */}
       <div className="space-y-4">
         <h3 className="text-base font-semibold text-white">Revenue</h3>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <StatCard
             label="All time"
             value={usd(revenue.allTimeUsdCents)}
@@ -216,7 +209,7 @@ export default function MonetizationSection({ data }: Props) {
           />
         </div>
 
-        <div className="glass-card-borderless rounded-2xl px-4 py-3 text-[11px] leading-relaxed font-medium text-rose-200/60">
+        <div className="panel rounded-md px-4 py-3 text-[11px] leading-relaxed font-medium text-slate-500">
           Dollar figures from Telegram Stars are an <strong className="text-rose-200">estimate</strong> —
           Telegram publishes no Stars→USD rate, so they are converted at the documented $0.02/⭐ ticket
           rate. App Store rows carry Apple's real price.
@@ -243,7 +236,7 @@ export default function MonetizationSection({ data }: Props) {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                  <tr className="text-[10px] font-semibold tracking-wide text-slate-400 uppercase">
                     <th className="pb-2 pr-4">Product</th>
                     <th className="pb-2 pr-4 text-right">Payers</th>
                     <th className="pb-2 pr-4 text-right">Purchases</th>

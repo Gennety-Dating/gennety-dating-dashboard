@@ -1,5 +1,10 @@
 interface SectionHeaderProps {
   title: string;
+  /**
+   * One line of orientation for the section — what it is measured over, or a
+   * caveat that changes how the numbers read. Omit it when the title already
+   * says everything; a restatement is noise with extra steps.
+   */
   description?: string;
 }
 
@@ -8,13 +13,14 @@ export default function SectionHeader({
   description,
 }: SectionHeaderProps) {
   return (
-    <div className="mb-5 flex flex-col justify-start">
-      <div className="flex items-center gap-2.5">
-        <div className="h-4 w-1.5 rounded-full bg-gradient-to-b from-rose-500 to-rose-900 shadow-md shadow-rose-950/80 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.4)]" />
-        <h2 className="text-lg font-extrabold tracking-tight text-white">{title}</h2>
-      </div>
+    <div className="mb-4">
+      <h2 className="text-sm font-semibold tracking-wide text-white uppercase">
+        {title}
+      </h2>
       {description && (
-        <p className="mt-1 text-xs font-medium text-rose-200/60 pl-4 leading-relaxed">{description}</p>
+        <p className="mt-1 max-w-3xl text-xs leading-relaxed text-slate-500">
+          {description}
+        </p>
       )}
     </div>
   );

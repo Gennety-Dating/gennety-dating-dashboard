@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Logo from "../components/Logo";
+import AppHeader from "../components/AppHeader";
 import DataFreshness from "../components/DataFreshness";
 import {
   getDemographics,
@@ -35,7 +35,6 @@ import {
   type MonetizationData,
   getDataGeneratedAt,
 } from "../lib/api";
-import { clearApiKey } from "../lib/auth";
 import DemographicsSection from "../components/DemographicsSection";
 import FunnelSection from "../components/FunnelSection";
 import MatchesSection from "../components/MatchesSection";
@@ -80,56 +79,21 @@ interface DashboardState {
   core: AdminDashboardData | null;
 }
 
-const TABS: Array<{ key: TabKey; label: string; description: string }> = [
-  {
-    key: "core",
-    label: "Core metrics",
-    description:
-      "The daily read: paid dates, net Match → Ticket conversion, gender balance. Test and synthetic accounts are out of every denominator.",
-  },
-  {
-    key: "overview",
-    label: "Overview",
-    description: "Headline KPIs and the safety report queue.",
-  },
-  {
-    key: "matches",
-    label: "Weekly matches",
-    description:
-      "Every pair from the last drop — both users' data, photos, and attractiveness score.",
-  },
-  {
-    key: "audience",
-    label: "Audience",
-    description: "Demographics, interests, psychology, geography.",
-  },
-  {
-    key: "cities",
-    label: "Cities",
-    description:
-      "Demographic split by city — date departure point where known, else matching city.",
-  },
-  {
-    key: "algorithm",
-    label: "Match algorithm",
-    description: "Synergy calibration and scoring component diagnostics.",
-  },
-  {
-    key: "gender",
-    label: "Gender balance",
-    description: "M/F dynamics, wait times, skewed universities.",
-  },
-  {
-    key: "growth",
-    label: "Growth & trust",
-    description: "Retention, date quality, verification, reports.",
-  },
-  {
-    key: "monetization",
-    label: "Monetization",
-    description:
-      "What share of acquired users pay — and which channel, gender, city and track they come from.",
-  },
+/**
+ * Each tab used to carry a paragraph, printed inside the sticky bar. It cost
+ * height on every scroll to re-explain the tab the operator had just clicked,
+ * and every section underneath already states its own scope.
+ */
+const TABS: Array<{ key: TabKey; label: string }> = [
+  { key: "core", label: "Core metrics" },
+  { key: "overview", label: "Overview" },
+  { key: "matches", label: "Weekly matches" },
+  { key: "audience", label: "Audience" },
+  { key: "cities", label: "Cities" },
+  { key: "algorithm", label: "Match algorithm" },
+  { key: "gender", label: "Gender balance" },
+  { key: "growth", label: "Growth & trust" },
+  { key: "monetization", label: "Monetization" },
 ];
 
 export default function DashboardPage() {
@@ -254,19 +218,12 @@ export default function DashboardPage() {
     };
   }, [navigate, reloadToken]);
 
-  function handleLogout() {
-    clearApiKey();
-    navigate("/login", { replace: true });
-  }
-
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#121316]">
+      <div className="flex min-h-screen items-center justify-center bg-canvas">
         <div className="text-center">
-          <div className="mx-auto h-9 w-9 animate-spin rounded-full border-2 border-rose-600 border-t-white" />
-          <p className="mt-4 text-xs font-semibold tracking-wide text-rose-200/70 uppercase">
-            Loading analytics...
-          </p>
+          <div className="mx-auto h-7 w-7 animate-spin rounded-full border-2 border-white/15 border-t-white/70" />
+          <p className="mt-3 text-xs text-slate-500">Loading analytics…</p>
         </div>
       </div>
     );
@@ -274,12 +231,13 @@ export default function DashboardPage() {
 
   if (error) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#121316] px-4">
-        <div className="glass-card-borderless max-w-md rounded-3xl p-8 text-center">
-          <p className="text-xs font-medium text-rose-300">{error}</p>
+      <div className="flex min-h-screen items-center justify-center bg-canvas px-4">
+        <div className="panel max-w-md rounded-lg p-8 text-center">
+          <p className="text-xs text-rose-300">{error}</p>
           <button
+            type="button"
             onClick={() => window.location.reload()}
-            className="inner-glow-cherry mt-4 cursor-pointer rounded-2xl px-5 py-2.5 text-xs font-bold text-white transition-all"
+            className="btn-primary mt-4 cursor-pointer rounded-md px-4 py-2 text-xs font-medium"
           >
             Retry
           </button>
@@ -288,23 +246,10 @@ export default function DashboardPage() {
     );
   }
 
-  const activeTabMeta = TABS.find((t) => t.key === activeTab);
-
   return (
-    <div className="min-h-screen bg-[#121316] px-4 py-6 sm:px-6 lg:px-8">
-      {/* Top Header */}
-      <div className="glass-card-borderless mx-auto mb-6 flex max-w-7xl items-center justify-between rounded-3xl p-4.5">
-        <div className="flex items-center gap-3.5">
-          <Logo className="h-11 w-11" />
-          <div>
-            <h1 className="text-xl font-extrabold tracking-tight text-white">
-              Gennety Analytics
-            </h1>
-            <p className="text-[11px] font-medium text-rose-200/70">Admin Dashboard</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
+    <div className="min-h-screen bg-canvas px-4 py-5 sm:px-6 lg:px-8">
+      <AppHeader
+        actions={
           <DataFreshness
             generatedAt={generatedAt}
             refreshing={refreshing}
@@ -313,88 +258,44 @@ export default function DashboardPage() {
               setReloadToken((n) => n + 1);
             }}
           />
-          <nav className="flex items-center gap-1.5 rounded-2xl bg-[#17181c] p-1.5 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
-            <Link
-              to="/"
-              className="inner-glow-cherry rounded-xl px-4 py-2 text-xs font-bold tracking-wide text-white"
-            >
-              Analytics
-            </Link>
-            <Link
-              to="/users"
-              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Users
-            </Link>
-            <Link
-              to="/purchases"
-              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Purchases
-            </Link>
-            <Link
-              to="/ad-spend"
-              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Ad Spend
-            </Link>
-            <Link
-              to="/dialogs"
-              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Dialogs
-            </Link>
-            <Link
-              to="/reports"
-              className="inner-glow rounded-xl px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Reports
-            </Link>
-          </nav>
-          <button
-            onClick={handleLogout}
-            className="inner-glow cursor-pointer rounded-2xl px-4 py-2.5 text-xs font-semibold text-rose-300/80 hover:text-rose-200"
-          >
-            Logout
-          </button>
-        </div>
-      </div>
+        }
+      />
 
       {/* Tier 3 alert banner */}
       {data.reports && data.reports.unreviewedTier3 > 0 && (
-        <div className="mx-auto mb-6 max-w-7xl">
+        <div className="mx-auto mb-4 max-w-7xl">
+          {/* The one place rose is allowed to shout. The dot no longer pings:
+              an animation that never stops stops being read as urgent. */}
           <Link
             to="/reports?tier=3&reviewed=false"
-            className="group flex items-center gap-3.5 rounded-2xl bg-rose-950/40 px-5 py-3.5 shadow-xl [box-shadow:inset_0_1px_1px_rgba(244,63,94,0.3),inset_0_0_16px_rgba(244,63,94,0.15)] transition-all hover:bg-rose-950/60"
+            className="flex items-center gap-3 rounded-md border border-rose-500/30 bg-rose-950/30 px-4 py-2.5 transition-colors hover:bg-rose-950/50"
           >
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75" />
-              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-rose-500" />
-            </span>
-            <span className="text-xs font-semibold text-rose-200">
+            <span className="h-2 w-2 shrink-0 rounded-full bg-rose-500" />
+            <span className="text-xs font-medium text-rose-200">
               {data.reports.unreviewedTier3} Tier 3 safety report
               {data.reports.unreviewedTier3 > 1 ? "s" : ""} pending review
             </span>
-            <span className="ml-auto text-xs font-medium text-rose-400 transition-transform group-hover:translate-x-0.5">
+            <span className="ml-auto text-xs text-rose-400">
               View reports &rarr;
             </span>
           </Link>
         </div>
       )}
 
-      {/* Tab navigation — sticky segment bar with inner edge spray */}
-      <div className="sticky top-4 z-20 mx-auto mb-8 max-w-7xl rounded-3xl bg-[#17181c]/90 p-2 shadow-2xl backdrop-blur-2xl [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15),inset_0_0_20px_rgba(0,0,0,0.5)]">
-        <div className="no-scrollbar flex overflow-x-auto gap-1.5">
+      {/* Sticky tab bar. Kept as thin as it can be while staying tappable —
+          it occupies the top of the viewport for the whole session. */}
+      <div className="panel sticky top-3 z-20 mx-auto mb-5 max-w-7xl rounded-md p-1">
+        <div className="no-scrollbar flex gap-1 overflow-x-auto">
           {TABS.map((t) => {
             const isActive = t.key === activeTab;
             return (
               <button
                 key={t.key}
+                type="button"
                 onClick={() => setActiveTab(t.key)}
-                className={`flex shrink-0 items-center justify-center cursor-pointer rounded-2xl px-4 py-2.5 text-xs font-bold whitespace-nowrap transition-all duration-200 ${
-                  isActive
-                    ? "inner-glow-cherry text-white"
-                    : "inner-glow text-slate-300 hover:text-white"
+                aria-pressed={isActive}
+                className={`shrink-0 cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium whitespace-nowrap ${
+                  isActive ? "btn-primary" : "btn"
                 }`}
               >
                 {t.label}
@@ -402,11 +303,6 @@ export default function DashboardPage() {
             );
           })}
         </div>
-        {activeTabMeta && (
-          <p className="mt-2 px-2 text-[11px] font-medium text-slate-400/70">
-            {activeTabMeta.description}
-          </p>
-        )}
       </div>
 
       {/* Tab body */}
@@ -420,11 +316,11 @@ export default function DashboardPage() {
             // `conversion` rather than the response itself matters: an older
             // server answers /admin/dashboard perfectly well, just without
             // these blocks, and rendering that would throw on undefined.
-            <div className="glass-card-borderless rounded-3xl p-8 text-center">
-              <p className="text-sm font-bold text-white">
+            <div className="panel rounded-lg p-8 text-center">
+              <p className="text-sm font-medium text-white">
                 Core metrics are not available yet
               </p>
-              <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed font-medium text-rose-200/60">
+              <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed text-slate-500">
                 The API answered <code>/admin/dashboard</code> without{" "}
                 <code>conversion</code> / <code>genderRatio</code>. This tab
                 ships ahead of the server it reads, so it will fill in on the
@@ -434,7 +330,7 @@ export default function DashboardPage() {
           ))}
 
         {activeTab === "overview" && (
-          <div className="space-y-10">
+          <div className="space-y-8">
             {data.demographics && <DemographicsSection data={data.demographics} />}
             {data.funnel && <FunnelSection data={data.funnel} />}
             {data.matches && <MatchesSection data={data.matches} />}
@@ -449,7 +345,7 @@ export default function DashboardPage() {
         )}
 
         {activeTab === "cities" && (
-          <div className="space-y-12">
+          <div className="space-y-8">
             {data.cities && <CitiesSection data={data.cities} />}
             <WaitlistSection data={data.waitlist} loading={loading} />
           </div>
@@ -471,9 +367,9 @@ export default function DashboardPage() {
             // hand, so this tab can legitimately land before its endpoint
             // exists. Say that, rather than render an empty panel — a silently
             // blank tab is indistinguishable from a broken one.
-            <div className="glass-card-borderless rounded-3xl p-8 text-center">
-              <p className="text-sm font-bold text-white">Monetization is not available yet</p>
-              <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed font-medium text-rose-200/60">
+            <div className="panel rounded-lg p-8 text-center">
+              <p className="text-sm font-medium text-white">Monetization is not available yet</p>
+              <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed text-slate-500">
                 The API did not answer <code>/admin/analytics/monetization</code>. This tab ships
                 ahead of the server it reads, so it will fill in on the next backend deploy.
               </p>

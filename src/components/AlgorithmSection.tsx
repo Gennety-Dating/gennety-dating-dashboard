@@ -12,14 +12,7 @@ import type { AlgorithmData } from "../lib/api";
 import SectionHeader from "./SectionHeader";
 import StatCard from "./StatCard";
 import ChartCard from "./charts/ChartCard";
-
-const TOOLTIP_STYLE = {
-  backgroundColor: "#17181c",
-  border: "none",
-  borderRadius: 12,
-  color: "#ffffff",
-  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.6)",
-};
+import { TOOLTIP_STYLE } from "../lib/chartTheme";
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -61,7 +54,7 @@ export default function AlgorithmSection({ data }: Props) {
         description="Diagnostics for the scoring formula MatchScore = (w₁·V_explicit + w₂·V_research) · V_league - w₃·V_penalty. Use these to tune weights and sanity-check the AI synergy score."
       />
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatCard
           label="Total matches"
           value={data.totalMatches.toLocaleString()}
@@ -147,7 +140,7 @@ export default function AlgorithmSection({ data }: Props) {
 
         <ChartCard
           title="Pitch length × accept rate"
-          description="X-axis: number of characters in the AI-generated pitch. Y-axis: per-side accept rate. Helps tune the pitch generator length — too long users skim, too short and the case isn't made."
+          description="Characters in the AI-generated pitch against per-side accept rate."
         >
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={pitchData} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>

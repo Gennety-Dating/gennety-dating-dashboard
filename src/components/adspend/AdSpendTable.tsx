@@ -46,11 +46,11 @@ interface Props {
 
 export default function AdSpendTable({ rows, loading, onEdit, onDelete }: Props) {
   return (
-    <div className="glass-card-borderless overflow-hidden rounded-3xl">
+    <div className="panel overflow-hidden rounded-lg">
       <div className="overflow-x-auto">
         <table className="w-full text-left text-xs">
-          <thead className="bg-[#121316]">
-            <tr className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">
+          <thead className="bg-canvas">
+            <tr className="text-[10px] font-semibold tracking-wide text-slate-500 uppercase">
               <th className="px-6 py-4">Channel</th>
               <th className="px-6 py-4">Category</th>
               <th className="px-6 py-4">Period</th>
@@ -89,7 +89,7 @@ export default function AdSpendTable({ rows, loading, onEdit, onDelete }: Props)
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`rounded-lg px-2 py-1 text-[10px] font-bold ${
+                        className={`rounded-md px-2 py-1 text-[10px] font-semibold ${
                           CATEGORY_STYLE[row.category] ?? "bg-slate-500/20 text-slate-300"
                         }`}
                       >
@@ -100,7 +100,7 @@ export default function AdSpendTable({ rows, loading, onEdit, onDelete }: Props)
                       {formatDate(row.periodStart)} – {formatDate(row.periodEnd)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-bold text-white">{money.primary}</div>
+                      <div className="font-semibold text-white">{money.primary}</div>
                       {money.secondary && (
                         <div className="text-[11px] text-slate-500">{money.secondary}</div>
                       )}
@@ -112,13 +112,13 @@ export default function AdSpendTable({ rows, loading, onEdit, onDelete }: Props)
                       <div className="flex justify-end gap-1.5">
                         <button
                           onClick={() => onEdit(row)}
-                          className="inner-glow cursor-pointer rounded-xl px-3 py-1.5 text-[11px] font-semibold text-slate-300 hover:text-white"
+                          className="btn cursor-pointer rounded-md px-3 py-1.5 text-[11px] font-semibold text-slate-300 hover:text-white"
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => onDelete(row)}
-                          className="inner-glow cursor-pointer rounded-xl px-3 py-1.5 text-[11px] font-semibold text-rose-300/80 hover:text-rose-200"
+                          className="btn cursor-pointer rounded-md px-3 py-1.5 text-[11px] font-semibold text-rose-300/80 hover:text-rose-200"
                         >
                           Delete
                         </button>

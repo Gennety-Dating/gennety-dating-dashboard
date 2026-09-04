@@ -14,19 +14,12 @@ import type { AudienceData, HeatmapData } from "../lib/api";
 import SectionHeader from "./SectionHeader";
 import StatCard from "./StatCard";
 import ChartCard from "./charts/ChartCard";
+import { TOOLTIP_STYLE } from "../lib/chartTheme";
 
 const CHART_COLORS = [
   "#e11d48", "#be123c", "#f43f5e", "#10b981", "#f59e0b",
   "#9f1239", "#fb7185", "#38bdf8", "#f97316",
 ];
-
-const TOOLTIP_STYLE = {
-  backgroundColor: "#17181c",
-  border: "none",
-  borderRadius: 12,
-  color: "#ffffff",
-  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.6)",
-};
 
 interface Props {
   audience: AudienceData;
@@ -48,11 +41,11 @@ export default function AudienceSection({ audience, heatmap }: Props) {
     <section className="space-y-8">
       <SectionHeader
         title="Audience"
-        description="Who your users are — demographics, interests, psychology, geography. Helps target growth campaigns and tune the matching algorithm."
+        description="Demographics, interests, psychology and geography of the registered base."
       />
 
       {/* Top-level summary cards */}
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatCard
           label="Total users"
           value={audience.totalUsers.toLocaleString()}
@@ -90,7 +83,7 @@ export default function AudienceSection({ audience, heatmap }: Props) {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <ChartCard
           title="Age distribution"
-          description="User counts in age brackets. Skews tell you which copy/imagery to use in growth ads."
+          description="User counts in age brackets."
         >
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={ageData} margin={{ top: 4, right: 16, left: 0, bottom: 4 }}>
@@ -168,7 +161,7 @@ export default function AudienceSection({ audience, heatmap }: Props) {
       {/* Match radius */}
       <ChartCard
         title="Match radius preference"
-        description="`campus_only` keeps matches inside one university; `citywide` opens up to cross-campus pairs. A shift toward citywide → tune Places API queries to wider midpoints."
+        description="`campus_only` keeps matches inside one university; `citywide` opens up to cross-campus pairs."
       >
         <ResponsiveContainer width="100%" height={240}>
           <PieChart>
@@ -282,7 +275,7 @@ function SimpleHeatmap({
   const lngRange = lngMax - lngMin || 1;
 
   return (
-    <div className="relative h-72 w-full overflow-hidden rounded-3xl bg-[#121316] [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]">
+    <div className="relative h-72 w-full overflow-hidden rounded-lg bg-canvas">
       {cells.map((c, i) => {
         // Y is inverted: higher latitude = top of the canvas.
         const left = ((c.lng - lngMin) / lngRange) * 100;

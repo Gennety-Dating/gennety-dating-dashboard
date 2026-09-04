@@ -7,9 +7,9 @@ interface Props {
 }
 
 const TIER_STYLES: Record<number, string> = {
-  1: "bg-slate-200/15 text-slate-200 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]",
-  2: "bg-slate-200/20 text-slate-100 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.18)]",
-  3: "bg-white/20 text-white [box-shadow:inset_0_1px_1.5px_rgba(255,255,255,0.3)]",
+  1: "bg-slate-200/15 text-slate-200",
+  2: "bg-slate-200/20 text-slate-100",
+  3: "bg-white/20 text-white",
 };
 
 const TIER_LABELS: Record<number, string> = {
@@ -20,10 +20,10 @@ const TIER_LABELS: Record<number, string> = {
 
 function TierPill({ tier }: { tier: number }) {
   const cls =
-    TIER_STYLES[tier] ?? "bg-[#17181c] text-slate-300 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]";
+    TIER_STYLES[tier] ?? "bg-panel text-slate-300";
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-0.5 text-[11px] font-bold ${cls}`}
+      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-0.5 text-[11px] font-semibold ${cls}`}
     >
       {tier === 3 && (
         <span className="relative flex h-1.5 w-1.5">
@@ -38,11 +38,11 @@ function TierPill({ tier }: { tier: number }) {
 
 function ReviewedPill({ reviewed }: { reviewed: boolean }) {
   return reviewed ? (
-    <span className="inline-flex items-center rounded-full bg-white/15 px-3 py-0.5 text-[11px] font-bold text-white [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.25)]">
+    <span className="inline-flex items-center rounded-full bg-white/15 px-3 py-0.5 text-[11px] font-semibold text-white">
       Reviewed
     </span>
   ) : (
-    <span className="inline-flex items-center rounded-full bg-[#17181c] px-3 py-0.5 text-[11px] font-bold text-slate-400 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]">
+    <span className="inline-flex items-center rounded-full bg-panel px-3 py-0.5 text-[11px] font-semibold text-slate-400">
       Pending
     </span>
   );
@@ -66,11 +66,11 @@ function formatDate(iso: string): string {
 
 export default function ReportsTable({ reports, loading, onRowClick }: Props) {
   return (
-    <div className="glass-card-borderless overflow-hidden rounded-3xl">
+    <div className="panel overflow-hidden rounded-lg">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-white/[0.03] text-xs">
-          <thead className="bg-[#121316]">
-            <tr className="text-left text-[11px] font-bold tracking-wider text-slate-400 uppercase">
+          <thead className="bg-canvas">
+            <tr className="text-left text-[11px] font-semibold tracking-wide text-slate-400 uppercase">
               <th className="px-6 py-4">Tier</th>
               <th className="px-6 py-4">Reporter</th>
               <th className="px-6 py-4">Reported</th>
@@ -85,7 +85,7 @@ export default function ReportsTable({ reports, loading, onRowClick }: Props) {
                 <tr key={`skel-${i}`}>
                   {Array.from({ length: 6 }).map((_, j) => (
                     <td key={j} className="px-6 py-4">
-                      <div className="h-3.5 w-24 animate-pulse rounded-xl bg-slate-800/50" />
+                      <div className="h-3.5 w-24 animate-pulse rounded-md bg-slate-800/50" />
                     </td>
                   ))}
                 </tr>
@@ -107,7 +107,7 @@ export default function ReportsTable({ reports, loading, onRowClick }: Props) {
                 <tr
                   key={r.id}
                   onClick={() => onRowClick(r.id)}
-                  className={`group cursor-pointer transition-all duration-150 hover:bg-white/[0.02] ${
+                  className={`group cursor-pointer transition-colors duration-150 hover:bg-white/[0.02] ${
                     r.tier === 3 && !r.adminReviewed
                       ? "bg-rose-950/20"
                       : ""
@@ -117,7 +117,7 @@ export default function ReportsTable({ reports, loading, onRowClick }: Props) {
                     <TierPill tier={r.tier} />
                   </td>
                   <td className="px-6 py-4">
-                    <div className="font-bold text-white transition-colors group-hover:text-rose-300">
+                    <div className="font-semibold text-white transition-colors group-hover:text-rose-300">
                       {displayName(r.reporter)}
                     </div>
                     <div className="text-[11px] font-medium text-slate-400">
@@ -125,7 +125,7 @@ export default function ReportsTable({ reports, loading, onRowClick }: Props) {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="font-bold text-white transition-colors group-hover:text-rose-300">
+                    <div className="font-semibold text-white transition-colors group-hover:text-rose-300">
                       {displayName(r.reported)}
                     </div>
                     <div className="text-[11px] font-medium text-slate-400">

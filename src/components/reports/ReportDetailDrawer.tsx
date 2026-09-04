@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { ReportListItem } from "../../lib/api";
 import { markReportReviewed } from "../../lib/api";
 import { toTagList } from "../../lib/tags";
+import ErrorBanner from "../ErrorBanner";
 
 interface Props {
   report: ReportListItem | null;
@@ -16,9 +17,9 @@ const TIER_LABELS: Record<number, string> = {
 };
 
 const TIER_COLORS: Record<number, string> = {
-  1: "bg-slate-200/15 text-slate-200 [box-shadow:inset_0_1px_1.5px_rgba(255,255,255,0.15)]",
-  2: "bg-slate-200/20 text-slate-100 [box-shadow:inset_0_1px_1.5px_rgba(255,255,255,0.18)]",
-  3: "bg-white/20 text-white [box-shadow:inset_0_1px_1.5px_rgba(255,255,255,0.25)]",
+  1: "bg-slate-200/15 text-slate-200",
+  2: "bg-slate-200/20 text-slate-100",
+  3: "bg-white/20 text-white",
 };
 
 function displayName(user: {
@@ -33,7 +34,7 @@ function displayName(user: {
 function Field({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div>
-      <p className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+      <p className="text-[10px] font-semibold tracking-wide text-slate-400 uppercase">
         {label}
       </p>
       <p className="mt-0.5 text-xs font-semibold text-slate-200">{value ?? "—"}</p>
@@ -52,7 +53,7 @@ function TagList({ items }: { items: string[] | string | undefined | null }) {
       {tags.map((item, index) => (
         <span
           key={`${item}-${index}`}
-          className="rounded-xl bg-[#121316] px-3 py-1 text-xs font-semibold text-slate-300 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]"
+          className="rounded-md bg-canvas px-3 py-1 text-xs font-semibold text-slate-300"
         >
           {item}
         </span>
@@ -63,7 +64,7 @@ function TagList({ items }: { items: string[] | string | undefined | null }) {
 
 function EmptyState({ text }: { text: string }) {
   return (
-    <div className="rounded-2xl bg-[#121316] p-4 text-xs font-medium text-slate-400 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]">
+    <div className="rounded-md bg-canvas p-4 text-xs font-medium text-slate-400">
       {text}
     </div>
   );
@@ -79,22 +80,22 @@ function UserSnapshot({
   showStrikes?: boolean;
 }) {
   return (
-    <section className="rounded-3xl bg-[#121316] p-6 shadow-2xl [box-shadow:inset_0_1px_1.5px_rgba(255,255,255,0.15)]">
-      <div className="mb-4 flex items-start justify-between gap-4">
+    <section className="rounded-lg bg-canvas p-6">
+      <div className="mb-4 flex items-start justify-between gap-3">
         <div>
-          <p className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+          <p className="text-[10px] font-semibold tracking-wide text-slate-400 uppercase">
             {title}
           </p>
-          <h4 className="mt-1 text-base font-extrabold text-white">
+          <h4 className="mt-1 text-base font-semibold text-white">
             {displayName(user)}
           </h4>
         </div>
-        <div className="rounded-full bg-[#17181c] px-3 py-1 text-[10px] font-bold tracking-wider text-slate-300 uppercase [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
+        <div className="rounded-full bg-panel px-3 py-1 text-[10px] font-semibold tracking-wide text-slate-300 uppercase">
           <span className="capitalize">{user.status}</span>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         <Field label="Telegram" value={`tg:${user.telegramId}`} />
         <Field label="Email" value={user.email ?? "—"} />
         <Field
@@ -111,11 +112,11 @@ function UserSnapshot({
 
       <div className="mt-5 space-y-4">
         <div>
-          <p className="mb-1.5 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+          <p className="mb-1.5 text-[10px] font-semibold tracking-wide text-slate-400 uppercase">
             Psychological Summary
           </p>
           {user.profile?.psychologicalSummary ? (
-            <div className="rounded-2xl bg-rose-950/30 p-4 [box-shadow:inset_0_1px_1px_rgba(244,63,94,0.3)]">
+            <div className="rounded-md bg-rose-950/30 p-4">
               <p className="font-mono text-xs leading-relaxed whitespace-pre-wrap text-slate-200">
                 {user.profile.psychologicalSummary}
               </p>
@@ -125,26 +126,26 @@ function UserSnapshot({
           )}
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
-            <p className="mb-1.5 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+            <p className="mb-1.5 text-[10px] font-semibold tracking-wide text-slate-400 uppercase">
               Hobbies
             </p>
             <TagList items={user.profile?.hobbies} />
           </div>
           <div>
-            <p className="mb-1.5 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+            <p className="mb-1.5 text-[10px] font-semibold tracking-wide text-slate-400 uppercase">
               Partner Preferences
             </p>
             <TagList items={user.profile?.partnerPreferences} />
           </div>
           <div>
-            <p className="mb-1.5 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+            <p className="mb-1.5 text-[10px] font-semibold tracking-wide text-slate-400 uppercase">
               Negative Constraints
             </p>
             <TagList items={user.profile?.negativeConstraints} />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             <Field
               label="Height"
               value={
@@ -194,21 +195,21 @@ export default function ReportDetailDrawer({
     <>
       <div
         onClick={onClose}
-        className={`fixed inset-0 z-40 bg-[#121316]/80 backdrop-blur-md transition-opacity duration-300 ${
+        className={`fixed inset-0 z-40 bg-canvas/80 transition-opacity ${
           open ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       />
       <aside
-        className={`fixed inset-y-0 right-0 z-50 w-full max-w-2xl overflow-y-auto bg-[#121316]/95 shadow-2xl backdrop-blur-2xl [box-shadow:inset_1px_0_1px_rgba(255,255,255,0.1)] transition-transform duration-300 ${
+        className={`fixed inset-y-0 right-0 z-50 w-full max-w-2xl overflow-y-auto bg-canvas/95 transition-transform ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="sticky top-0 z-10 flex items-center justify-between bg-[#17181c]/95 px-6 py-4.5 backdrop-blur-xl [box-shadow:inset_0_-1px_0_rgba(255,255,255,0.06)]">
-          <h2 className="text-base font-extrabold tracking-tight text-white">Report Detail</h2>
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-panel/95 px-6 py-3">
+          <h2 className="text-base font-semibold tracking-tight text-white">Report Detail</h2>
           <button
             onClick={onClose}
             aria-label="Close"
-            className="inner-glow cursor-pointer rounded-2xl px-4 py-2 text-xs font-bold text-slate-300 hover:text-white"
+            className="btn cursor-pointer rounded-md px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
           >
             Close
           </button>
@@ -217,9 +218,9 @@ export default function ReportDetailDrawer({
         {report && (
           <div className="space-y-6 px-6 py-6">
             <div
-              className={`rounded-3xl p-5 ${TIER_COLORS[report.tier] ?? "bg-[#121316] text-slate-300 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]"}`}
+              className={`rounded-lg p-5 ${TIER_COLORS[report.tier] ?? "bg-canvas text-slate-300"}`}
             >
-              <p className="text-xs font-extrabold tracking-tight">
+              <p className="text-xs font-semibold tracking-tight">
                 {TIER_LABELS[report.tier] ?? `Tier ${report.tier}`}
               </p>
               <p className="mt-1 text-xs opacity-90 leading-relaxed font-medium">
@@ -242,14 +243,13 @@ export default function ReportDetailDrawer({
             </div>
 
             <section>
-              <h4 className="mb-3 text-xs font-extrabold tracking-tight text-white uppercase">
+              <h4 className="mb-3 text-xs font-semibold tracking-tight text-white uppercase">
                 AI Triage Summary
               </h4>
               {report.reasonSummary ? (
-                <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-rose-950/40 via-[#121316] to-[#121316] p-5.5 shadow-2xl [box-shadow:inset_0_1px_1.5px_rgba(244,63,94,0.35),inset_0_0_18px_rgba(244,63,94,0.1)]">
-                  <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-rose-400 to-rose-700" />
-                  <div className="mb-3 flex items-center gap-2">
-                    <span className="rounded-xl bg-rose-950/60 px-2.5 py-0.5 text-[10px] font-bold tracking-widest text-rose-200 uppercase [box-shadow:inset_0_1px_1px_rgba(244,63,94,0.4)]">
+                <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-rose-950/40 via-[#121316] to-[#121316] p-4">
+                              <div className="mb-3 flex items-center gap-2">
+                    <span className="rounded-md bg-white/8 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-slate-400 uppercase">
                       LLM Classification
                     </span>
                   </div>
@@ -263,17 +263,17 @@ export default function ReportDetailDrawer({
             </section>
 
             <section>
-              <h4 className="mb-3 text-xs font-extrabold tracking-tight text-white uppercase">
+              <h4 className="mb-3 text-xs font-semibold tracking-tight text-white uppercase">
                 User's Report
               </h4>
-              <div className="rounded-3xl bg-[#121316] p-5.5 shadow-2xl [box-shadow:inset_0_1px_1.5px_rgba(255,255,255,0.15)]">
+              <div className="rounded-lg bg-canvas p-4">
                 <p className="text-xs font-medium leading-relaxed whitespace-pre-wrap text-slate-200">
                   {report.rawText}
                 </p>
               </div>
             </section>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 rounded-3xl bg-[#121316] p-5.5 shadow-2xl [box-shadow:inset_0_1px_1.5px_rgba(255,255,255,0.15)]">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 rounded-lg bg-canvas p-4">
               <Field
                 label="Report ID"
                 value={
@@ -307,14 +307,12 @@ export default function ReportDetailDrawer({
             {!report.adminReviewed && (
               <div className="pt-4">
                 {markError && (
-                  <p className="mb-3 rounded-2xl bg-rose-950/40 p-3 text-xs font-medium text-rose-300 [box-shadow:inset_0_1px_1px_rgba(244,63,94,0.3)]">
-                    {markError}
-                  </p>
+                  <ErrorBanner className="mb-3" message={markError} />
                 )}
                 <button
                   onClick={handleMarkReviewed}
                   disabled={marking}
-                  className="inner-glow-cherry group relative w-full cursor-pointer overflow-hidden rounded-2xl py-3.5 text-xs font-bold tracking-wide uppercase text-white shadow-xl transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="btn-primary group relative w-full cursor-pointer overflow-hidden rounded-md py-3.5 text-xs font-semibold tracking-wide uppercase text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <span className="relative z-10">{marking ? "Marking..." : "Mark as Reviewed"}</span>
                   <div className="absolute inset-0 bg-white/10 opacity-0 transition-opacity group-hover:opacity-100" />

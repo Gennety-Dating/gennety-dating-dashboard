@@ -1,9 +1,20 @@
 @import "tailwindcss";
 
+/* ── Palette ──────────────────────────────────────────────────────────
+   Two greys carry the entire layout: the canvas and the panel sitting on
+   it, separated by a hairline instead of a shadow. Rose is deliberately
+   absent here — on this screen colour is a status channel (success /
+   warning / danger / selected), so spending it on chrome would leave
+   nothing left to say "this report is unsafe".                        */
+@theme {
+  --color-canvas: #121316;
+  --color-panel: #17181c;
+  --color-hairline: rgba(255, 255, 255, 0.07);
+}
+
 @layer base {
   html {
     color-scheme: dark;
-    scroll-behavior: smooth;
   }
 
   body {
@@ -17,88 +28,65 @@
       sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: #121316;
+    background-color: var(--color-canvas);
     color: #f8fafc;
   }
 
   input[type="checkbox"] {
-    accent-color: #9f1239;
+    accent-color: #64748b;
   }
 
-  /* Custom sleek dark scrollbars */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
   }
   ::-webkit-scrollbar-track {
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(244, 63, 94, 0.25);
-    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 4px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(244, 63, 94, 0.45);
+    background: rgba(255, 255, 255, 0.2);
   }
 }
 
-/* Borderless Glassmorphism & Inner Edge Spray Effects */
-
-/* Dark charcoal button / badge with white inner spray light running from edge inwards */
-.inner-glow {
-  background-color: rgba(24, 25, 30, 0.9);
-  box-shadow:
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.35),
-    inset 0 0 14px 0 rgba(255, 255, 255, 0.08),
-    0 10px 25px -5px rgba(0, 0, 0, 0.6);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+/* ── Surface ─────────────────────────────────────────────────────────
+   One panel, one border, no blur, no drop shadow. Depth costs contrast
+   and buys nothing here: the reader is comparing numbers across panels,
+   not judging which one floats higher.                                */
+.panel {
+  background-color: var(--color-panel);
+  border: 1px solid var(--color-hairline);
 }
 
-.inner-glow:hover {
-  background-color: rgba(36, 38, 45, 0.95);
-  box-shadow:
-    inset 0 1px 2px 0 rgba(255, 255, 255, 0.5),
-    inset 0 0 18px 0 rgba(244, 63, 94, 0.3),
-    0 15px 30px -5px rgba(136, 19, 55, 0.35);
+/* ── Controls ────────────────────────────────────────────────────────
+   `.btn-primary` is a lighter fill rather than a colour, for the reason
+   given above the palette.                                            */
+.btn {
+  background-color: #1e2025;
+  border: 1px solid var(--color-hairline);
+  color: #cbd5e1;
+  transition:
+    background-color 0.12s ease,
+    color 0.12s ease;
+}
+.btn:hover {
+  background-color: #26282e;
+  color: #ffffff;
 }
 
-/* Deep Burgundy / Cherry Active Button with Inset Rim Light */
-.inner-glow-cherry {
-  background: linear-gradient(135deg, #9f1239 0%, #4c0519 100%);
-  box-shadow:
-    inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.5),
-    inset 0 0 16px 0 rgba(255, 255, 255, 0.2),
-    0 8px 22px -4px rgba(159, 18, 57, 0.45);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+.btn-primary {
+  background-color: #2f3239;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  transition: background-color 0.12s ease;
+}
+.btn-primary:hover {
+  background-color: #383b43;
 }
 
-.inner-glow-cherry:hover {
-  background: linear-gradient(135deg, #be123c 0%, #881337 100%);
-  box-shadow:
-    inset 0 1px 2px 0 rgba(255, 255, 255, 0.7),
-    inset 0 0 20px 0 rgba(255, 255, 255, 0.3),
-    0 12px 28px -4px rgba(190, 18, 60, 0.55);
-}
-
-/* Dark Charcoal Borderless Card with inner edge lighting */
-.glass-card-borderless {
-  background: rgba(22, 23, 27, 0.75);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  box-shadow:
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.18),
-    inset 0 0 22px 0 rgba(255, 255, 255, 0.04),
-    0 20px 45px -15px rgba(0, 0, 0, 0.7);
-}
-
-/* Deep Cherry Gradient Text */
-.text-gradient-cherry {
-  background: linear-gradient(135deg, #ffffff 0%, #fecdd3 30%, #f43f5e 70%, #9f1239 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Hide scrollbar utility */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -106,6 +94,3 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-
-
-

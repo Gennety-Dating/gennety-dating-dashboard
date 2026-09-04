@@ -30,16 +30,16 @@ function HealthCard({
 }) {
   const share = total > 0 ? Math.round((count / total) * 100) : 0;
   return (
-    <div className="glass-card-borderless rounded-3xl p-5" title={hint}>
+    <div className="panel rounded-lg p-5" title={hint}>
       <div className="flex items-center justify-between gap-2">
         <span
-          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold ${HEALTH_STYLES[cls]}`}
+          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold ${HEALTH_STYLES[cls]}`}
         >
           {HEALTH_LABELS[cls]}
         </span>
         <span className="text-[10px] font-semibold text-slate-500">{share}%</span>
       </div>
-      <p className="mt-2.5 text-3xl font-black tracking-tight text-white">{count}</p>
+      <p className="mt-2.5 text-3xl font-semibold tracking-tight text-white">{count}</p>
     </div>
   );
 }
@@ -65,19 +65,19 @@ function FunnelStep({
   return (
     <div>
       <div className="mb-1.5 flex items-baseline justify-between gap-3">
-        <span className="text-[11px] font-bold tracking-wider text-slate-400 uppercase">
+        <span className="text-[11px] font-semibold tracking-wide text-slate-400 uppercase">
           {label}
         </span>
         <span className="text-xs font-semibold text-slate-300">
-          <span className="font-black text-white">{value}</span>
+          <span className="font-semibold text-white">{value}</span>
           {drop !== null && drop > 0 && (
-            <span className="ml-2 text-[11px] font-bold text-rose-300/80">−{drop}%</span>
+            <span className="ml-2 text-[11px] font-semibold text-rose-300/80">−{drop}%</span>
           )}
         </span>
       </div>
-      <div className="h-2.5 overflow-hidden rounded-full bg-[#17181c]">
+      <div className="h-2.5 overflow-hidden rounded-full bg-panel">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-rose-500/70 to-rose-300/70"
+          className="h-full rounded-full bg-slate-400"
           style={{ width: `${width}%` }}
         />
       </div>
@@ -94,9 +94,9 @@ export default function HealthSection({
 }) {
   if (loading || !stats) {
     return (
-      <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-5">
+      <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-5">
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="glass-card-borderless h-28 animate-pulse rounded-3xl" />
+          <div key={i} className="panel h-28 animate-pulse rounded-lg" />
         ))}
       </div>
     );
@@ -123,16 +123,16 @@ export default function HealthSection({
   };
 
   return (
-    <div className="mb-6">
-      <div className="mb-3 flex items-baseline justify-between gap-4">
-        <h2 className="text-sm font-extrabold tracking-tight text-white">Здоровье базы</h2>
+    <div className="mb-5">
+      <div className="mb-3 flex items-baseline justify-between gap-3">
+        <h2 className="text-sm font-semibold tracking-tight text-white">Здоровье базы</h2>
         <p className="text-[11px] font-medium text-slate-500">
           {userHealth.real} реальных из {userHealth.total} аккаунтов
           {userHealth.truncated && " · скан ограничен, цифры частичные"}
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
         {KPI_ORDER.map((cls) => (
           <HealthCard
             key={cls}
@@ -145,10 +145,10 @@ export default function HealthSection({
       </div>
 
       {/* Ликвидность — единственное число, которое отвечает «есть ли кого сводить». */}
-      <div className="glass-card-borderless mt-4 flex flex-wrap items-center justify-between gap-3 rounded-3xl px-5.5 py-4">
+      <div className="panel mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg px-5.5 py-4">
         <div className="text-xs font-medium text-slate-300">
           Готовы к матчингу:{" "}
-          <span className="text-base font-black text-white">{eligible.count}</span>
+          <span className="text-base font-semibold text-white">{eligible.count}</span>
           <span className="text-slate-500"> из {eligible.of_total}</span>
           <span className="ml-2 text-[11px] text-slate-500">
             (реальные пользователи, без тестовых)
@@ -163,19 +163,19 @@ export default function HealthSection({
       </div>
 
       {/* Воронка онбординга. Знаменатель везде — реальные пользователи. */}
-      <div className="glass-card-borderless mt-4 rounded-3xl p-5.5">
-        <div className="mb-4 flex items-baseline justify-between gap-4">
-          <h3 className="text-xs font-bold tracking-wider text-slate-400 uppercase">
+      <div className="panel mt-4 rounded-lg p-4">
+        <div className="mb-4 flex items-baseline justify-between gap-3">
+          <h3 className="text-xs font-semibold tracking-wide text-slate-400 uppercase">
             Воронка онбординга
           </h3>
           <p className="text-[11px] font-medium text-slate-500">
             рег → активный:{" "}
-            <span className="font-bold text-white">
+            <span className="font-semibold text-white">
               {funnel.conversion_registered_to_active_pct ?? "—"}%
             </span>
             <span className="mx-2 text-slate-700">|</span>
             consent → активный:{" "}
-            <span className="font-bold text-white">
+            <span className="font-semibold text-white">
               {funnel.conversion_consent_to_active_pct ?? "—"}%
             </span>
           </p>

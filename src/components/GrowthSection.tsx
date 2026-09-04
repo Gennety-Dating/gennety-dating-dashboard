@@ -16,14 +16,7 @@ import type { RetentionData, DatesData, VerificationData } from "../lib/api";
 import SectionHeader from "./SectionHeader";
 import StatCard from "./StatCard";
 import ChartCard from "./charts/ChartCard";
-
-const TOOLTIP_STYLE = {
-  backgroundColor: "#17181c",
-  border: "none",
-  borderRadius: 12,
-  color: "#ffffff",
-  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.6)",
-};
+import { TOOLTIP_STYLE } from "../lib/chartTheme";
 
 const STATUS_COLORS: Record<string, string> = {
   onboarding: "#f59e0b",
@@ -42,14 +35,14 @@ interface Props {
 
 export default function GrowthSection({ retention, dates, verification }: Props) {
   return (
-    <section className="space-y-12">
+    <section className="space-y-8">
       <SectionHeader
         title="Growth & trust"
-        description="Long-horizon health: do users stick around, do dates actually happen, and is the verification pipeline catching abuse without false positives."
+        description="Retention, date completion and the verification pipeline."
       />
 
       {/* Top KPI strip */}
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatCard
           label="Avg matches / user"
           value={retention.avgMatchesPerUser.toFixed(2)}
@@ -85,7 +78,8 @@ export default function GrowthSection({ retention, dates, verification }: Props)
 
         <ChartCard
           title="Cohort retention (week of registration → activity at W+N)"
-          description="Each row is a registration week cohort. Cells show the share of that cohort still active (sent a message or made a match decision) N weeks later. '—' = cohort isn't old enough yet to have a measurable W+N value. 'low N' flags small cohorts."
+          legend="'—' = cohort not old enough to score at W+N. 'low N' flags a small cohort."
+          description="Each row is a registration week cohort. Cells show the share of that cohort still active — sent a message or made a match decision — N weeks later."
         >
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
@@ -189,7 +183,7 @@ export default function GrowthSection({ retention, dates, verification }: Props)
 
         <ChartCard
           title="Weekly registrations"
-          description="Total new accounts per ISO week. Combine with the gender breakdown chart for balance trend."
+          description="Total new accounts per ISO week."
         >
           <ResponsiveContainer width="100%" height={240}>
             <LineChart
@@ -213,7 +207,7 @@ export default function GrowthSection({ retention, dates, verification }: Props)
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <ChartCard
             title="Platform split & active rate"
-            description="Telegram-only, mobile-only, and `both` users with their respective active rates. Lower active rate on a platform suggests retention work there pays off most."
+            description="Telegram-only, mobile-only and `both` users, each with its active rate."
           >
             <ResponsiveContainer width="100%" height={240}>
               <BarChart
@@ -267,7 +261,7 @@ export default function GrowthSection({ retention, dates, verification }: Props)
       <div className="space-y-6">
         <h3 className="text-base font-semibold text-white">Date quality</h3>
 
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <StatCard
             label="Scheduled dates"
             value={dates.scheduledCount.toLocaleString()}
@@ -475,7 +469,7 @@ export default function GrowthSection({ retention, dates, verification }: Props)
                 return (
                   <div
                     key={tier}
-                    className="rounded-2xl bg-[#17181c] p-3 text-sm [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.1)]"
+                    className="rounded-md bg-panel p-3 text-sm"
                   >
                     <div className="flex items-baseline justify-between">
                       <span className="text-xs tracking-wide text-slate-400 uppercase">
@@ -489,7 +483,7 @@ export default function GrowthSection({ retention, dates, verification }: Props)
                   </div>
                 );
               })}
-              <div className="rounded-lg border border-amber-700/40 bg-amber-500/5 p-3 text-sm">
+              <div className="rounded-md border border-amber-700/40 bg-amber-500/5 p-3 text-sm">
                 <p className="text-xs tracking-wide text-amber-400 uppercase">
                   False-positive proxy
                 </p>

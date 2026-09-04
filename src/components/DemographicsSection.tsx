@@ -12,19 +12,12 @@ import {
 import type { DemographicsData } from "../lib/api";
 import SectionHeader from "./SectionHeader";
 import StatCard from "./StatCard";
+import { TOOLTIP_STYLE } from "../lib/chartTheme";
 
 const GENDER_COLORS: Record<string, string> = {
   male: "#e11d48",
   female: "#f43f5e",
   unknown: "#64748b",
-};
-
-const TOOLTIP_STYLE = {
-  backgroundColor: "#17181c",
-  border: "none",
-  borderRadius: 12,
-  color: "#ffffff",
-  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.6)",
 };
 
 const FALLBACK_COLOR = "#94a3b8";
@@ -47,10 +40,9 @@ export default function DemographicsSection({ data }: Props) {
     <section>
       <SectionHeader
         title="Demographics"
-        description="User base composition by gender and university"
       />
 
-      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <StatCard label="Total Users" value={data.totalUsers.toLocaleString()} accent />
         {genderEntries.map((g) => (
           <StatCard
@@ -64,8 +56,8 @@ export default function DemographicsSection({ data }: Props) {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Gender Pie */}
-        <div className="glass-card-borderless rounded-3xl p-5.5">
-          <h3 className="mb-3 text-sm font-extrabold text-white">
+        <div className="panel rounded-lg p-4">
+          <h3 className="mb-3 text-sm font-semibold text-white">
             Gender Split
           </h3>
           <ResponsiveContainer width="100%" height={240}>
@@ -96,8 +88,8 @@ export default function DemographicsSection({ data }: Props) {
         </div>
 
         {/* University Bar */}
-        <div className="glass-card-borderless rounded-3xl p-5.5">
-          <h3 className="mb-3 text-sm font-extrabold text-white">
+        <div className="panel rounded-lg p-4">
+          <h3 className="mb-3 text-sm font-semibold text-white">
             Top Universities
           </h3>
           <ResponsiveContainer width="100%" height={240}>

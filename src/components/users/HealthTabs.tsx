@@ -45,7 +45,7 @@ export default function HealthTabs({
 
   return (
     <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-      <div className="flex flex-wrap items-center gap-1.5 rounded-2xl bg-[#17181c] p-1.5 [box-shadow:inset_0_1px_1px_rgba(255,255,255,0.15)]">
+      <div className="flex flex-wrap items-center gap-1.5 rounded-md bg-panel p-1.5">
         {TABS.map((tab) => {
           // Вкладка «Тестовые» бессмысленна, когда тестовые скрыты.
           if (tab === "test" && !includeTest) return null;
@@ -56,8 +56,8 @@ export default function HealthTabs({
               key={tab}
               onClick={() => onChange(tab)}
               className={`${
-                isActive ? "inner-glow-cherry text-white" : "inner-glow text-slate-300 hover:text-white"
-              } cursor-pointer rounded-xl px-3.5 py-2 text-[11px] font-bold tracking-wide`}
+                isActive ? "btn-primary text-white" : "btn text-slate-300 hover:text-white"
+              } cursor-pointer rounded-md px-3.5 py-2 text-[11px] font-semibold tracking-wide`}
             >
               {tab === "all" ? "Все" : HEALTH_LABELS[tab]}
               {count !== null && (
@@ -75,7 +75,7 @@ export default function HealthTabs({
           type="checkbox"
           checked={includeTest}
           onChange={(e) => onIncludeTestChange(e.target.checked)}
-          className="h-3.5 w-3.5 cursor-pointer accent-rose-500"
+          className="h-3.5 w-3.5 cursor-pointer accent-slate-400"
         />
         Показывать тестовые аккаунты
       </label>
