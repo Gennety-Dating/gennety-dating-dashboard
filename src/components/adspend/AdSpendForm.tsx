@@ -39,17 +39,35 @@ const APPROX_USD_RATE: Record<string, number> = {
   PLN: 0.25,
 };
 
+/**
+ * `YYYY-MM-DD` for a date, read on the LOCAL calendar.
+ *
+ * Not `toISOString().slice(0, 10)`, which was the bug it replaces: that
+ * converts to UTC first, so at 01:00 in Kyiv (UTC+3) "today" comes back as
+ * yesterday and the prefilled Monday silently became a Sunday. `sv-SE` is the
+ * terse way to ask `Intl` for an ISO-shaped date on the local calendar.
+ */
 function isoDate(d: Date): string {
-  return d.toISOString().slice(0, 10);
+  return d.toLocaleDateString("sv-SE");
 }
 
-/** Monday–Sunday of the current week, used to pre-fill a performance-ads period — the one category whose window is short enough that "this week" is the obvious default. */
-function currentWeekRange(): { start: string; end: string } {
+/**
+ * Monday–Sunday of the week that has CLOSED — the prefill for a performance-ads
+ * period.
+ *
+ * It used to prefill the week still in progress, which is one week away from
+ * the only question anyone arrives here to answer. The Monday reminder in the
+ * founder bot names the week that just ended, and the phone form
+ * (`GET /v1/founder/ad-spend/:token`) prefills that same week; a desktop form
+ * defaulting to a different one is how one spend ends up logged against two
+ * periods, since the period is part of the upsert key.
+ */
+function closedWeekRange(): { start: string; end: string } {
   const now = new Date();
   const day = now.getDay(); // 0 = Sunday
-  const diffToMonday = day === 0 ? -6 : 1 - day;
+  const daysSinceMonday = day === 0 ? 6 : day - 1;
   const monday = new Date(now);
-  monday.setDate(now.getDate() + diffToMonday);
+  monday.setDate(now.getDate() - daysSinceMonday - 7);
   const sunday = new Date(monday);
   sunday.setDate(monday.getDate() + 6);
   return { start: isoDate(monday), end: isoDate(sunday) };
@@ -133,7 +151,7 @@ export default function AdSpendForm({
           next.channel = "";
         }
         if (cat === "performance_ads" && !prev.periodStart && !prev.periodEnd) {
-          const week = currentWeekRange();
+          const week = closedWeekRange();
           next.periodStart = week.start;
           next.periodEnd = week.end;
         }
@@ -175,6 +193,17 @@ export default function AdSpendForm({
     }
     if (!Number.isFinite(amount) || amount <= 0) {
       setValidationError("Amount must be a positive number.");
+      return;
+    }
+    // `AdSpend.amount` is an Int of whole currency units (only the USD figure
+    // is stored in cents). A decimal used to pass every check here and die
+    // inside Prisma, reaching the founder as an opaque 500 on a form they had
+    // filled in correctly by every visible rule. The server now answers 400;
+    // saying it here means they don't spend a round-trip finding out.
+    if (!Number.isInteger(amount)) {
+      setValidationError(
+        `Amount must be a whole number of ${currency || "the currency"} — put the exact figure in the USD equivalent field instead.`,
+      );
       return;
     }
     if (!currency || currency.length !== 3) {
@@ -296,10 +325,12 @@ export default function AdSpendForm({
           <label className="mb-1 block text-[10px] font-semibold tracking-wide text-slate-500 uppercase">
             Amount
           </label>
+          {/* step="1": the stored column is an Int of whole currency units, and
+              step="0.01" was actively inviting the decimal that then failed. */}
           <input
             type="number"
             min="0"
-            step="0.01"
+            step="1"
             value={form.amount}
             onChange={(e) => update("amount", e.target.value)}
             className="w-full rounded-md border border-white/10 bg-canvas px-3 py-2 text-xs font-medium text-white outline-none focus:border-white/30"
