@@ -48,6 +48,7 @@ import GrowthSection from "../components/GrowthSection";
 import MonetizationSection from "../components/MonetizationSection";
 import CoreMetricsSection from "../components/CoreMetricsSection";
 import WeeklyMatchesSection from "../components/WeeklyMatchesSection";
+import ViralitySection from "../components/virality/ViralitySection";
 
 type TabKey =
   | "core"
@@ -58,6 +59,7 @@ type TabKey =
   | "algorithm"
   | "gender"
   | "growth"
+  | "virality"
   | "monetization";
 
 interface DashboardState {
@@ -93,6 +95,7 @@ const TABS: Array<{ key: TabKey; label: string }> = [
   { key: "algorithm", label: "Match algorithm" },
   { key: "gender", label: "Gender balance" },
   { key: "growth", label: "Growth & trust" },
+  { key: "virality", label: "Virality" },
   { key: "monetization", label: "Monetization" },
 ];
 
@@ -386,6 +389,11 @@ export default function DashboardPage() {
               verification={data.verification}
             />
           )}
+
+        {/* Загружает себя сам, как CohortRetentionSection: у него собственный
+            период и собственная гранулярность, а тянуть четыре виральных
+            эндпоинта в общий boot значило бы платить за них на каждой вкладке. */}
+        {activeTab === "virality" && <ViralitySection />}
       </div>
     </div>
   );

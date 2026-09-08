@@ -1467,3 +1467,246 @@ export const getCohortRetention = (bucket: CohortBucket, force = false) => {
   const path = `/admin/analytics/cohort-retention?bucket=${bucket}`;
   return apiFetch<CohortRetentionData>(force ? fresh(path) : path);
 };
+
+// ── Virality / K-factor ────────────────────────────────────────
+
+/**
+ * Каждый виральный ответ несёт свежесть предагрегата, а не только числа.
+ *
+ * У виральности нет «сейчас»: она считается фоновой задачей раз в сутки. Без
+ * этой пары полей незапустившийся крон читается как падение метрики — и это
+ * ровно та ошибка, которая обходится дороже всего, потому что выглядит как
+ * продуктовая проблема и уводит расследование не туда.
+ */
+export interface ViralityFreshness {
+  rollupAt: string | null;
+  rollupAgeHours: number | null;
+  stale: boolean;
+}
+
+export type ViralityGranularity = "day" | "week";
+export type ClusterDimension = "city" | "university";
+
+export interface ViralityMaturityCell {
+  maturityDay: number;
+  cohorts: number;
+  matureCohorts: number;
+  cohortSize: number;
+  sharers: number;
+  invitesSent: number;
+  linkClicks: number;
+  activations: number;
+  shareRate: number | null;
+  invitesPerUser: number | null;
+  clickRate: number | null;
+  activationRate: number | null;
+  kDirect: number | null;
+  cycleTimeMedianHours: number | null;
+  kTotal: number | null;
+}
+
+export interface WomCalibration {
+  method: "hdyhau" | "baseline" | "none";
+  coverage: number | null;
+  upliftFromBaseline: number | null;
+  upliftFromSurvey: number | null;
+  kWom: number | null;
+  reason: string;
+  /**
+   * Можно ли опираться на `kWom`. Число приходит в любом случае — спрятать его
+   * значило бы лишить читателя возможности увидеть, что метод сломался, — но
+   * `low` обязано быть показано рядом с ним.
+   */
+  confidence: "ok" | "low";
+  confidenceReasons: string[];
+}
+
+export interface HdyhauSummary {
+  total: number;
+  byAnswer: Array<{ answer: string; count: number; share: number }>;
+  womShare: number | null;
+  organicRespondents: number;
+  womShareOfOrganic: number | null;
+}
+
+export interface ViralitySummaryData extends ViralityFreshness {
+  generatedAt: string;
+  timezone: string;
+  range: { from: string; to: string };
+  scope: string;
+  granularity: ViralityGranularity;
+  kpi: {
+    maturityDay: number | null;
+    kDirect: number | null;
+    kWom: number | null;
+    kTotal: number | null;
+    cycleTimeMedianHours: number | null;
+    matureCohorts: number;
+    cohorts: number;
+  };
+  byMaturity: Record<string, ViralityMaturityCell>;
+  shareFunnel: {
+    cohortSize: number;
+    sharers: number;
+    shareRate: number | null;
+    invitesSent: number;
+    invitesPerUser: number | null;
+    linkClicks: number;
+    clickRate: number | null;
+    activations: number;
+    activationRate: number | null;
+  } | null;
+  wom: {
+    organicSignups: number;
+    seedSignups: number;
+    uplift: number | null;
+    kWomBaseline: number | null;
+    measurableDays: number;
+    /** Доля органики, объявленная приростом — проверка предпосылки метода. */
+    upliftShareOfOrganic: number | null;
+    calibration: WomCalibration;
+  };
+  hdyhau: HdyhauSummary;
+  series: Array<{
+    bucket: string;
+    signups: number;
+    organicSignups: number;
+    referralSignups: number;
+    seedSignups: number;
+    baselineOrganic: number | null;
+    organicUplift: number | null;
+    kWom: number | null;
+  }>;
+}
+
+export interface ViralityCohortCell {
+  sharers: number;
+  invitesSent: number;
+  invitesPerUser: number;
+  linkClicks: number;
+  clickRate: number | null;
+  activations: number;
+  activationRate: number | null;
+  kDirect: number;
+  kWom: number | null;
+  kTotal: number;
+  cycleTimeMedianHours: number | null;
+  /** Закрылось ли окно наблюдения. False — строка неполна по построению. */
+  mature: boolean;
+}
+
+export interface ViralityCohortsData extends ViralityFreshness {
+  generatedAt: string;
+  timezone: string;
+  range: { from: string; to: string };
+  scope: string;
+  maturityDays: number[];
+  cohorts: Array<{
+    cohortDate: string;
+    cohortSize: number;
+    byMaturity: Record<string, ViralityCohortCell>;
+  }>;
+}
+
+export interface ViralityClusterRow {
+  scope: string;
+  key: string | null;
+  signups: number;
+  organicSignups: number;
+  seedSignups: number;
+  organicUplift: number | null;
+  kWom: number | null;
+  kDirect: number | null;
+  kTotal: number | null;
+  cohortSize: number;
+  matureCohorts: number;
+  activations: number;
+  cycleTimeMedianHours: number | null;
+}
+
+export interface ViralityClustersData extends ViralityFreshness {
+  generatedAt: string;
+  timezone: string;
+  range: { from: string; to: string };
+  dimension: ClusterDimension;
+  maturityDay: number;
+  clusters: ViralityClusterRow[];
+}
+
+export interface ViralityAnomaly {
+  kind: "organic_spike" | "organic_drop" | "cycle_time_shift";
+  at: string;
+  scope: string;
+  observed: number;
+  expected: number;
+  stdDev: number;
+  zScore: number;
+  direction: "up" | "down";
+}
+
+export interface ViralityAnomaliesData extends ViralityFreshness {
+  generatedAt: string;
+  timezone: string;
+  range: { from: string; to: string };
+  sigma: number;
+  scope: string | null;
+  pointsChecked: number;
+  count: number;
+  anomalies: ViralityAnomaly[];
+}
+
+export interface ViralityRange {
+  from: string;
+  to: string;
+}
+
+function viralityParams(
+  range: ViralityRange,
+  extra: Record<string, string> = {},
+): string {
+  return new URLSearchParams({
+    from: range.from,
+    to: range.to,
+    ...extra,
+  }).toString();
+}
+
+export const getViralitySummary = (
+  range: ViralityRange,
+  granularity: ViralityGranularity,
+  scope: string,
+  force = false,
+) => {
+  const path = `/admin/analytics/virality/summary?${viralityParams(range, {
+    granularity,
+    scope,
+  })}`;
+  return apiFetch<ViralitySummaryData>(force ? fresh(path) : path);
+};
+
+export const getViralityCohorts = (
+  range: ViralityRange,
+  scope: string,
+  force = false,
+) => {
+  const path = `/admin/analytics/virality/cohorts?${viralityParams(range, { scope })}`;
+  return apiFetch<ViralityCohortsData>(force ? fresh(path) : path);
+};
+
+export const getViralityClusters = (
+  range: ViralityRange,
+  dimension: ClusterDimension,
+  maturityDay: number,
+  force = false,
+) => {
+  const path = `/admin/analytics/virality/clusters?${viralityParams(range, {
+    dimension,
+    maturityDay: String(maturityDay),
+  })}`;
+  return apiFetch<ViralityClustersData>(force ? fresh(path) : path);
+};
+
+export const getViralityAnomalies = (range: ViralityRange, force = false) => {
+  const path = `/admin/analytics/virality/anomalies?${viralityParams(range)}`;
+  return apiFetch<ViralityAnomaliesData>(force ? fresh(path) : path);
+};
