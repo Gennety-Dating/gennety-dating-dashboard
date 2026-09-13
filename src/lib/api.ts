@@ -1121,15 +1121,32 @@ export function fresh(path: string): string {
   return path.includes("?") ? `${path}&fresh=1` : `${path}?fresh=1`;
 }
 
+/**
+ * What a failed call carries besides its message.
+ *
+ * `code` is the backend's own `{ "error": "<code>" }`, when the body had one.
+ * Its absence matters as much as its value: a 404 WITH `not_found` is a row
+ * that is gone, a 404 without any code is a route this server does not have
+ * yet (Express answers unknown paths with HTML).
+ */
+export interface ApiErrorDetails {
+  status?: number;
+  code?: string;
+}
+
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const token = sessionStorage.getItem("admin_api_key");
   if (!token) throw new Error("Not authenticated");
+
+  // A multipart body must not be labelled JSON: the browser has to write the
+  // Content-Type itself, because only it knows the boundary string.
+  const isFormData = init?.body instanceof FormData;
 
   const res = await fetch(`${BASE_URL}${path}`, {
     ...init,
     headers: {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
       ...init?.headers,
     },
   });
@@ -1144,8 +1161,12 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
     // this endpoint yet" (404, i.e. the backend is a deploy behind the client)
     // from a real failure. The message is deliberately unchanged, so every
     // existing consumer behaves exactly as before.
-    const err = new Error(`API error: ${res.status}`) as Error & { status?: number };
+    const err = new Error(`API error: ${res.status}`) as Error & ApiErrorDetails;
     err.status = res.status;
+    const body: unknown = await res.json().catch(() => null);
+    if (body && typeof body === "object" && typeof (body as { error?: unknown }).error === "string") {
+      err.code = (body as { error: string }).error;
+    }
     throw err;
   }
 
@@ -1710,3 +1731,167 @@ export const getViralityAnomalies = (range: ViralityRange, force = false) => {
   const path = `/admin/analytics/virality/anomalies?${viralityParams(range)}`;
   return apiFetch<ViralityAnomaliesData>(force ? fresh(path) : path);
 };
+
+// ── Announcements (/admin/announcements) ───────────────────────
+// Rich in-app announcements: composed here, previewed on one phone, then
+// fanned out by the backend's `announcement-fanout` worker into every matching
+// app user's inbox (docs/product/domains/inbox-and-announcements.md in the
+// backend repo). Only a draft is editable; once scheduled, what people read is
+// what was scheduled.
+
+/** Mirrors `ANNOUNCEMENT_LIMITS` in `@gennety/shared` — the server enforces the same numbers. */
+export const ANNOUNCEMENT_LIMITS = {
+  title: 80,
+  teaser: 140,
+  body: 2000,
+  agentBrief: 1500,
+  suggestedQuestions: 3,
+  suggestedQuestion: 80,
+} as const;
+
+/** Mirrors `ANNOUNCEMENT_MEDIA` in `@gennety/shared`. */
+export const ANNOUNCEMENT_MEDIA = {
+  imageMaxBytes: 2 * 1024 * 1024,
+  videoMaxBytes: 8 * 1024 * 1024,
+  videoMaxSeconds: 10,
+} as const;
+
+export const ANNOUNCEMENT_LANGUAGES = ["en", "ru", "uk", "de", "pl"] as const;
+export type AnnouncementLanguage = (typeof ANNOUNCEMENT_LANGUAGES)[number];
+
+export type AnnouncementStatus = "draft" | "scheduled" | "sending" | "sent" | "archived";
+
+/** `{}` = every app user in status active or paused. */
+export interface AnnouncementAudience {
+  cityKeys?: string[];
+  languages?: AnnouncementLanguage[];
+}
+
+export interface AdminAnnouncement {
+  id: string;
+  status: AnnouncementStatus;
+  title: string;
+  teaser: string;
+  body: string;
+  agentBrief: string | null;
+  suggestedQuestions: string[];
+  eventId: string | null;
+  mediaKind: "image" | "video" | null;
+  /** Signed for 1 hour. Only on GET one and write responses — `null` in the list. */
+  mediaUrl: string | null;
+  posterUrl: string | null;
+  audience: AnnouncementAudience;
+  sendPush: boolean;
+  scheduledAt: string | null;
+  sentAt: string | null;
+  /** How many inbox rows the fan-out wrote. `null` until sending finishes. */
+  recipientCount: number | null;
+  readCount: number;
+  pendingPushCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AnnouncementInput {
+  title: string;
+  teaser: string;
+  body: string;
+  agentBrief?: string | null;
+  suggestedQuestions?: string[];
+  eventId?: string | null;
+  audience?: AnnouncementAudience;
+  sendPush?: boolean;
+}
+
+export type AnnouncementMediaRole = "media" | "poster";
+
+export interface AnnouncementPreviewResult {
+  inboxItemId: string;
+  /** `false` = no push token / APNs refused. The inbox row exists either way. */
+  pushed: boolean;
+}
+
+export const getAnnouncements = () =>
+  apiFetch<{ announcements: AdminAnnouncement[] }>("/admin/announcements");
+
+export const getAnnouncement = (id: string) =>
+  apiFetch<{ announcement: AdminAnnouncement }>(`/admin/announcements/${encodeURIComponent(id)}`);
+
+export const createAnnouncement = (body: AnnouncementInput) =>
+  apiFetch<{ announcement: AdminAnnouncement }>("/admin/announcements", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+
+export const updateAnnouncement = (id: string, body: Partial<AnnouncementInput>) =>
+  apiFetch<{ announcement: AdminAnnouncement }>(`/admin/announcements/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    body: JSON.stringify(body),
+  });
+
+export const countAnnouncementAudience = (audience: AnnouncementAudience) =>
+  apiFetch<{ count: number }>("/admin/announcements/audience-count", {
+    method: "POST",
+    body: JSON.stringify({ audience }),
+  });
+
+/**
+ * Multipart, never JSON: the admin JSON body limit is 32 kb, and a video is
+ * megabytes. The type is decided server-side from the bytes, not from `file.type`.
+ */
+export const uploadAnnouncementMedia = (id: string, role: AnnouncementMediaRole, file: File) => {
+  const form = new FormData();
+  form.append("role", role);
+  form.append("file", file);
+  return apiFetch<{ announcement: AdminAnnouncement }>(
+    `/admin/announcements/${encodeURIComponent(id)}/media`,
+    { method: "POST", body: form },
+  );
+};
+
+/** Clears the image or video AND its poster. Drafts only. */
+export const clearAnnouncementMedia = (id: string) =>
+  apiFetch<{ announcement: AdminAnnouncement }>(
+    `/admin/announcements/${encodeURIComponent(id)}/media`,
+    { method: "DELETE" },
+  );
+
+export const previewAnnouncement = (id: string, userId: string) =>
+  apiFetch<AnnouncementPreviewResult>(`/admin/announcements/${encodeURIComponent(id)}/preview`, {
+    method: "POST",
+    body: JSON.stringify({ userId }),
+  });
+
+/** `scheduledAt` omitted = now; a past instant is clamped to now server-side. */
+export const scheduleAnnouncement = (id: string, scheduledAt?: string) =>
+  apiFetch<{ announcement: AdminAnnouncement }>(`/admin/announcements/${encodeURIComponent(id)}/schedule`, {
+    method: "POST",
+    body: JSON.stringify(scheduledAt ? { scheduledAt } : {}),
+  });
+
+export const unscheduleAnnouncement = (id: string) =>
+  apiFetch<{ announcement: AdminAnnouncement }>(`/admin/announcements/${encodeURIComponent(id)}/unschedule`, {
+    method: "POST",
+  });
+
+export const archiveAnnouncement = (id: string) =>
+  apiFetch<{ announcement: AdminAnnouncement }>(`/admin/announcements/${encodeURIComponent(id)}/archive`, {
+    method: "POST",
+  });
+
+// ── Launch events (GET /admin/events) ──────────────────────────
+// Only the fields the announcement composer's picker reads. The whole router
+// answers 404 while the server's EVENTS_FEATURE_ENABLED flag is off.
+
+export interface AdminEventSummary {
+  id: string;
+  cityKey: string;
+  status: string;
+  title: string;
+  venueName: string;
+  startsAt: string;
+  timeZone: string;
+}
+
+export const getEvents = () =>
+  apiFetch<{ data: AdminEventSummary[]; total: number }>("/admin/events");

@@ -8,6 +8,7 @@ import PurchasesPage from "./pages/PurchasesPage";
 import AdSpendPage from "./pages/AdSpendPage";
 import DialogsPage from "./pages/DialogsPage";
 import ReportsPage from "./pages/ReportsPage";
+import AnnouncementsPage from "./pages/AnnouncementsPage";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (!isAuthenticated()) {
@@ -74,6 +75,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <ReportsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/announcements"
+          element={
+            <ProtectedRoute>
+              <AnnouncementsPage />
             </ProtectedRoute>
           }
         />

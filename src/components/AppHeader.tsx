@@ -18,6 +18,7 @@ const NAV = [
   { to: "/ad-spend", label: "Ad Spend" },
   { to: "/dialogs", label: "Dialogs" },
   { to: "/reports", label: "Reports" },
+  { to: "/announcements", label: "Announcements" },
 ] as const;
 
 interface AppHeaderProps {
@@ -43,9 +44,9 @@ export default function AppHeader({ actions }: AppHeaderProps) {
         </span>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {actions}
-        <nav className="flex items-center gap-1">
+        <nav className="flex flex-wrap items-center gap-1">
           {NAV.map((item) => {
             // "/" would prefix-match everything, so it is the one exact case.
             const active =
