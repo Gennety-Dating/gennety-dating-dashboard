@@ -1,3 +1,14 @@
+import type {
+  PulseBriefResponse,
+  PulseCatalogResponse,
+  PulseFunnelsResponse,
+  PulseInsightsResponse,
+  PulseJourneyResponse,
+  PulseJourneysResponse,
+  PulseScreenDetailResponse,
+  PulseScreensResponse,
+} from "./pulse-types";
+
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3100";
 
 // ── Response types ──────────────────────────────────────────────
@@ -1122,6 +1133,16 @@ export function fresh(path: string): string {
 }
 
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  // Dev-only preview: `VITE_PULSE_FIXTURES=1 npm run dev` answers the Pulse
+  // endpoints (and the two activity reads next to them) from local fixtures.
+  // The env check is a build-time constant, so a production bundle does not
+  // even contain the fixtures module.
+  if (import.meta.env.VITE_PULSE_FIXTURES === "1") {
+    const { pulseFixture } = await import("./pulse-fixtures");
+    const hit = pulseFixture(path);
+    if (hit !== undefined) return hit as T;
+  }
+
   const token = sessionStorage.getItem("admin_api_key");
   if (!token) throw new Error("Not authenticated");
 
@@ -1710,3 +1731,144 @@ export const getViralityAnomalies = (range: ViralityRange, force = false) => {
   const path = `/admin/analytics/virality/anomalies?${viralityParams(range)}`;
   return apiFetch<ViralityAnomaliesData>(force ? fresh(path) : path);
 };
+
+// ── Pulse (GET /admin/pulse/*) ──────────────────────────────────
+// Types are a hand mirror of the backend contract — see the header of
+// ./pulse-types.ts for the source file. Every endpoint accepts `?fresh=1`.
+
+export type * from "./pulse-types";
+
+const maybeFresh = (path: string, force: boolean) => (force ? fresh(path) : path);
+
+export const getPulseBrief = (force = false) =>
+  apiFetch<PulseBriefResponse>(maybeFresh("/admin/pulse/brief", force));
+
+export const getPulseScreens = (force = false) =>
+  apiFetch<PulseScreensResponse>(maybeFresh("/admin/pulse/screens", force));
+
+export const getPulseScreen = (screen: string, force = false) =>
+  apiFetch<PulseScreenDetailResponse>(
+    maybeFresh(`/admin/pulse/screens/${encodeURIComponent(screen)}`, force),
+  );
+
+export const getPulseJourneys = (
+  opts: { stuck?: boolean; limit?: number } = {},
+  force = false,
+) => {
+  const q = new URLSearchParams();
+  if (opts.stuck) q.set("stuck", "1");
+  if (opts.limit) q.set("limit", String(opts.limit));
+  const qs = q.toString();
+  return apiFetch<PulseJourneysResponse>(
+    maybeFresh(`/admin/pulse/journeys${qs ? `?${qs}` : ""}`, force),
+  );
+};
+
+/** Never cached server-side; 404 when no such real account exists. */
+export const getPulseJourney = (userId: string) =>
+  apiFetch<PulseJourneyResponse>(`/admin/pulse/journeys/${encodeURIComponent(userId)}`);
+
+export const getPulseCatalog = (force = false) =>
+  apiFetch<PulseCatalogResponse>(maybeFresh("/admin/pulse/catalog", force));
+
+export const getPulseFunnels = (force = false) =>
+  apiFetch<PulseFunnelsResponse>(maybeFresh("/admin/pulse/funnels", force));
+
+export const getPulseInsights = (status: "open" | "all" = "open", force = false) =>
+  apiFetch<PulseInsightsResponse>(maybeFresh(`/admin/pulse/insights?status=${status}`, force));
+
+// ── Activity (GET /admin/analytics/active, /dau, /mau) ──────────
+// Mirrors apps/bot/src/admin/routes/activity.ts. Days are UTC `YYYY-MM-DD`;
+// the default day is YESTERDAY (today is still filling).
+
+export interface ActivitySummary {
+  date: string;
+  dau: number;
+  wau: number;
+  mau: number;
+  /** DAU ÷ MAU as a percentage; null when MAU is 0. */
+  stickinessPct: number | null;
+  dauByPlatform: Record<string, number>;
+  mauByPlatform: Record<string, number>;
+  windows: { wauDays: number; mauDays: number };
+}
+
+export interface ActivitySeriesData {
+  generatedAt: string;
+  timezone: "UTC";
+  from: string;
+  to: string;
+  includeTest: boolean;
+  summary: ActivitySummary;
+  series: Array<{ date: string; dau: number }>;
+}
+
+export interface DauData extends ActivitySummary {
+  generatedAt: string;
+  timezone: "UTC";
+  includeTest: boolean;
+  excludedTestUsers: number;
+}
+
+export interface MauData {
+  generatedAt: string;
+  timezone: "UTC";
+  mode: "calendar_month" | "rolling";
+  from: string;
+  to: string;
+  days: number;
+  mau: number;
+  byPlatform: Record<string, number>;
+  avgDau: number;
+  stickinessPct: number | null;
+  includeTest: boolean;
+  excludedTestUsers: number;
+}
+
+/** Zero-filled DAU series (default: the 30 days ending yesterday) + headline block. */
+export const getActivitySeries = (force = false) =>
+  apiFetch<ActivitySeriesData>(maybeFresh("/admin/analytics/active", force));
+
+export const getDau = (force = false) =>
+  apiFetch<DauData>(maybeFresh("/admin/analytics/dau", force));
+
+export const getMau = (force = false) =>
+  apiFetch<MauData>(maybeFresh("/admin/analytics/mau", force));
+
+// ── Bot onboarding funnel (GET /admin/analytics/onboarding-funnel) ──
+// Mirrors apps/bot/src/admin/utils/onboarding-funnel.ts. All-time, from
+// `onboarding_step_events` — the conversational (bot) questionnaire.
+
+export interface OnboardingStepRow {
+  step: string;
+  order: number;
+  reached: number;
+  answered: number;
+  skipped: number;
+  advanced: number;
+  stuckHere: number;
+  /** Share of reachers who did NOT advance, 0..1. */
+  dropOffRate: number;
+  dwellSamples: number;
+  dwellMsMedian: number | null;
+  dwellMsP90: number | null;
+}
+
+export interface OnboardingFunnelData {
+  generatedAt: string;
+  usersEntered: number;
+  usersStillOnboarding: number;
+  steps: OnboardingStepRow[];
+  topDropOffSteps: Array<{ step: string; stuckHere: number; dropOffRate: number }>;
+  slowestSteps: Array<{ step: string; dwellMsMedian: number | null; dwellSamples: number }>;
+  tail: {
+    finalizedOnboarding: number;
+    verified: number;
+    pendingVerification: number;
+    rejectedOrReview: number;
+    active: number;
+  };
+}
+
+export const getOnboardingFunnel = (force = false) =>
+  apiFetch<OnboardingFunnelData>(maybeFresh("/admin/analytics/onboarding-funnel", force));
