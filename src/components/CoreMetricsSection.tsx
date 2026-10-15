@@ -27,40 +27,24 @@ function usd(cents: number | null | undefined): string {
 }
 
 /**
- * A metric that is blocked on a mechanism nobody has built yet.
+ * A metric that only exists once some mechanism produces it (ad spend for CAC,
+ * a payer cohort for LTV:CAC).
  *
- * It still reads the field. That matters: `cacPerPayingUsdCents` and `ltvCac`
- * are real fields the API already returns, they are simply always `null`
- * today — so a card that hard-coded "no data" would keep saying it on the
- * day ad spend starts arriving, and nobody would notice the number was
- * finally there. `value` absent ⇒ show the reason; `value` present ⇒ show
- * the number and drop the excuse.
+ * It still reads the field — the API already returns it, as `null` today — so
+ * the card appears by itself on the day the number does. Until then it renders
+ * nothing: a row of permanent "no data" placeholders was clutter the founder
+ * had learnt to skip, which is worse than absence.
  */
-function BlockedCard({
-  label,
-  value,
-  reason,
-}: {
-  label: string;
-  value?: string | null;
-  reason: string;
-}) {
-  const has = value != null;
+function BlockedCard({ label, value }: { label: string; value?: string | null }) {
+  if (value == null) return null;
   return (
     <div className="panel rounded-lg p-4">
       <p className="text-[11px] font-medium tracking-wide text-slate-500 uppercase">
         {label}
       </p>
-      <p
-        className={`mt-2 text-2xl font-semibold tracking-tight tabular-nums ${
-          has ? "text-white" : "text-slate-600"
-        }`}
-      >
-        {has ? value : NO_DATA}
+      <p className="mt-2 text-2xl font-semibold tracking-tight text-white tabular-nums">
+        {value}
       </p>
-      {!has && (
-        <p className="mt-1 text-xs leading-relaxed text-slate-500">{reason}</p>
-      )}
     </div>
   );
 }
@@ -177,7 +161,6 @@ export default function CoreMetricsSection({
           <BlockedCard
             label="CAC per paying"
             value={d.cacPerPayingUsdCents == null ? null : usd(d.cacPerPayingUsdCents)}
-            reason="No attributable spend overlapping a signup yet — log spend on the Ad Spend page. Full breakdown by channel is below."
           />
         </div>
       </section>
@@ -316,17 +299,14 @@ export default function CoreMetricsSection({
           <BlockedCard
             label="CAC per active"
             value={d.cacPerActiveUsdCents == null ? null : usd(d.cacPerActiveUsdCents)}
-            reason="No attributable spend overlapping an activation yet."
           />
           <BlockedCard
             label="LTV : CAC"
             value={d.ltvCac == null ? null : `${d.ltvCac.toFixed(2)}×`}
-            reason="Needs both a payer cohort and acquisition cost — see the CAC cards."
           />
           <BlockedCard
             label="ROAS"
             value={d.roas == null ? null : `${d.roas.toFixed(2)}×`}
-            reason="Revenue earned inside the spend's own attribution window, divided by that spend — needs both to exist."
           />
           <StatCard
             label="Total marketing spend"
@@ -361,24 +341,6 @@ export default function CoreMetricsSection({
             </div>
           </div>
         )}
-      </section>
-
-      {/* ── Weekly ────────────────────────────────────────────── */}
-      <section>
-        <SectionHeader
-          title="Weekly"
-          description="Two numbers that need something the product does not have yet. They are listed so the gap is visible, not so the panel looks full."
-        />
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <BlockedCard
-            label="Churn"
-            reason="Measured on Premium subscriptions. Not one has ever been sold, so there is no cohort to lose."
-          />
-          <BlockedCard
-            label="MRR"
-            reason="Same: recurring revenue starts at the first subscriber. Total revenue to date is on the Monetization tab."
-          />
-        </div>
       </section>
     </div>
   );

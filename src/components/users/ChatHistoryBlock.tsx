@@ -16,6 +16,36 @@ function formatTime(ts: string | number | undefined): string {
   });
 }
 
+/**
+ * Message text for a human. Non-string content (multi-part arrays, tool calls)
+ * used to be dumped as raw JSON; it is now reduced to its text parts plus
+ * short bracketed markers for whatever is not text.
+ */
+function readableContent(m: ChatMessage): string {
+  const parts: string[] = [];
+  const c: unknown = m.content;
+  if (typeof c === "string") parts.push(c);
+  else if (Array.isArray(c)) {
+    for (const p of c as unknown[]) {
+      if (typeof p === "string") parts.push(p);
+      else if (p && typeof p === "object") {
+        const o = p as { type?: unknown; text?: unknown };
+        if (typeof o.text === "string") parts.push(o.text);
+        else if (typeof o.type === "string")
+          parts.push(o.type.includes("image") ? "[изображение]" : `[${o.type}]`);
+      }
+    }
+  }
+  const calls = (m as { tool_calls?: unknown }).tool_calls;
+  if (Array.isArray(calls)) {
+    for (const call of calls as Array<{ function?: { name?: unknown }; name?: unknown }>) {
+      const name = call?.function?.name ?? call?.name;
+      parts.push(`[вызов инструмента${typeof name === "string" ? `: ${name}` : ""}]`);
+    }
+  }
+  return parts.length > 0 ? parts.join("\n") : "[без текста]";
+}
+
 export default function ChatHistoryBlock({ messages }: Props) {
   if (!messages || messages.length === 0) {
     return (
@@ -36,10 +66,7 @@ export default function ChatHistoryBlock({ messages }: Props) {
           : isAssistant
             ? "mr-auto bg-panel text-slate-100"
             : "mx-auto bg-canvas text-slate-400 italic";
-        const content =
-          typeof m.content === "string"
-            ? m.content
-            : JSON.stringify(m.content ?? m, null, 2);
+        const content = readableContent(m);
 
         return (
           <div

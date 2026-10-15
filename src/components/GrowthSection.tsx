@@ -44,9 +44,9 @@ export default function GrowthSection({ retention, dates, verification }: Props)
       {/* Top KPI strip */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatCard
-          label="Avg matches / user"
+          label="Решений по парам на аккаунт"
           value={retention.avgMatchesPerUser.toFixed(2)}
-          info="Total per-side decisions (ACCEPTED + DECLINED) divided by total registered users. Includes onboarding/inactive in the denominator on purpose — that's the realistic per-user yield."
+          info="Все решения сторон по парам («иду» + «нет») ÷ все зарегистрированные аккаунты, включая тех, кто ещё в анкете. Это не «пар на человека»: каждая пара даёт до двух решений."
         />
         <StatCard
           label="Date completion rate"
